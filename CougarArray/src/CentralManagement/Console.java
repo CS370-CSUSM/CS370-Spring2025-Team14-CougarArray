@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Console {
-    public static void console(String[] args) throws IOException {
+    public void view() throws IOException {
 
         while(true)
         {
