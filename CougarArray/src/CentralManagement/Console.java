@@ -9,6 +9,7 @@ public class Console {
 
         while(true)
         {
+            System.out.print("> ");
             // Enter data using BufferReader
             BufferedReader r = new BufferedReader(
                 new InputStreamReader(System.in));
