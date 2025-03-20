@@ -15,6 +15,15 @@ public class Console {
 
             // Reading data using readLine
             String s = r.readLine();
+            String[] args = breakDownArgs(s);
         }
+    }
+
+    public String[] breakDownArgs(String s){
+        String[] words = s.split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].replaceAll("[^\\w]", "");
+        }
+        return words;
     }
 }
