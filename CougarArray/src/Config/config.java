@@ -13,7 +13,7 @@ public class config {
     //DEFAULT VALUES
     private int port = 5666; 
 
-    public void main() {
+    public config() {
         loadConfig();
     }
 
@@ -22,16 +22,20 @@ public class config {
         File file = new File(FILE_PATH);
         Properties properties = new Properties();
 
-        // If file exists, load it
+        // Case #1: If file exists, load it
         if (file.exists()) {
+            System.out.println("Loading Config File...");
             try (FileInputStream fis = new FileInputStream(file)) {
                 properties.load(fis);
                 this.port = Integer.parseInt(properties.getProperty("Port", "2020"));
             } catch (IOException | NumberFormatException e) {
                 System.err.println("Error reading properties file: " + e.getMessage());
             }
+
+            return;
         }
 
+        // Case #2: The Properties file is not made; Generate it
         properties.setProperty("Port", "5666");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             properties.store(fos, "Configuration Settings");
