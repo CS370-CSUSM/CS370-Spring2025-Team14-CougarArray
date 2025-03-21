@@ -11,7 +11,9 @@ public class config {
     private static final String FILE_PATH = "config.properties";
 
     //DEFAULT VALUES
-    private int port = 5666; 
+    private int port = 5666; //by default, operate as a reciever on port 5666
+    private boolean actAsSender = true; //by default, you can send files
+    private boolean actAsReciever = true; //by default, you can recieve files
 
     public config() {
         loadConfig();
