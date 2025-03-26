@@ -29,7 +29,9 @@ public class config {
             System.out.println("Loading Config File...");
             try (FileInputStream fis = new FileInputStream(file)) {
                 properties.load(fis);
-                this.port = Integer.parseInt(properties.getProperty("Port", "2020"));
+                this.port = Integer.parseInt(properties.getProperty("Port", Integer.toString(this.port)));
+                this.actAsSender = Boolean.parseBoolean(properties.getProperty("actAsSender", Boolean.toString(this.actAsSender)));
+                this.actAsReciever = Boolean.parseBoolean(properties.getProperty("actAsSender", Boolean.toString(this.actAsReciever)));
             } catch (IOException | NumberFormatException e) {
                 System.err.println("Error reading properties file: " + e.getMessage());
             }
@@ -37,8 +39,16 @@ public class config {
             return;
         }
 
+        generateConfig(properties, file);
+    }
+
+    private void generateConfig(Properties properties, File file) {
+
         // Case #2: The Properties file is not made; Generate it
-        properties.setProperty("Port", "5666");
+        properties.setProperty("Port", Integer.toString(this.port));
+        properties.setProperty("actAsSender", Boolean.toString(actAsSender));
+        properties.setProperty("actAsReciever", Boolean.toString(actAsReciever));
+
         try (FileOutputStream fos = new FileOutputStream(file)) {
             properties.store(fos, "Configuration Settings");
             System.out.println("Config file created with default values.");
