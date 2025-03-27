@@ -43,7 +43,7 @@ public class config {
                 properties.load(fis);
                 this.port = Integer.parseInt(properties.getProperty("Port", Integer.toString(this.port)));
                 this.actAsSender = Boolean.parseBoolean(properties.getProperty("actAsSender", Boolean.toString(this.actAsSender)));
-                this.actAsReciever = Boolean.parseBoolean(properties.getProperty("actAsSender", Boolean.toString(this.actAsReciever)));
+                this.actAsReciever = Boolean.parseBoolean(properties.getProperty("actAsReceiver", Boolean.toString(this.actAsReciever)));
             } catch (IOException | NumberFormatException e) {
                 System.err.println("Error reading properties file: " + e.getMessage());
             }
