@@ -27,14 +27,16 @@ public class Websocket extends Thread{
     }
     
     private void listen(){
+        Output.print("Starting Websocket Reciever");
+
         //Connect to the port
         try (ServerSocket serverSocket = new ServerSocket(this.port)) {
-            System.out.println("Server listening on port " + this.port + "...");
+            Output.print("Server listening on port " + this.port + "...", Status.GOOD);
 
             //after successful connection, start listening for input messages
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getInetAddress());
+                Output.print("Client connected: " + clientSocket.getInetAddress(), Status.GOOD);
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //this handles messages that are INPUTTED (ex. input would recieve information. If I send "Hello World" to a server, the server would save it here)
                 PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true); //this handles what to write back (ex. if I recieve "Hello World", output would write back "How are you doing?")
@@ -49,6 +51,8 @@ public class Websocket extends Thread{
             Output.print("Error Catched! Error revolves in Websocket.java!", Status.BAD);
             e.printStackTrace();
         }
+
+        Output.print("Leaving Websocket Reciever...");
         
     }
 
