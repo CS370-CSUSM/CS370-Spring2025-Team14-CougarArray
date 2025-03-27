@@ -19,7 +19,7 @@ public class CentralMGMTEngine {
         //Also look more into Mapping Runnables so that 2 parameters can be accepted
     }
 
-    private static boolean executeArgs(String[] parameters) {
+    public static boolean executeArgs(String[] parameters) {
         String command = parameters[0]; //send, encrypt, decrypt
 
         actions.get(command).accept(parameters[1]);

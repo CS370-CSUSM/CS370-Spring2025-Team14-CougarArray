@@ -10,6 +10,8 @@ import OutputT.Output;
 import OutputT.Status;
 import OutputT.Colors;
 
+
+
 //A lot of the information founded for using websockets can be founded here: https://www.geeksforgeeks.org/java-net-socket-class-in-java/
 //ServerSocket is for SERVER side tasks (for recieving stuff)
 //Socket is for CLIENT side tasks (for sending stuff)
