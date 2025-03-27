@@ -10,7 +10,7 @@ import java.util.Map;
 //This does NOT focus on execution; only on acting as a View
 public class Console extends CentralMGMTEngine {
 
-    public void view() throws IOException {
+    public static void view() throws IOException {
 
         while(true)
         {

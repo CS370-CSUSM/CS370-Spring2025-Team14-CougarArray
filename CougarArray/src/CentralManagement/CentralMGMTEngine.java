@@ -12,6 +12,11 @@ public class CentralMGMTEngine {
 
     public CentralMGMTEngine() {
         actions.put("encrypt", filepath -> encryptFile(filepath));
+        actions.put("decrypt", filepath -> decryptFile(filepath));
+        
+        //@TODO!
+        //Make it so if actAsSender is false then send function cannot be used
+        //Also look more into Mapping Runnables so that 2 parameters can be accepted
     }
 
     private static boolean executeArgs(String[] parameters) {
