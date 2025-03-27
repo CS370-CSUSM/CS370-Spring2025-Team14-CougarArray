@@ -13,7 +13,7 @@ import OutputT.Colors;
 
 
 //A lot of the information founded for using websockets can be founded here: https://www.geeksforgeeks.org/java-net-socket-class-in-java/
-//ServerSocket is for SERVER side tasks (for recieving stuff)
+//ServerSocket is for SERVER side tasks (for receiving stuff)
 //Socket is for CLIENT side tasks (for sending stuff)
 public class Websocket extends Thread{
 
@@ -29,7 +29,7 @@ public class Websocket extends Thread{
     }
     
     private void listen(){
-        Output.print("Starting Websocket Reciever");
+        Output.print("Starting Websocket Receiver");
 
         //Connect to the port
         try (ServerSocket serverSocket = new ServerSocket(this.port)) {
@@ -40,21 +40,21 @@ public class Websocket extends Thread{
                 Socket clientSocket = serverSocket.accept();
                 Output.print("Client connected: " + clientSocket.getInetAddress(), Status.GOOD);
 
-                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //this handles messages that are INPUTTED (ex. input would recieve information. If I send "Hello World" to a server, the server would save it here)
-                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true); //this handles what to write back (ex. if I recieve "Hello World", output would write back "How are you doing?")
+                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //this handles messages that are INPUTTED (ex. input would receive information. If I send "Hello World" to a server, the server would save it here)
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true); //this handles what to write back (ex. if I receive "Hello World", output would write back "How are you doing?")
                 
                 String received;
-                while ((received = input.readLine()) != null) { //save input to the strong Recieived. If there are several lines on the strong; keep saving it until it's empty. (Similiar to reading a file with C++)
+                while ((received = input.readLine()) != null) { //save input to the strong Received. If there are several lines on the strong; keep saving it until it's empty. (Similiar to reading a file with C++)
                     System.out.println("Received: " + received);
                     output.println("Message received: " + received);
                 }
             }
         } catch (Exception e) {
-            Output.print("Error Catched! Error revolves in Websocket.java!", Status.BAD);
+            Output.print("Error Caught! Error revolves in Websocket.java!", Status.BAD);
             e.printStackTrace();
         }
 
-        Output.print("Leaving Websocket Reciever...");
+        Output.print("Leaving Websocket Receiver...");
         
     }
 
