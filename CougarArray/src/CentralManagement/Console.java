@@ -7,9 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 //subsystem
-public class Console {
-
-    private static CentralMGMTEngine Execution = new CentralMGMTEngine();
+//This does NOT focus on execution; only on acting as a View
+public class Console extends CentralMGMTEngine {
 
     public void view() throws IOException {
 
@@ -34,13 +33,5 @@ public class Console {
             words[i] = words[i].replaceAll("[^\\w]", "");
         }
         return words;
-    }
-
-    private static boolean executeArgs(String[] parameters) {
-        String command = parameters[0]; //send, encrypt, decrypt
-
-        Map<String, Runnable> functionMap = new HashMap<>();
-
-        return false;
     }
 }
