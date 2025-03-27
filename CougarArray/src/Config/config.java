@@ -15,6 +15,18 @@ public class config {
     private boolean actAsSender = true; //by default, you can send files
     private boolean actAsReciever = true; //by default, you can recieve files
 
+    public int getPort() {
+        return port;
+    }
+    
+    public boolean getAsSender() {
+        return actAsSender;
+    }
+
+    public boolean getAsReciever() {
+        return actAsReciever;
+    }
+
     public config() {
         loadConfig();
     }

@@ -6,20 +6,37 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import OutputT.Output;
+import OutputT.Status;
+import OutputT.Colors;
+
 //A lot of the information founded for using websockets can be founded here: https://www.geeksforgeeks.org/java-net-socket-class-in-java/
 //ServerSocket is for SERVER side tasks (for recieving stuff)
 //Socket is for CLIENT side tasks (for sending stuff)
-public class Websocket {
+public class Websocket extends Thread{
+
+    private int port;
+
+    public Websocket(int port){
+        this.port = port;
+    }
+
+    //extension of Thread
+    public void run(){
+        listen();
+    }
     
-    private void listen(int port){
+    private void listen(){
+        Output.print("Starting Websocket Reciever");
+
         //Connect to the port
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server listening on port " + port + "...");
+        try (ServerSocket serverSocket = new ServerSocket(this.port)) {
+            Output.print("Server listening on port " + this.port + "...", Status.GOOD);
 
             //after successful connection, start listening for input messages
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getInetAddress());
+                Output.print("Client connected: " + clientSocket.getInetAddress(), Status.GOOD);
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //this handles messages that are INPUTTED (ex. input would recieve information. If I send "Hello World" to a server, the server would save it here)
                 PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true); //this handles what to write back (ex. if I recieve "Hello World", output would write back "How are you doing?")
@@ -31,8 +48,12 @@ public class Websocket {
                 }
             }
         } catch (Exception e) {
+            Output.print("Error Catched! Error revolves in Websocket.java!", Status.BAD);
             e.printStackTrace();
         }
+
+        Output.print("Leaving Websocket Reciever...");
+        
     }
 
 
@@ -46,8 +67,8 @@ public class Websocket {
     public static void main(String args[]) {
         int port = 6333; //@TODO! make it so, for testing purposes, user might want to use another port in case 6333 is used.
         
-        Websocket websocket = new Websocket(); 
-        new Thread(() -> websocket.listen(port)).start(); //Concurrency is needed for websocket as it operates as another process
+        Websocket websocket = new Websocket(port); 
+        new Thread(() -> websocket.listen()).start(); //Concurrency is needed for websocket as it operates as another process
 
         try (Socket socket = new Socket("127.0.0.1", port);
              PrintWriter output = new PrintWriter(socket.getOutputStream(), true);

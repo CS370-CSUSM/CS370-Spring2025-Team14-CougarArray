@@ -3,13 +3,19 @@ package CentralManagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Console {
+//subsystem
+//This does NOT focus on execution; only on acting as a View
+public class Console extends CentralMGMTEngine {
+
     public void view() throws IOException {
 
         while(true)
         {
-            System.out.print("> ");
+            //System.out.print("> "); @TODO! Make it so when there is console output, it doesn't break this
+
             // Enter data using BufferReader
             BufferedReader r = new BufferedReader(
                 new InputStreamReader(System.in));
@@ -17,10 +23,11 @@ public class Console {
             // Reading data using readLine
             String s = r.readLine();
             String[] args = breakDownArgs(s);
+            executeArgs(args);
         }
     }
 
-    public String[] breakDownArgs(String s){
+    private static String[] breakDownArgs(String s){
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             words[i] = words[i].replaceAll("[^\\w]", "");
