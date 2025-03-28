@@ -14,6 +14,7 @@ public class Console extends CentralMGMTEngine {
 
         while(true)
         {
+            CentralMGMTEngine engine = new CentralMGMTEngine();
             //System.out.print("> "); @TODO! Make it so when there is console output, it doesn't break this
 
             // Enter data using BufferReader
@@ -23,7 +24,7 @@ public class Console extends CentralMGMTEngine {
             // Reading data using readLine
             String s = r.readLine();
             String[] args = breakDownArgs(s);
-            executeArgs(args);
+            engine.executeArgs(args);
         }
     }
 
