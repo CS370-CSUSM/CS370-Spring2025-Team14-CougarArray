@@ -22,7 +22,7 @@ public class CentralMGMTEngine {
         //Also look more into Mapping Runnables so that 2 parameters can be accepted
     }
 
-    public static boolean executeArgs(String[] parameters) {
+    public boolean executeArgs(String[] parameters) {
         if (parameters.length == 0) {
             Output.print("Error: No command provided", Status.BAD);
             return false;
@@ -51,7 +51,14 @@ public class CentralMGMTEngine {
     }
 
 
-    // these would be handled in cryptography package (i think)
+    //encryptFile
+    //make <<use>> of Encryption.java
+    //Example Execution
+    //  encrypt file.txt
+    //  encrypt full/fill/path/to/file.txt
+    //  (parameter[1] is file)
+    //Expected Outcome:
+    //It should generate an encrypted version of the file
     private boolean encryptFile(String[] parameters) {
         return false;
     }
