@@ -12,6 +12,11 @@ public class Output {
         print(message, Status.OK);
     }
 
+    public static boolean errorPrint(String message) {
+        print(message, Status.BAD);
+        return false;
+    }
+
     public static void main(String[] args){
         print("Testing for Output.java");
         

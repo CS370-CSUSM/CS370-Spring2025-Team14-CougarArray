@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import Cryptography.Encryption;
 import OutputT.Output;
 import OutputT.Status;
 
@@ -23,30 +24,19 @@ public class CentralMGMTEngine {
     }
 
     public boolean executeArgs(String[] parameters) {
-        if (parameters.length == 0) {
-            Output.print("Error: No command provided", Status.BAD);
-            return false;
-        }
+        if (parameters.length == 0) return Output.errorPrint("Error: No command provided");
         
         String command = parameters[0].toLowerCase(); // case-insensitive commands
         
-        if (!actions.containsKey(command)) {
-            Output.print("Error: Unknown Command.", Status.BAD);
-            Output.print("Available commands: " + actions.keySet());
-            return false;
-        }
+        if (!actions.containsKey(command)) return Output.errorPrint("Error: Unknown Command. Commands availiable: " + actions.keySet());
         
-        if (parameters.length < 2) {
-            Output.print("Error: Command '" + command + "' requires an argument", Status.BAD);
-            return false;
-        }
+        if (parameters.length < 2) return Output.errorPrint("Error: Command '" + command + "' requires an argument"); //NOTE; I feel like this would be more appropriate in the action files...?
         
         try {
             actions.get(command).accept(parameters);
             return true;
         } catch (Exception e) {
-            Output.print("Error executing command '" + command + "': " + e.getMessage(), Status.BAD);
-            return false;
+            return Output.errorPrint("Error executing command '" + command + "': " + e.getMessage());
         }
     }
 
@@ -60,6 +50,7 @@ public class CentralMGMTEngine {
     //Expected Outcome:
     //It should generate an encrypted version of the file
     private boolean encryptFile(String[] parameters) {
+        Encryption.Encrypt(parameters[1]);
         return false;
     }
 

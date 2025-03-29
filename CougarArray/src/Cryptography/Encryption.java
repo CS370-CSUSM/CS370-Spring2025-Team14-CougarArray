@@ -12,7 +12,7 @@ public class Encryption extends Cryptography {
         super(privateKey, publicKey);
     }
 
-    public boolean Encrypt(String Filepath) {
+    public static boolean Encrypt(String Filepath) {
 
         return true;
     }
