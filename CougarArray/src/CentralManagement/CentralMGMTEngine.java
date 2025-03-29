@@ -24,7 +24,7 @@ public class CentralMGMTEngine {
 
     public static boolean executeArgs(String[] parameters) {
         if (parameters.length == 0) {
-            System.err.println("Error: No command provided");
+            Output.print("Error: No command provided", Status.BAD);
             return false;
         }
         
