@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import OutputT.Output;
+import OutputT.Status;
+
 //subsystem
 //This acts as an event trigger; this parsers then executes the model
 public class CentralMGMTEngine {
 
-    private static Map<String, Consumer<String>> actions = new HashMap<>();
+    private static Map<String, Consumer<String[]>> actions = new HashMap<>();
 
     public CentralMGMTEngine() {
         actions.put("encrypt", filepath -> encryptFile(filepath));
@@ -28,36 +31,36 @@ public class CentralMGMTEngine {
         String command = parameters[0].toLowerCase(); // case-insensitive commands
         
         if (!actions.containsKey(command)) {
-            System.err.println("Error: Unknown command '" + command + "'");
-            System.err.println("Available commands: " + actions.keySet());
+            Output.print("Error: Unknown Command.", Status.BAD);
+            Output.print("Available commands: " + actions.keySet());
             return false;
         }
         
         if (parameters.length < 2) {
-            System.err.println("Error: Command '" + command + "' requires an argument");
+            Output.print("Error: Command '" + command + "' requires an argument", Status.BAD);
             return false;
         }
         
         try {
-            actions.get(command).accept(parameters[1]);
+            actions.get(command).accept(parameters);
             return true;
         } catch (Exception e) {
-            System.err.println("Error executing command '" + command + "': " + e.getMessage());
+            Output.print("Error executing command '" + command + "': " + e.getMessage(), Status.BAD);
             return false;
         }
     }
 
 
     // these would be handled in cryptography package (i think)
-    private boolean encryptFile(String filepath) {
+    private boolean encryptFile(String[] parameters) {
         return false;
     }
 
-    private boolean decryptFile(String filepath) {
+    private boolean decryptFile(String[] parameters) {
         return false;
     }
 
-    private boolean sendFile(String filepath) {
+    private boolean sendFile(String[] parameters) {
         return false;
     }
 }
