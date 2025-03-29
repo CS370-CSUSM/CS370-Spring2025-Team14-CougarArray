@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import Config.config;
 import Cryptography.Encryption;
 import OutputT.Output;
 import OutputT.Status;
@@ -13,6 +14,7 @@ import OutputT.Status;
 public class CentralMGMTEngine {
 
     private static Map<String, Consumer<String[]>> actions = new HashMap<>();
+    private config Config = new config();
 
     public CentralMGMTEngine() {
         actions.put("encrypt", filepath -> encryptFile(filepath));
