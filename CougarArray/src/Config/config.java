@@ -24,6 +24,12 @@ public class config {
     public int getPort() {
         return port;
     }
+
+    public void setPort(int port) {
+        if (updateProperty("port", String.valueOf(port))) {
+            this.port = port;
+        }
+    }
     
     public boolean getAsSender() {
         return actAsSender;
@@ -41,6 +47,17 @@ public class config {
         return privateKey;
     }
 
+    public boolean setKeys(String privateKey, String publicKey) {
+        if (updateProperty("privateKey", privateKey) & updateProperty("publicKey", publicKey)) {
+            this.publicKey = publicKey;
+            this.privateKey = privateKey;
+            return true;
+        }
+        return false;
+    }
+
+    //This should be kept private due to the severity of this
+    //we making illegal code with this one
     private boolean updateProperty(String key, String value) {
 
         Output.print("Updating properties key " + key + " to value: " + value);
@@ -54,6 +71,7 @@ public class config {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
 
         Output.print("Successfully updated config.properties." , Status.GOOD);

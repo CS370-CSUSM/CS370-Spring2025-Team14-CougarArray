@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import Config.config;
+import Cryptography.Cryptography;
 import Cryptography.Encryption;
+import Cryptography.Keys;
 import OutputT.Output;
 import OutputT.Status;
 
@@ -17,6 +19,17 @@ public class CentralMGMTEngine {
     private config Config = new config();
 
     public CentralMGMTEngine() {
+
+        if (Config.getPrivatekey() == null || Config.getPublicKey() == null) {
+            Output.print("Keys for Config are Empty...Updating Keys");
+            Keys updatedKeys = Cryptography.generateKeys();
+            if (Config.setKeys(updatedKeys.getPrivate(), updatedKeys.getPublic())) {
+                Output.print("Successfully generated keys", Status.GOOD);
+            } else {
+                Output.errorPrint("Godammit. How did you get here?");
+            }
+        }
+
         actions.put("encrypt", filepath -> encryptFile(filepath));
         actions.put("decrypt", filepath -> decryptFile(filepath));
         
