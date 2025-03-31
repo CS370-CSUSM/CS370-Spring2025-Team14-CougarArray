@@ -18,7 +18,10 @@ import java.security.PublicKey;
 import java.util.Base64;
 
 public class Cryptography {
-    private Keys keys;
+    protected Keys keys;
+
+    //this needs to be consistent when using encryption methods...using AES and RSA combined can cause tomfoolery
+    protected static final String transformation = "RSA";
 
     public Cryptography(String privateKey, String publicKey) {
         this.keys = new Keys(privateKey, publicKey);
@@ -26,7 +29,7 @@ public class Cryptography {
 
     public static Keys generateKeys() {
         try {
-            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(transformation);
             keyPairGen.initialize(2048); // Use 2048-bit RSA key
             KeyPair keyPair = keyPairGen.generateKeyPair();
 

@@ -1,5 +1,12 @@
 package Cryptography;
 
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
 public class Keys {
     private String privateKey;
     private String publicKey;
@@ -27,5 +34,25 @@ public class Keys {
 
     public String getPublic() {
         return this.publicKey;
+    }
+
+
+    //This code was made by ChatGPT!
+    //The idea is this; when using Java Cipher & Security packages they don't want "publickey" and "privatekey"
+    //as String...rather as the class PublicKey & PrivateKey
+    //Again this code acts as getters meaning that privatekey & publicKey should NEVER be modified here
+
+    public PublicKey getPublicKeyFromString() throws Exception {
+        byte[] byteKey = Base64.getDecoder().decode(this.publicKey);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(byteKey);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePublic(keySpec);
+    }
+
+    public PrivateKey getPrivateKeyFromString(String key) throws Exception {
+        byte[] byteKey = Base64.getDecoder().decode(this.privateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(byteKey);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
     }
 }
