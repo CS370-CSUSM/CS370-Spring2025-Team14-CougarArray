@@ -1,20 +1,47 @@
 package Cryptography;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Base64;
+
 //This is a subsytem that has both Encryption & Decryption in one place
 public class CryptographyClient {
 
     public Encryption encryption;
     public Decrypytion decrypytion;
 
-    public CryptographyClient() {
-        Keys keys = Cryptography.generateKeys();
-
+    public CryptographyClient(Keys keys) {
         encryption = new Encryption(keys.getPrivate(), keys.getPublic());
         decrypytion = new Decrypytion(keys.getPrivate(), keys.getPublic());
     }
 
+    public static Keys generateKeys() {
+        try {
+            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+            keyPairGen.initialize(2048); // Use 2048-bit RSA key
+            KeyPair keyPair = keyPairGen.generateKeyPair();
+
+            PublicKey pubKey = keyPair.getPublic();
+            PrivateKey privKey = keyPair.getPrivate();
+
+            String publicKey = Base64.getEncoder().encodeToString(pubKey.getEncoded());
+            String privateKey = Base64.getEncoder().encodeToString(privKey.getEncoded());
+            return new Keys(privateKey, publicKey);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        CryptographyClient testEngine = new CryptographyClient();
+
+        Keys keys = Cryptography.generateKeys();
+
+        CryptographyClient testEngine = new CryptographyClient(keys);
         testEngine.encryption.Encrypt("test.txt");   
         testEngine.decrypytion.Decrypt("test.txt", "testoutput.txt");
     }

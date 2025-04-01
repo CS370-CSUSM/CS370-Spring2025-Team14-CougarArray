@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import Cryptography.Keys;
 import OutputT.Output;
 import OutputT.Status;
 
@@ -47,10 +48,14 @@ public class config {
         return privateKey;
     }
 
-    public boolean setKeys(String privateKey, String publicKey) {
-        if (updateProperty("privateKey", privateKey) & updateProperty("publicKey", publicKey)) {
-            this.publicKey = publicKey;
-            this.privateKey = privateKey;
+    public boolean emptyOrInvalidKeys() {
+        return this.publicKey.isEmpty() || this.privateKey.isEmpty();
+    }
+
+    public boolean setKeys(Keys keys) {
+        if (updateProperty("privateKey", keys.getPrivate()) & updateProperty("publicKey", keys.getPublic())) {
+            this.publicKey = keys.getPublic();
+            this.privateKey = keys.getPrivate();
             return true;
         }
         return false;
@@ -113,8 +118,8 @@ public class config {
         properties.setProperty("Port", Integer.toString(this.port));
         properties.setProperty("actAsSender", Boolean.toString(actAsSender));
         properties.setProperty("actAsReciever", Boolean.toString(actAsReciever));
-        properties.setProperty("privateKey", null);
-        properties.setProperty("publicKey", null);
+        properties.setProperty("privateKey", "");
+        properties.setProperty("publicKey", "");
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             properties.store(fos, "Configuration Settings");

@@ -6,8 +6,6 @@ import java.util.function.Consumer;
 
 import Config.config;
 import Cryptography.Cryptography;
-import Cryptography.Encryption;
-import Cryptography.Keys;
 import OutputT.Output;
 import OutputT.Status;
 
@@ -20,10 +18,11 @@ public class CentralMGMTEngine {
 
     public CentralMGMTEngine() {
 
-        if (Config.getPrivatekey() == null || Config.getPublicKey() == null) {
-            Output.print("Keys for Config are Empty...Updating Keys");
-            Keys updatedKeys = Cryptography.generateKeys();
-            if (Config.setKeys(updatedKeys.getPrivate(), updatedKeys.getPublic())) {
+        Output.print("test");
+
+        if (Config.emptyOrInvalidKeys()) {
+            Output.print("Keys for Config are Invalid...Updating Keys");
+            if (Config.setKeys(Cryptography.generateKeys())) {
                 Output.print("Successfully generated keys", Status.GOOD);
             } else {
                 Output.errorPrint("Godammit. How did you get here?");
@@ -38,7 +37,7 @@ public class CentralMGMTEngine {
         //Also look more into Mapping Runnables so that 2 parameters can be accepted
     }
 
-    public boolean executeArgs(String[] parameters) {
+    public static boolean executeArgs(String[] parameters) {
         if (parameters.length == 0) return Output.errorPrint("Error: No command provided");
         
         String command = parameters[0].toLowerCase(); // case-insensitive commands
@@ -65,7 +64,7 @@ public class CentralMGMTEngine {
     //Expected Outcome:
     //It should generate an encrypted version of the file
     private boolean encryptFile(String[] parameters) {
-        Encryption.Encrypt(parameters[1]);
+
         return false;
     }
 
