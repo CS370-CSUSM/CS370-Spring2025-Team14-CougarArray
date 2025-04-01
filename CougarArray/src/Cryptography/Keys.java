@@ -10,6 +10,7 @@ import java.util.Base64;
 public class Keys {
     private String privateKey;
     private String publicKey;
+    private static final String algorithm = "RSA";
 
     Keys(String privateKey, String publicKey) {
         setPrivate(privateKey);
@@ -45,14 +46,14 @@ public class Keys {
     public PublicKey getPublicKeyFromString() throws Exception {
         byte[] byteKey = Base64.getDecoder().decode(this.publicKey);
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(byteKey);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
         return keyFactory.generatePublic(keySpec);
     }
 
     public PrivateKey getPrivateKeyFromString() throws Exception {
         byte[] byteKey = Base64.getDecoder().decode(this.privateKey);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(byteKey);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
         return keyFactory.generatePrivate(keySpec);
     }
 }

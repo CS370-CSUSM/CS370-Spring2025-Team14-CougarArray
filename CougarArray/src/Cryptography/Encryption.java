@@ -5,7 +5,7 @@
 
 package Cryptography;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,7 +33,7 @@ public class Encryption extends Cryptography {
     //cipher documentation i was reading
 
     private byte[] encryptContent(byte[] content) throws Exception  {
-        Cipher cipher = Cipher.getInstance(transformation);
+        Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.ENCRYPT_MODE, this.keys.getPublicKeyFromString());
         return cipher.doFinal(content);
 

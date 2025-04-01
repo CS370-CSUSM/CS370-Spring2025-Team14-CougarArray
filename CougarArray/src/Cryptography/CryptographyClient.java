@@ -12,6 +12,7 @@ public class CryptographyClient {
 
     public Encryption encryption;
     public Decrypytion decrypytion;
+    private static final String algorithm = "RSA";
 
     public CryptographyClient(Keys keys) {
         encryption = new Encryption(keys.getPrivate(), keys.getPublic());
@@ -20,7 +21,7 @@ public class CryptographyClient {
 
     public static Keys generateKeys() {
         try {
-            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(algorithm);
             keyPairGen.initialize(2048); // Use 2048-bit RSA key
             KeyPair keyPair = keyPairGen.generateKeyPair();
 
@@ -39,7 +40,7 @@ public class CryptographyClient {
 
     public static void main(String[] args) throws Exception {
 
-        Keys keys = Cryptography.generateKeys();
+        Keys keys = generateKeys();
 
         CryptographyClient testEngine = new CryptographyClient(keys);
         testEngine.encryption.Encrypt("test.txt");   

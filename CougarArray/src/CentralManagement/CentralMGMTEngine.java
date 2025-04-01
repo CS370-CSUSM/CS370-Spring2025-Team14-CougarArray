@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import Config.config;
 import Cryptography.Cryptography;
+import Cryptography.CryptographyClient;
 import OutputT.Output;
 import OutputT.Status;
 
@@ -22,7 +23,7 @@ public class CentralMGMTEngine {
 
         if (Config.emptyOrInvalidKeys()) {
             Output.print("Keys for Config are Invalid...Updating Keys");
-            if (Config.setKeys(Cryptography.generateKeys())) {
+            if (Config.setKeys(CryptographyClient.generateKeys())) {
                 Output.print("Successfully generated keys", Status.GOOD);
             } else {
                 Output.errorPrint("Godammit. How did you get here?");

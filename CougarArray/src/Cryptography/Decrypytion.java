@@ -29,7 +29,7 @@ public class Decrypytion extends Cryptography {
     }
 
     private byte[] decryptContent(byte[] content) throws Exception {
-        Cipher cipher = Cipher.getInstance(transformation);
+        Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.DECRYPT_MODE, this.keys.getPrivateKeyFromString());
         return cipher.doFinal(content);
     }
