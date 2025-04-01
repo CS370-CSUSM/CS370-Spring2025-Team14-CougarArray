@@ -49,7 +49,7 @@ public class Keys {
         return keyFactory.generatePublic(keySpec);
     }
 
-    public PrivateKey getPrivateKeyFromString(String key) throws Exception {
+    public PrivateKey getPrivateKeyFromString() throws Exception {
         byte[] byteKey = Base64.getDecoder().decode(this.privateKey);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(byteKey);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");

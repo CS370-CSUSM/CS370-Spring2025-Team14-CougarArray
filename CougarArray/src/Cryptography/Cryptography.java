@@ -38,7 +38,7 @@ public class Cryptography {
 
             String publicKey = Base64.getEncoder().encodeToString(pubKey.getEncoded());
             String privateKey = Base64.getEncoder().encodeToString(privKey.getEncoded());
-            return new Keys(publicKey, privateKey);
+            return new Keys(privateKey, publicKey);
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
