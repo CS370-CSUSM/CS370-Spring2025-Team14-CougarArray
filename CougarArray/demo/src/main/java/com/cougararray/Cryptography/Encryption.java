@@ -3,7 +3,7 @@
 + encryptWithOutsideKey(String)
 */
 
-package Cryptography;
+package com.cougararray.Cryptography;
 
 
 import java.io.IOException;

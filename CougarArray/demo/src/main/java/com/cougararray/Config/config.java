@@ -1,4 +1,4 @@
-package Config;
+package com.cougararray.Config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,9 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import Cryptography.Keys;
-import OutputT.Output;
-import OutputT.Status;
+import com.cougararray.Cryptography.Keys;
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
 
 public class config {
 

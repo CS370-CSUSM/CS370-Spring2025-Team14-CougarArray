@@ -1,4 +1,4 @@
-package CentralManagement;
+package com.cougararray.CentralManagement;
 
 import java.io.BufferedReader;
 import java.io.IOException;

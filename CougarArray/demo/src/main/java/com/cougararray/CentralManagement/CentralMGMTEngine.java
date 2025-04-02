@@ -1,4 +1,4 @@
-package CentralManagement;
+package com.cougararray.CentralManagement;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -9,12 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import Config.config;
-import Cryptography.CryptographyClient;
-import OutputT.Output;
-import OutputT.Status;
-
-import TCPWebsocket.WebsocketListener;
+import com.cougararray.Config.config;
+import com.cougararray.Cryptography.CryptographyClient;
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
+import com.cougararray.TCPWebsocket.WebsocketListener;
 
 //subsystem
 //This acts as an event trigger; this parsers then executes the model

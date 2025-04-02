@@ -1,4 +1,4 @@
-package RecDatabase;
+package com.cougararray.RecDatabase;
 
 //TODO!
 //Discuss what kind of database to use 

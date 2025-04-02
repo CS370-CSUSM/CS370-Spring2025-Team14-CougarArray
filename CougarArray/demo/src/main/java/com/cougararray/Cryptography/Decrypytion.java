@@ -3,7 +3,7 @@
 + decryptWithOutsideKey(String)
 */
 
-package Cryptography;
+package com.cougararray.Cryptography;
 
 import java.io.IOException;
 import java.nio.file.Files;

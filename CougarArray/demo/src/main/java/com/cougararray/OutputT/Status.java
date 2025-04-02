@@ -1,4 +1,4 @@
-package OutputT;
+package com.cougararray.OutputT;
 
 public enum Status {
     /*

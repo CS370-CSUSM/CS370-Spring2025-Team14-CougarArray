@@ -1,4 +1,4 @@
-package TCPWebsocket;
+package com.cougararray.TCPWebsocket;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import OutputT.Output;
-import OutputT.Status;
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
 
 
 

@@ -8,7 +8,7 @@
 +getFile(String)
 */
 
-package Cryptography;
+package com.cougararray.Cryptography;
 
 public class Cryptography {
     protected Keys keys;

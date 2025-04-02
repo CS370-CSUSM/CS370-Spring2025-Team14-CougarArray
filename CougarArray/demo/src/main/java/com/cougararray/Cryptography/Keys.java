@@ -1,4 +1,4 @@
-package Cryptography;
+package com.cougararray.Cryptography;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
