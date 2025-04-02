@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -37,9 +38,10 @@ public class Database {
 
     private void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Users ("
-                   + "IP_ADDRESS TEXT NOT NULL, "
-                   + "NAME TEXT NOT NULL, "
-                   + "PUBLICKEY TEXT NOT NULL);";
+                    + "IP_ADDRESS TEXT NOT NULL, "
+                    + "NAME TEXT DEFAULT NULL, "
+                    + "PUBLICKEY TEXT NOT NULL);";
+
         
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);
              Statement stmt = conn.createStatement()) {
@@ -47,6 +49,44 @@ public class Database {
             System.out.println("Users table verified/created successfully.");
         } catch (SQLException e) {
             System.out.println("Error creating Users table: " + e.getMessage());
+        }
+    }
+
+    protected Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DATABASE_URL);
+    }
+
+
+    //INSERT RECORDS
+    //One if NAME is NULL and one if Name is present
+    public void createRecord(String address, String publicKey) {
+        String sql = "INSERT INTO Users (IP_ADDRESS, NAME, PUBLICKEY) VALUES (?, NULL, ?)";
+
+        try (Connection conn = getConnection();  // Replace with your actual connection method
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, address);
+            pstmt.setString(2, publicKey);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle exceptions properly in production
+        }
+    }
+
+    public void createRecord(String address, String publicKey, String name) {
+        String sql = "INSERT INTO Users (IP_ADDRESS, NAME, PUBLICKEY) VALUES (?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL);  // Replace with your actual connection method
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, address);
+            pstmt.setString(2, name);
+            pstmt.setString(3, publicKey);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle exceptions properly in production
         }
     }
 

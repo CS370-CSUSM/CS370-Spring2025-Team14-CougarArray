@@ -26,7 +26,8 @@ public class recipientdoa extends Database {
     }
 
     public void setName(String name) {
-        Name = name;
+        if (updateUser("IP_ADDRESS", getAddress(), "NAME", getName())) this.Name = name;
+        else return; //TODO! what to do in "ELSE" cases?
     }
     
     public String getAddress() {
@@ -34,7 +35,8 @@ public class recipientdoa extends Database {
     }
 
     public void setAddress(String address) {
-        Address = address;
+        if (updateUser("PUBLICKEY", getPublicKey(), "ADDRESS", getAddress())) this.Address = address;
+        else return; //TODO! what to do in "ELSE" cases?
     }
 
     public String getPublicKey() {
@@ -42,7 +44,8 @@ public class recipientdoa extends Database {
     }
 
     public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+        if (updateUser("IP_ADDRESS", getAddress(), "PUBLICKEY", getPublicKey())) this.publicKey = publicKey;
+        else return; //TODO! what to do in "ELSE" cases?
     }
 
     //for it not to exist...all the values would be empty
@@ -58,7 +61,11 @@ public class recipientdoa extends Database {
     }
 
     private void getUser(String statement) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        //statement should be in this format
+        //return "SELECT IP_ADDRESS, NAME, PUBLICKEY FROM Users WHERE " + getkeyType() + " = '" + input + "';";
+
+    
+        try (Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(statement)) {
              
             ResultSet rs = pstmt.executeQuery();
@@ -71,6 +78,26 @@ public class recipientdoa extends Database {
         } catch (SQLException e) {
             System.out.println("Error retrieving user: " + e.getMessage());
         }
+    }
+
+    //return boolean if successful
+    private boolean updateUser(String identifier, String identifierValue, String columnToUpdate, String newValue) {
+        String sql = "UPDATE Users SET " + columnToUpdate + " = " + newValue + " WHERE "+ identifier + " = " + identifierValue;
+    
+        try (Connection conn = getConnection(); // Replace with your actual connection method
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected == 0) {
+                System.out.println("No records updated. User with IP " + identifier + " not found.");
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle exceptions properly in production
+        }
+
+        return false;
     }
     
 }
