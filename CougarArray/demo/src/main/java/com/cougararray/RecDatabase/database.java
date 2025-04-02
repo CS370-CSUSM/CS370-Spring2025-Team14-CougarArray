@@ -74,7 +74,7 @@ public class Database {
         }
     }
 
-    public void createRecord(String address, String publicKey, String name) {
+    public boolean createRecord(String address, String publicKey, String name) {
         String sql = "INSERT INTO Users (IP_ADDRESS, NAME, PUBLICKEY) VALUES (?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);  // Replace with your actual connection method
@@ -85,9 +85,11 @@ public class Database {
             pstmt.setString(3, publicKey);
 
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace(); // Handle exceptions properly in production
         }
+        return false;
     }
 
     /**
