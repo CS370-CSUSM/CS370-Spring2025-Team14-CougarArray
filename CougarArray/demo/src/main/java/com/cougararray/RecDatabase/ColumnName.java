@@ -1,6 +1,6 @@
 package com.cougararray.RecDatabase;
 
-public enum keyType {
+public enum ColumnName {
     /*
      * Instead of the developer having to type "RED" or pulling the Colors Red, they can instead type the status
      */
@@ -9,16 +9,17 @@ public enum keyType {
     PUBLICKEY("PUBLICKEY");
 
     private final String type;
+    private String value;
 
-    keyType(String type) { 
+    ColumnName(String type) { 
         this.type = type;
     }
 
-    private String getkeyType() {
+    public String getkeyType() {
         return this.type;
     }
 
-    public String returnStatement(String input) {
-        return "SELECT IP_ADDRESS, NAME, PUBLICKEY FROM Users WHERE " + getkeyType() + " = '" + input + "';";
+    public String getValue() {
+        return this.value;
     }
 }

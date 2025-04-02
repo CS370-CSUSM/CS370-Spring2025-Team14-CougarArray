@@ -18,7 +18,7 @@ public class recipientdoa extends Database {
     private String Name = null; //this is ok to be NULL!
     private String Address = NON_EXISTANT_NULL;
     private String publicKey = NON_EXISTANT_NULL;
-    private boolean persistent = false; //does the record exist? Default: false unless explictly found
+    private boolean persistent = false; //does the record exist? Default: false unless explictly found @TODO! make use of this?
 
     //Getters & Setters
     //TODO! Make setters update the database!
@@ -56,9 +56,9 @@ public class recipientdoa extends Database {
 
     //Constructor
     //Find User via Database
-    public recipientdoa(String key, keyType type) {
+    public recipientdoa(RecordValue record) {
         super(); //execute Database.java constructor in case we didn't create a database beforehand
-        persistent = getUser(type.returnStatement(key));
+        this.persistent = getUser(record.returnStatement());
     }
 
     //Constructor
@@ -122,6 +122,12 @@ public class recipientdoa extends Database {
         return this.createRecord(this.Address, this.publicKey, this.Name);
     }
 
+    
+    public void print() {
+        String output = "Name - " + this.getName() + "\n" + "Address - " + this.getAddress() + "\n" + "Public Key - " + this.getPublicKey() + "\n" + "In Database? - " + this.persistent;
+        System.out.println(output);
+    }
+
     //TEST
     //Create .sql Database File
     //Create new user; Name: localhost, IP: 127.0.0.1, PublicKey: "Test"
@@ -133,10 +139,11 @@ public class recipientdoa extends Database {
     public static void main(String[] args) {
         recipientdoa localhost = new recipientdoa("127.0.0.1", "Test", "localhost");
         localhost.createUser();
-
-        localhost = new recipientdoa("127.0.0.1", keyType.IP_ADDRESS);
+        localhost = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
+        localhost.print();
         localhost.setPublicKey("Test2");
-        System.out.println("New Key is " + localhost.getPublicKey());
+        System.err.println("-----------");
+        localhost.print();
 
         localhost.setPublicKey("Test");
     }
