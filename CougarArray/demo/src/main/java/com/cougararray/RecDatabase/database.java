@@ -22,7 +22,7 @@ public class Database {
         createUsersTable();
     }
 
-        private void createDatabase() {
+    private void createDatabase() {
         File dbFile = new File(DATABASE_FILE);
         if (!dbFile.exists()) {
             try (Connection conn = DriverManager.getConnection(DATABASE_URL)) {

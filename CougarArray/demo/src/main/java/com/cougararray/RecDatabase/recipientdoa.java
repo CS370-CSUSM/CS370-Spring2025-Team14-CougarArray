@@ -12,10 +12,12 @@ import java.sql.SQLException;
 //if my age was manipulated, then it should manipulate the database's data
 public class recipientdoa extends Database {
 
+    private final String NON_EXISTANT_NULL = "NA";
+
     //Private Variables to Class
-    private String Name;
-    private String Address;
-    private String publicKey;
+    private String Name = null; //this is ok to be NULL!
+    private String Address = NON_EXISTANT_NULL;
+    private String publicKey = NON_EXISTANT_NULL;
 
     //Getters & Setters
     //TODO! Make setters update the database!
@@ -43,8 +45,15 @@ public class recipientdoa extends Database {
         this.publicKey = publicKey;
     }
 
+    //for it not to exist...all the values would be empty
+    public boolean exists() {
+        return Address == NON_EXISTANT_NULL && publicKey == NON_EXISTANT_NULL;
+    }
 
+    //Constructor
+    //Find User via Database
     public recipientdoa(String key, keyType type) {
+        super(); //execute Database.java constructor in case we didn't create a database beforehand
         getUser(type.returnStatement(key));
     }
 
