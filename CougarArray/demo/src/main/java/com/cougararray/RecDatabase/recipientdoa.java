@@ -138,6 +138,8 @@ public class recipientdoa extends Database {
     //Revert it back
     public static void main(String[] args) {
         recipientdoa localhost = new recipientdoa("127.0.0.1", "Test", "localhost");
+        localhost.print();
+        System.err.println("-----------");
         localhost.createUser();
         localhost = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
         localhost.print();
