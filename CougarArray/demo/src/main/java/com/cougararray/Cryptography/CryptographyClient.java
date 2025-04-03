@@ -10,8 +10,8 @@ import java.util.Base64;
 //This is a subsytem that has both Encryption & Decryption in one place
 public class CryptographyClient {
 
-    public Encryption encryption;
-    public Decrypytion decrypytion;
+    private Encryption encryption;
+    private Decrypytion decrypytion;
     private static final String algorithm = "RSA";
 
     public CryptographyClient(Keys keys) {
@@ -45,6 +45,26 @@ public class CryptographyClient {
         CryptographyClient testEngine = new CryptographyClient(keys);
         testEngine.encryption.Encrypt("test.txt");   
         testEngine.decrypytion.Decrypt("test.txt", "testoutput.txt");
+    }
+
+    public boolean encrypt(String filePath) {
+        try {
+            return encryption.Encrypt(filePath);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean decrypt(String filePath) {
+        try {
+            return decrypytion.Decrypt(filePath, filePath);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
     }
     
 }

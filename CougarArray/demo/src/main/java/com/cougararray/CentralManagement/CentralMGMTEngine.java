@@ -19,7 +19,6 @@ import com.cougararray.TCPWebsocket.WebsocketListener;
 //This acts as an event trigger; this parsers then executes the model
 public class CentralMGMTEngine extends WebsocketListener {
 
-    private static Map<String, Consumer<String[]>> actions = new HashMap<>();
     private static config Config = new config();
 
     public CentralMGMTEngine() {
@@ -35,30 +34,28 @@ public class CentralMGMTEngine extends WebsocketListener {
             }
         }
         
-
-        actions.put("encrypt", filepath -> encryptFile(filepath));
-        actions.put("decrypt", filepath -> decryptFile(filepath));
-        
-        //@TODO!
-        //Make it so if actAsSender is false then send function cannot be used
-        //Also look more into Mapping Runnables so that 2 parameters can be accepted
     }
 
-    public static boolean executeArgs(String[] parameters) {
-        if (parameters.length == 0) return Output.errorPrint("Error: No command provided");
-        
-        String command = parameters[0].toLowerCase(); // case-insensitive commands
-        
-        if (!actions.containsKey(command)) return Output.errorPrint("Error: Unknown Command. Commands availiable: " + actions.keySet());
-        
-        if (parameters.length < 2) return Output.errorPrint("Error: Command '" + command + "' requires an argument"); //NOTE; I feel like this would be more appropriate in the action files...?
-        
-        try {
-            actions.get(command).accept(parameters);
-            return true;
-        } catch (Exception e) {
-            return Output.errorPrint("Error executing command '" + command + "': " + e.getMessage());
+    public boolean executeArgs(String[] parameters) {
+        //I feel like this line of code doesn't make sense...
+        //If Java Command can get one line of string then this wouldn't be needed?
+        //if (parameters.length == 0) return Output.errorPrint("Error: No command provided");
+
+        switch(parameters[0].toLowerCase()) {
+            case "encrypt":
+                //safer way of checking length
+                if (parameters.length > 1) return encryptFile(parameters[1]);
+                break;
+            case "decrypt": //@TODO!
+                if (parameters.length > 1) return decryptFile(parameters[1]);
+                break;
+            case "send": //@TODO!
+                break;
+            default:
+                return Output.errorPrint("Unknown Command!");
         }
+
+        return false;
     }
 
 
@@ -70,13 +67,12 @@ public class CentralMGMTEngine extends WebsocketListener {
     //  (parameter[1] is file)
     //Expected Outcome:
     //It should generate an encrypted version of the file
-    private boolean encryptFile(String[] parameters) {
-
-        return false;
+    private boolean encryptFile(String file) {
+        return new CryptographyClient(Config.getKeys()).encrypt(file);
     }
 
-    private boolean decryptFile(String[] parameters) {
-        return false;
+    private boolean decryptFile(String file) {
+        return new CryptographyClient(Config.getKeys()).decrypt(file);
     }
 
     private boolean sendFile(String[] parameters) {

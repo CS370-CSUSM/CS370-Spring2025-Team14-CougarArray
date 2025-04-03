@@ -12,6 +12,9 @@ public class Output {
         print(message, Status.OK);
     }
 
+    //ErrorPrint returns false because some code has it so it outputs something AND returns false to imply
+    //unsuccessful execution of code
+    //this functions merges the two
     public static boolean errorPrint(String message) {
         print(message, Status.BAD);
         return false;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.Key;
 import java.util.Properties;
 
 import com.cougararray.Cryptography.Keys;
@@ -59,6 +60,10 @@ public class config {
             return true;
         }
         return false;
+    }
+
+    public Keys getKeys(){
+        return new Keys(getPrivatekey(), getPublicKey());
     }
 
     //This should be kept private due to the severity of this

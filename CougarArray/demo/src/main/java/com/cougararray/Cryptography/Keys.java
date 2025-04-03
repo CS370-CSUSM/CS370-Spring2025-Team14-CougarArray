@@ -12,7 +12,7 @@ public class Keys {
     private String publicKey;
     private static final String algorithm = "RSA";
 
-    Keys(String privateKey, String publicKey) {
+    public Keys(String privateKey, String publicKey) {
         setPrivate(privateKey);
         setPublic(publicKey);
     }

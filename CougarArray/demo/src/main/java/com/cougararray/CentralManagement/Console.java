@@ -32,7 +32,8 @@ public class Console extends CentralMGMTEngine {
     private static String[] breakDownArgs(String s){
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
-            words[i] = words[i].replaceAll("[^\\w]", "");
+            words[i] = words[i].replaceAll("[^\\w.]", "");
+            System.err.println(words[i]);
         }
         return words;
     }
