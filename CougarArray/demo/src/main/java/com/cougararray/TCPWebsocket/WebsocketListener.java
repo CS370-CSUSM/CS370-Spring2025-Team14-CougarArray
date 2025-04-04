@@ -89,7 +89,8 @@ public class WebsocketListener extends Thread{
         WebsocketListener websocketListener = new WebsocketListener(port);
         websocketListener.start();
 
-        WebsocketSenderClient.sendPing("localhost:6999");
+        WebsocketSenderClient.sendPing("127.0.0.1:6999");
+        WebsocketSenderClient.sendMessage("127.0.0.1:6999", "Hi!");
 
     }
 }

@@ -19,8 +19,7 @@ public class Console extends CentralMGMTEngine {
             //System.out.print("> "); @TODO! Make it so when there is console output, it doesn't break this
 
             // Enter data using BufferReader
-            BufferedReader r = new BufferedReader(
-                new InputStreamReader(System.in));
+            BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 
             // Reading data using readLine
             String s = r.readLine();

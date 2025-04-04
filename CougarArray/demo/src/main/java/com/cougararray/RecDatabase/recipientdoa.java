@@ -51,7 +51,7 @@ public class recipientdoa extends Database {
 
     //for it not to exist...all the values would be empty
     public boolean exists() {
-        return Address == NON_EXISTANT_NULL && publicKey == NON_EXISTANT_NULL;
+        return Address != NON_EXISTANT_NULL && publicKey != NON_EXISTANT_NULL;
     }
 
     //Constructor
@@ -75,7 +75,7 @@ public class recipientdoa extends Database {
 
     private boolean getUser(String statement) {
         //statement should be in this format
-        //return "SELECT IP_ADDRESS, NAME, PUBLICKEY FROM Users WHERE " + getkeyType() + " = '" + input + "';";
+        //SELECT IP_ADDRESS, NAME, PUBLICKEY FROM Users WHERE NAME = 'Localhost';
 
     
         try (Connection conn = getConnection();
@@ -137,17 +137,18 @@ public class recipientdoa extends Database {
     //Output new PublicKey
     //Revert it back
     public static void main(String[] args) {
-        recipientdoa localhost = new recipientdoa("127.0.0.1", "Test", "localhost");
+        //recipientdoa localhost = new recipientdoa("127.0.0.1", "Test", "localhost");
+        //localhost.print();
+        //System.err.println("-----------");
+        //localhost.createUser();
+        recipientdoa localhost = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
         localhost.print();
-        System.err.println("-----------");
-        localhost.createUser();
-        localhost = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
-        localhost.print();
-        localhost.setPublicKey("Test2");
-        System.err.println("-----------");
-        localhost.print();
+        System.out.println(localhost.exists());
+        //localhost.setPublicKey("Test2");
+        //System.err.println("-----------");
+        //localhost.print();
 
-        localhost.setPublicKey("Test");
+        //localhost.setPublicKey("Test");
     }
     
 }

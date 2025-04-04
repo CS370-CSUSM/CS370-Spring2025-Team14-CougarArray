@@ -6,7 +6,7 @@ public class RecordValue {
 
     public RecordValue(ColumnName columnName, String value) {
         this.columnName = columnName;
-        this.value = value;
+        this.value = value.replaceAll("\\s", "");
     }
 
     public String returnStatement() {
