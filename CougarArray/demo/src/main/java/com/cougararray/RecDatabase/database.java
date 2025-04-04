@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -51,6 +52,35 @@ public class Database {
             System.out.println("Error creating Users table: " + e.getMessage());
         }
     }
+
+    public boolean formatPrint() {
+        String sql = "SELECT * FROM Users";
+
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            System.out.printf("%-20s | %-20s | %-50s%n", "IP_ADDRESS", "NAME", "PUBLICKEY");
+            System.out.println("----------------------------------------------------------------------------");
+
+            while (rs.next()) {
+                String ipAddress = rs.getString("IP_ADDRESS");
+                String name = rs.getString("NAME");
+                String publicKey = rs.getString("PUBLICKEY");
+
+                System.out.printf("%-20s | %-20s | %-50s%n", 
+                                  ipAddress, 
+                                  name != null ? name : "NULL", 
+                                  publicKey);
+            }
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error retrieving Users table: " + e.getMessage());
+        }
+
+        return false;
+    }
+
 
     protected Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DATABASE_URL);

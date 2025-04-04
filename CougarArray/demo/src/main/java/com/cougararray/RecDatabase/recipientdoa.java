@@ -118,7 +118,7 @@ public class recipientdoa extends Database {
         return false;
     }
 
-    private boolean createUser() {
+    public boolean createUser() {
         return this.createRecord(this.Address, this.publicKey, this.Name);
     }
 

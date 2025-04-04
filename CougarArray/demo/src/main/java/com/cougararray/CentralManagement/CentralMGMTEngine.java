@@ -13,6 +13,8 @@ import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
+import com.cougararray.RecDatabase.Database;
+import com.cougararray.RecDatabase.recipientdoa;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 
 //subsystem
@@ -49,6 +51,11 @@ public class CentralMGMTEngine extends WebsocketListener {
             case "decrypt": //@TODO!
                 if (parameters.length > 1) return decryptFile(parameters[1]);
                 break;
+            case "adduser":
+                if (parameters.length > 3) return addUser(parameters[1], parameters[2], parameters[3]);
+                else if (parameters.length > 3) return addUser(parameters[1], parameters[2], null);
+            case "users":
+                return listUsers();
             case "send": //@TODO!
                 break;
             default:
@@ -77,6 +84,15 @@ public class CentralMGMTEngine extends WebsocketListener {
 
     private boolean sendFile(String[] parameters) {
         return false;
+    }
+
+    private boolean addUser(String address, String publicKey, String name){
+        recipientdoa newUser = new recipientdoa(address, publicKey, name);
+        return newUser.createUser();
+    }
+
+    private boolean listUsers() {
+        return new Database().formatPrint();
     }
 
     //WEBSOCKET INHERITANCE
