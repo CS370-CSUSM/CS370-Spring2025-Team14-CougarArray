@@ -59,7 +59,7 @@ public class CryptographyClient {
 
     public boolean decrypt(String filePath) {
         try {
-            return decrypytion.Decrypt(filePath, filePath);
+            return decrypytion.Decrypt(filePath, filePath).successful;
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class CryptographyClient {
 
     //Static usage; we are not using variables created inside here
     public static CryptographyResult encryptWithOutsideKey(String filepath, String publicKey) {
-        Encryption encryption = new Encryption(null, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
+        Encryption encryption = new Encryption(algorithm, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
         CryptographyResult output = new CryptographyResult(null, false);
         try {
             output = encryption.Encrypt(filepath);
@@ -79,6 +79,20 @@ public class CryptographyClient {
         }
 
         return output;
+    }
+
+    //This is mostly going to be used locally
+    public static boolean decryptBytes(byte[] content, String output)
+    {
+        Decrypytion decryption = new Decrypytion(algorithm, output);
+        try {
+            return decryption.DecryptBytes(content, output).successful;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return false;
     }
     
 }

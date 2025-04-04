@@ -22,7 +22,7 @@ import com.cougararray.OutputT.Status;
 public class WebsocketListener extends Thread{
 
     protected int port;
-    private WebSocketServer server;
+    protected WebSocketServer server;
 
     public WebsocketListener(int port){
         this.port = port;
@@ -84,12 +84,12 @@ public class WebsocketListener extends Thread{
     //Better documentation
     public static void main(String args[]) {
 
-        int port = 8000; // default test port
+        int port = 6999; // default test port
 
         WebsocketListener websocketListener = new WebsocketListener(port);
         websocketListener.start();
 
-        WebsocketSenderClient.sendPing("localhost:8000");
+        WebsocketSenderClient.sendPing("localhost:6999");
 
     }
 }

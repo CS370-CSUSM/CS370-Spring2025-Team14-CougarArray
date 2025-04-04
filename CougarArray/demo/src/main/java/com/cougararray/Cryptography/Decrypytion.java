@@ -27,16 +27,23 @@ public class Decrypytion {
         }
     }
     
-    public boolean Decrypt(String Filepath, String output) throws Exception {
+    public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
         try {
             byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
             byte[] decryptedData = decryptContent(fileData);
 
             Files.write(Paths.get(output), decryptedData);
+            return new CryptographyResult(decryptedData, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
+        return null;
+    }
+
+    public CryptographyResult DecryptBytes(byte[] fileData, String output) throws Exception {
+        byte[] decryptedData = decryptContent(fileData);
+        Files.write(Paths.get(output), decryptedData);
+        return new CryptographyResult(decryptedData, true);
     }
 
     private byte[] decryptContent(byte[] content) throws Exception {
