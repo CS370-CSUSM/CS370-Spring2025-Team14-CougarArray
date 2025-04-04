@@ -9,13 +9,22 @@ package com.cougararray.Cryptography;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.PublicKey;
 
 import javax.crypto.Cipher;
 
-public class Encryption extends Cryptography {
+public class Encryption {
+
+    private String algorithm; 
+    private PublicKey publicKey;
     
-    public Encryption(String privateKey, String publicKey) {
-        super(privateKey, publicKey);
+    public Encryption(String algorithm, String publicKey) {
+        this.algorithm = algorithm;
+        try {
+            this.publicKey = Keys.getPublicKeyFromString(publicKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean Encrypt(String Filepath) throws Exception {
@@ -33,8 +42,8 @@ public class Encryption extends Cryptography {
     //cipher documentation i was reading
 
     private byte[] encryptContent(byte[] content) throws Exception  {
-        Cipher cipher = Cipher.getInstance(algorithm);
-        cipher.init(Cipher.ENCRYPT_MODE, this.keys.getPublicKeyFromString());
+        Cipher cipher = Cipher.getInstance(this.algorithm);
+        cipher.init(Cipher.ENCRYPT_MODE, this.publicKey);
         return cipher.doFinal(content);
 
     }

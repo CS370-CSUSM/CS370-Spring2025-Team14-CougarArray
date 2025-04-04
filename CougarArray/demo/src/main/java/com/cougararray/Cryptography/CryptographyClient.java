@@ -15,8 +15,8 @@ public class CryptographyClient {
     private static final String algorithm = "RSA";
 
     public CryptographyClient(Keys keys) {
-        encryption = new Encryption(keys.getPrivate(), keys.getPublic());
-        decrypytion = new Decrypytion(keys.getPrivate(), keys.getPublic());
+        encryption = new Encryption(algorithm, keys.getPublic());
+        decrypytion = new Decrypytion(algorithm, keys.getPrivate());
     }
 
     public static Keys generateKeys() {
@@ -67,7 +67,8 @@ public class CryptographyClient {
         }
     }
 
-    public boolean encryptWithOutsideKey(String filepath, String publicKey) {
+    //Static usage; we are not using variables created inside here
+    public static boolean encryptWithOutsideKey(String filepath, String publicKey) {
         Encryption encryption = new Encryption(null, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
         try {
             return encryption.Encrypt(filepath);
@@ -84,3 +85,6 @@ public class CryptographyClient {
 //Make it so where it asks to input "public key or private key", just replace it with Key class
 //I been having headache because putting in the wrong key really does screw everything up
 //i hate this.
+
+//TODO
+//make a unit test

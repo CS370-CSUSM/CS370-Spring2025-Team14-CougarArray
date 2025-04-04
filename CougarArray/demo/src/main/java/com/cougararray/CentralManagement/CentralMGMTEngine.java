@@ -92,8 +92,9 @@ public class CentralMGMTEngine extends WebsocketListener {
     private boolean sendFile(String file, RecordValue record) {
         recipientdoa endUser = new recipientdoa(record);
         if (!endUser.exists()) return false;
+        if (!CryptographyClient.encryptWithOutsideKey(file, endUser.getPublicKey())) return false;
 
-        //@TODO! make it send encrypt file & send it
+        //we can assume that user exist & file was created
 
         return false;
     }

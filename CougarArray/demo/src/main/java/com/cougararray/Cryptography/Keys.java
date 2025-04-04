@@ -56,4 +56,18 @@ public class Keys {
         KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
         return keyFactory.generatePrivate(keySpec);
     }
+
+    public static PublicKey getPublicKeyFromString(String publicKey) throws Exception {
+        byte[] byteKey = Base64.getDecoder().decode(publicKey);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(byteKey);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        return keyFactory.generatePublic(keySpec);
+    }
+
+    public static PrivateKey getPrivateKeyFromString(String privateKey) throws Exception {
+        byte[] byteKey = Base64.getDecoder().decode(privateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(byteKey);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        return keyFactory.generatePrivate(keySpec);
+    }
 }
