@@ -1,0 +1,4 @@
+TODO:
+* Standardized Port
+Not sure where this occured but Lenny started using port 5666 despite agreed upon 6999 so i feel like we need to find time to pick a port to use and rely on that way no port issues occur anymore.
+There should also be a discussion regarding port usage, if user can use a different port and how to save data of another peer different port 
