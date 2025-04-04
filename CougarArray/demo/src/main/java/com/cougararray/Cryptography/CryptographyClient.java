@@ -66,6 +66,17 @@ public class CryptographyClient {
             return false;
         }
     }
+
+    public boolean encryptWithOutsideKey(String filepath, String publicKey) {
+        Encryption encryption = new Encryption(null, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
+        try {
+            return encryption.Encrypt(filepath);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
     
 }
 

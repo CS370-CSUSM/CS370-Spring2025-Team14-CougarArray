@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import javax.crypto.Cipher;
 
 public class Decrypytion extends Cryptography {
+    
     public Decrypytion(String privateKey, String publicKey) {
         super(privateKey, publicKey);
     }

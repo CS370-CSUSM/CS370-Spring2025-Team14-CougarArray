@@ -8,12 +8,15 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.jar.Attributes.Name;
 
 import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
+import com.cougararray.RecDatabase.ColumnName;
 import com.cougararray.RecDatabase.Database;
+import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdoa;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 
@@ -56,7 +59,11 @@ public class CentralMGMTEngine extends WebsocketListener {
                 else if (parameters.length > 3) return addUser(parameters[1], parameters[2], null);
             case "users":
                 return listUsers();
-            case "send": //@TODO!
+            case "send": //Send <file> <option: name/address> <name/address>
+                if (parameters.length > 3){
+                    if (parameters[2].toLowerCase() == "name") return sendFile(parameters[1], new RecordValue(ColumnName.NAME, parameters[3]));
+                    else if (parameters[2].toLowerCase() == "address") return sendFile(parameters[1], new RecordValue(ColumnName.IP_ADDRESS, parameters[3]));
+                }
                 break;
             default:
                 return Output.errorPrint("Unknown Command!");
@@ -82,7 +89,12 @@ public class CentralMGMTEngine extends WebsocketListener {
         return new CryptographyClient(Config.getKeys()).decrypt(file);
     }
 
-    private boolean sendFile(String[] parameters) {
+    private boolean sendFile(String file, RecordValue record) {
+        recipientdoa endUser = new recipientdoa(record);
+        if (!endUser.exists()) return false;
+
+        //@TODO! make it send encrypt file & send it
+
         return false;
     }
 
