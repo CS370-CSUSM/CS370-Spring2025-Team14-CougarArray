@@ -33,7 +33,7 @@ public class Console extends CentralMGMTEngine {
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             words[i] = words[i].replaceAll("[^\\w.:]", "");
-            System.err.println(words[i]);
+            //System.err.println(words[i]);
         }
         return words;
     }

@@ -76,6 +76,9 @@ public class CentralMGMTEngine extends WebsocketListener {
             case "ping":
                 if (parameters.length > 1) WebsocketSenderClient.sendPing(parameters[1]);
                 break;
+            case "mykeys":
+                Output.print("\n----\nPublic Key: " + Config.getPublicKey() +"\n----\n" +"Private Key (DO NOT SHARE): " + Config.getPrivatekey() +"\n----");
+                break;
             default:
                 return Output.errorPrint("Unknown Command!");
         }
