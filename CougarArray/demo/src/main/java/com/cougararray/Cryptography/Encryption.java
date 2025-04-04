@@ -27,16 +27,17 @@ public class Encryption {
         }
     }
 
-    public boolean Encrypt(String Filepath) throws Exception {
+    public CryptographyResult Encrypt(String Filepath) throws Exception {
         try {
             byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
             byte[] encryptedData = encryptContent(fileData);
 
             Files.write(Paths.get(Filepath + ".enc"), encryptedData);
+            return new CryptographyResult(encryptedData, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
+        return null;
     }
 
     //cipher documentation i was reading

@@ -12,12 +12,14 @@ import java.util.jar.Attributes.Name;
 
 import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
+import com.cougararray.Cryptography.CryptographyResult;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 import com.cougararray.RecDatabase.ColumnName;
 import com.cougararray.RecDatabase.Database;
 import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdoa;
+import com.cougararray.TCPWebsocket.ContentPacket;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 
 //subsystem
@@ -92,7 +94,10 @@ public class CentralMGMTEngine extends WebsocketListener {
     private boolean sendFile(String file, RecordValue record) {
         recipientdoa endUser = new recipientdoa(record);
         if (!endUser.exists()) return false;
-        if (!CryptographyClient.encryptWithOutsideKey(file, endUser.getPublicKey())) return false;
+        CryptographyResult output = CryptographyClient.encryptWithOutsideKey(file, endUser.getPublicKey());
+        if(!output.successful()) return false;
+        ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData);
+        
 
         //we can assume that user exist & file was created
 
