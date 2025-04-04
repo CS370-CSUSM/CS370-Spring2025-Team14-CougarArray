@@ -16,13 +16,28 @@ public class WebsocketSenderClient {
     private static WebSocketClient client;
 
     public static void sendPing(String server) {
+        serverConnectAndSend(server, "Ping");
+    }
+
+    public static void sendMessage(String server, String message) {
+        serverConnectAndSend(server, message);
+    }
+
+    public static void sendByte(String server, byte[] content)
+    {
+        serverConnectAndSend(server, content);
+    }
+
+
+    //Backend-related commands
+    private static void serverConnectAndSend(String server, Object message){
         try {
             if (client == null || !client.isOpen()) {
                 connectToServer("ws://" + server);
             }
 
             if (client != null && client.isOpen()) {
-                client.send("ping");
+                sendAppropriateInfo(message);
                 Output.print("Ping", Status.GOOD);
             } else {
                 Output.print("Client not connected. Could not send message.", Status.BAD);
@@ -30,6 +45,18 @@ public class WebsocketSenderClient {
         } catch (Exception e) {
             Output.print("Error sending message: " + e.getMessage(), Status.BAD);
             e.printStackTrace();
+        }
+    }
+
+    private static void sendAppropriateInfo(Object message) {
+        if (message instanceof String) {
+            client.send((String) message);  // Send as String message
+            Output.print("String message sent.", Status.GOOD);
+        } else if (message instanceof byte[]) {
+            client.send((byte[]) message);  // Send as byte array
+            Output.print("Byte array message sent.", Status.GOOD);
+        } else {
+            Output.print("Unsupported message type: " + message.getClass(), Status.BAD);
         }
     }
 
