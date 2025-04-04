@@ -1,4 +1,4 @@
-package com.cougararray.TCPWebsocket;
+package com.cougararray.TCPWebsocket.Packets;
 
 import java.util.Base64;
 
@@ -40,6 +40,7 @@ public class ContentPacket {
 
     public String toJson() {
         JSONObject json = new JSONObject();
+        json.put("type", "CONTENT");
         json.put("fileName", fileName);
         json.put("content", Base64.getEncoder().encodeToString(contentBase64));
         return json.toString();

@@ -27,7 +27,7 @@ import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdoa;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 import com.cougararray.TCPWebsocket.WebsocketSenderClient;
-import com.cougararray.TCPWebsocket.ContentPacket;
+import com.cougararray.TCPWebsocket.Packets.ContentPacket;
 
 //subsystem
 //This acts as an event trigger; this parsers then executes the model
