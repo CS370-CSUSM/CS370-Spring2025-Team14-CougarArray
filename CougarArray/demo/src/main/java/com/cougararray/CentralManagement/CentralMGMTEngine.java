@@ -15,6 +15,7 @@ import java.util.jar.Attributes.Name;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.JSONObject;
 
 import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
@@ -147,7 +148,23 @@ public class CentralMGMTEngine extends WebsocketListener {
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
+
                 Output.print("Received: " + message);
+
+                try {
+                    JSONObject json = new JSONObject(message);
+                    String type = json.getString("type");  // Assumes a "type" field exists
+                    Output.print("Parsed JSON Type: " + type);
+
+                    // Example: If you had a "content" or "fileName" field
+                    // String content = json.getString("content");
+                    // String fileName = json.getString("fileName");
+                    // CryptographyClient.decryptBytes(Base64.getDecoder().decode(content), fileName);
+                } catch (Exception e) {
+                    Output.print("Invalid JSON: " + e.getMessage());
+                }
+
+                //Output.print("Received: " + message);
                 conn.send("Message received: " + message);
                 //ContentPacket recievedMessage = new ContentPacket(message);
                 //CryptographyClient.decryptBytes(recievedMessage.getContentBase64(), recievedMessage.getFileName());
