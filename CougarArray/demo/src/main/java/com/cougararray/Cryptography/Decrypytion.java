@@ -32,7 +32,7 @@ public class Decrypytion {
             byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
             byte[] decryptedData = decryptContent(fileData);
 
-            Files.write(Paths.get(output), decryptedData);
+            Files.write(Paths.get("decrypted"+output), decryptedData);
             return new CryptographyResult(decryptedData, true);
         } catch (IOException e) {
             e.printStackTrace();

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -123,6 +124,8 @@ public class CentralMGMTEngine extends WebsocketListener {
         ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData);
         WebsocketSenderClient.sendMessage(endUser.getAddress() + ":5666", packetToBeSent.toJson());
 
+        Output.print("Sent: " + packetToBeSent.toJson());
+
         //we can assume that user exist & file was created
 
         return false;
@@ -155,6 +158,18 @@ public class CentralMGMTEngine extends WebsocketListener {
                     JSONObject json = new JSONObject(message);
                     String type = json.getString("type");  // Assumes a "type" field exists
                     Output.print("Parsed JSON Type: " + type);
+
+                    switch (type.replaceAll("\\s+", "")){
+                        case "PING":
+                        conn.send("PONG!");
+                            break;
+                        case "CONTENT":
+                            ContentPacket recievPacket = new ContentPacket(message);
+                            CryptographyClient.decryptBytes(Base64.getDecoder().decode(json.getString("content")), recievPacket.getFileName(), Config.getPrivatekey());
+                            break;
+                        default:
+                            Output.print("I didn't find anything!");
+                    }
 
                     // Example: If you had a "content" or "fileName" field
                     // String content = json.getString("content");

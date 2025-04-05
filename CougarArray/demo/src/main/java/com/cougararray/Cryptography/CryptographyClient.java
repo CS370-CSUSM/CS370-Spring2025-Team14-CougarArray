@@ -82,9 +82,9 @@ public class CryptographyClient {
     }
 
     //This is mostly going to be used locally
-    public static boolean decryptBytes(byte[] content, String output)
+    public static boolean decryptBytes(byte[] content, String output, String privateKey)
     {
-        Decrypytion decryption = new Decrypytion(algorithm, output);
+        Decrypytion decryption = new Decrypytion(algorithm, privateKey);
         try {
             return decryption.DecryptBytes(content, output).successful;
         } catch (Exception e) {
