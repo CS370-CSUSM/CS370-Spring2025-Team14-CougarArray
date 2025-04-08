@@ -49,7 +49,7 @@ public class config {
     }
 
     public boolean emptyOrInvalidKeys() {
-        return this.publicKey.isEmpty() || this.privateKey.isEmpty();
+        return (this.publicKey != null && this.publicKey.isEmpty()) || (this.privateKey != null && this.privateKey.isEmpty());
     }
 
     public boolean setKeys(Keys keys) {
