@@ -1,7 +1,6 @@
 package com.cougararray.RecDatabase;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -64,10 +63,12 @@ public class recipientdoa extends Database {
     //Constructor
     //Create User
     public recipientdoa(String Address, String publicKey) {
+        super();
         this.Address = Address;
         this.publicKey = publicKey;
     }
     public recipientdoa(String Address, String publicKey, String name) {
+        super();
         this.Address = Address;
         this.publicKey = publicKey;
         this.Name = name;
