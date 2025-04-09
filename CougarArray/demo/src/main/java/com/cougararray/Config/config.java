@@ -1,4 +1,4 @@
-package Config;
+package com.cougararray.Config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,9 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import Cryptography.Keys;
-import OutputT.Output;
-import OutputT.Status;
+import com.cougararray.Cryptography.Keys;
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
 
 public class config {
 
@@ -49,7 +49,7 @@ public class config {
     }
 
     public boolean emptyOrInvalidKeys() {
-        return this.publicKey.isEmpty() || this.privateKey.isEmpty();
+        return (this.publicKey == null || this.publicKey.isEmpty()) || (this.privateKey == null || this.privateKey.isEmpty());
     }
 
     public boolean setKeys(Keys keys) {
@@ -59,6 +59,10 @@ public class config {
             return true;
         }
         return false;
+    }
+
+    public Keys getKeys(){
+        return new Keys(getPrivatekey(), getPublicKey());
     }
 
     //This should be kept private due to the severity of this

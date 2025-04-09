@@ -1,4 +1,4 @@
-package Cryptography;
+package com.cougararray.Cryptography;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -12,7 +12,7 @@ public class Keys {
     private String publicKey;
     private static final String algorithm = "RSA";
 
-    Keys(String privateKey, String publicKey) {
+    public Keys(String privateKey, String publicKey) {
         setPrivate(privateKey);
         setPublic(publicKey);
     }
@@ -52,6 +52,20 @@ public class Keys {
 
     public PrivateKey getPrivateKeyFromString() throws Exception {
         byte[] byteKey = Base64.getDecoder().decode(this.privateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(byteKey);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    public static PublicKey getPublicKeyFromString(String publicKey) throws Exception {
+        byte[] byteKey = Base64.getDecoder().decode(publicKey);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(byteKey);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        return keyFactory.generatePublic(keySpec);
+    }
+
+    public static PrivateKey getPrivateKeyFromString(String privateKey) throws Exception {
+        byte[] byteKey = Base64.getDecoder().decode(privateKey);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(byteKey);
         KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
         return keyFactory.generatePrivate(keySpec);

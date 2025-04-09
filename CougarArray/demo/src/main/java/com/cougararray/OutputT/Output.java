@@ -1,4 +1,4 @@
-package OutputT;
+package com.cougararray.OutputT;
 
 public class Output {
     
@@ -12,6 +12,13 @@ public class Output {
         print(message, Status.OK);
     }
 
+    public static void print(Object obj) {
+        print(obj.toString(), Status.OK);
+    }
+
+    //ErrorPrint returns false because some code has it so it outputs something AND returns false to imply
+    //unsuccessful execution of code
+    //this functions merges the two
     public static boolean errorPrint(String message) {
         print(message, Status.BAD);
         return false;
