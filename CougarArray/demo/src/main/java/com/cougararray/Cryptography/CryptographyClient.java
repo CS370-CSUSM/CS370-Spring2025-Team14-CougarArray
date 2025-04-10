@@ -10,8 +10,8 @@ import java.util.Base64;
 //This is a subsytem that has both Encryption & Decryption in one place
 public class CryptographyClient {
 
-    private Encryption encryption;
-    private Decrypytion decrypytion;
+    private static Encryption encryption;
+    private static Decrypytion decrypytion;
     private static final String algorithm = "RSA";
 
     public CryptographyClient(Keys keys) {
@@ -43,8 +43,8 @@ public class CryptographyClient {
         Keys keys = generateKeys();
 
         CryptographyClient testEngine = new CryptographyClient(keys);
-        testEngine.encryption.Encrypt("test.txt");   
-        testEngine.decrypytion.Decrypt("test.txt", "testoutput.txt");
+        testEngine.encrypt("test.txt");   
+        testEngine.decrypt("test.txt", "testoutput.txt");
     }
 
     public boolean encrypt(String filePath) {
@@ -67,9 +67,18 @@ public class CryptographyClient {
         }
     }
 
+    public boolean  decrypt(String filePath, String fileOutput) {
+        try {
+            return decrypytion.Decrypt(filePath, fileOutput).successful;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     //Static usage; we are not using variables created inside here
     public static CryptographyResult encrypt(String filepath, String publicKey) {
-        Encryption encryption = new Encryption(algorithm, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
         CryptographyResult output = new CryptographyResult(null, false);
         try {
             output = encryption.Encrypt(filepath, publicKey);
@@ -84,9 +93,8 @@ public class CryptographyClient {
     //This is mostly going to be used locally
     public static boolean decryptBytes(byte[] content, String output, String privateKey)
     {
-        Decrypytion decryption = new Decrypytion(algorithm, privateKey);
         try {
-            return decryption.DecryptBytes(content, output).successful;
+            return decrypytion.DecryptBytes(content, output).successful;
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
