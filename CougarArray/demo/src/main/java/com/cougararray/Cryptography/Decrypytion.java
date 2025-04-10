@@ -5,11 +5,9 @@
 
 package com.cougararray.Cryptography;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 
 import javax.crypto.Cipher;
 
@@ -28,16 +26,11 @@ public class Decrypytion {
     }
     
     public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
-        try {
-            byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
-            byte[] decryptedData = decryptContent(fileData);
+        byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
+        byte[] decryptedData = decryptContent(fileData);
 
-            Files.write(Paths.get("decrypted"+output), decryptedData);
-            return new CryptographyResult(decryptedData, true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        Files.write(Paths.get("decrypted"+output), decryptedData);
+        return new CryptographyResult(decryptedData, true);
     }
 
     public CryptographyResult DecryptBytes(byte[] fileData, String output) throws Exception {

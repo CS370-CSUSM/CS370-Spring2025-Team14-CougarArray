@@ -2,16 +2,9 @@ package com.cougararray.CentralManagement;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.jar.Attributes.Name;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -27,15 +20,15 @@ import com.cougararray.RecDatabase.ColumnName;
 import com.cougararray.RecDatabase.Database;
 import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdoa;
+import com.cougararray.TCPWebsocket.Packets.ContentPacket;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 import com.cougararray.TCPWebsocket.WebsocketSenderClient;
-import com.cougararray.TCPWebsocket.Packets.ContentPacket;
 
 //subsystem
 //This acts as an event trigger; this parsers then executes the model
 public class CentralMGMTEngine extends WebsocketListener {
 
-    private static config Config = new config();
+    private static final config Config = new config();
 
     public CentralMGMTEngine() {
         super(Config.getPort());
@@ -119,7 +112,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         recipientdoa endUser = new recipientdoa(record);
         if (!endUser.exists()) return false;
         Output.print("User exists!");
-        CryptographyResult output = CryptographyClient.encryptWithOutsideKey(file, endUser.getPublicKey());
+        CryptographyResult output = CryptographyClient.encrypt(file, endUser.getPublicKey());
         if(!output.successful()) return false;
         ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData);
         WebsocketSenderClient.sendMessage(endUser.getAddress() + ":5666", packetToBeSent.toJson());

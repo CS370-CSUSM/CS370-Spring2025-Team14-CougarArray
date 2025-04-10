@@ -68,7 +68,7 @@ public class CryptographyClient {
     }
 
     //Static usage; we are not using variables created inside here
-    public static CryptographyResult encryptWithOutsideKey(String filepath, String publicKey) {
+    public static CryptographyResult encrypt(String filepath, String publicKey) {
         Encryption encryption = new Encryption(algorithm, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
         CryptographyResult output = new CryptographyResult(null, false);
         try {
