@@ -1,11 +1,6 @@
 package com.cougararray.TCPWebsocket;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -36,7 +31,7 @@ public class WebsocketListener extends Thread{
     protected void listen(){
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
-        server = new WebSocketServer(new InetSocketAddress(port)) {
+        server = new WebSocketServer(new InetSocketAddress("0.0.0.0", port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
                 Output.print("Received: " + message);

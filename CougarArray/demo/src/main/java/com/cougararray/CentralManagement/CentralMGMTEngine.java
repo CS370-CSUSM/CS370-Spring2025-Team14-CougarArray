@@ -112,6 +112,8 @@ public class CentralMGMTEngine extends WebsocketListener {
         recipientdoa endUser = new recipientdoa(record);
         if (!endUser.exists()) return false;
         Output.print("User exists!");
+        Output.print("publicKey" + endUser.getPublicKey());
+        Output.print("filepath" + file);
         CryptographyResult output = CryptographyClient.encrypt(file, endUser.getPublicKey());
         if(!output.successful()) return false;
         ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData);

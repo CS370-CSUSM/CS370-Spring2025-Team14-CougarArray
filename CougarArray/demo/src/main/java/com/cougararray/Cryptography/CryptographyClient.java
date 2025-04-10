@@ -80,8 +80,9 @@ public class CryptographyClient {
     //Static usage; we are not using variables created inside here
     public static CryptographyResult encrypt(String filepath, String publicKey) {
         CryptographyResult output = new CryptographyResult(null, false);
+        Encryption encryptionLocal = new Encryption(algorithm, publicKey); //temp variable
         try {
-            output = encryption.Encrypt(filepath, publicKey);
+            output = encryptionLocal.Encrypt(filepath, publicKey);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
