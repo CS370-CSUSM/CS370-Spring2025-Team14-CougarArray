@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -24,15 +26,14 @@ import com.cougararray.TCPWebsocket.Packets.ContentPacket;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 import com.cougararray.TCPWebsocket.WebsocketSenderClient;
 
-//subsystem
-//This acts as an event trigger; this parsers then executes the model
 public class CentralMGMTEngine extends WebsocketListener {
 
     private static final config Config = new config();
+    private final Map<String, CommandHandler> commandMap = new HashMap<>();
 
     public CentralMGMTEngine() {
         super(Config.getPort());
-        this.start(); //start Websocket
+        this.start(); // Start Websocket
 
         if (Config.emptyOrInvalidKeys()) {
             Output.print("Keys for Config are Invalid...Updating Keys");
@@ -43,61 +44,88 @@ public class CentralMGMTEngine extends WebsocketListener {
             }
         }
         
+        initializeCommandMap();
     }
 
-    public boolean executeArgs(String[] parameters) throws IOException {
-        //I feel like this line of code doesn't make sense...
-        //If Java Command can get one line of string then this wouldn't be needed?
-        //if (parameters.length == 0) return Output.errorPrint("Error: No command provided");
+    private void initializeCommandMap() {
+        commandMap.put("encrypt", params -> {
+            if (params.length > 1) return encryptFile(params[1]);
+            return Output.errorPrint("Error: Missing filename for encrypt");
+        });
 
-        switch(parameters[0].toLowerCase()) {
-            case "encrypt":
-                //safer way of checking length
-                if (parameters.length > 1) return encryptFile(parameters[1]);
-                break;
-            case "decrypt": //@TODO!
-                if (parameters.length > 1) return decryptFile(parameters[1]);
-                break;
-            case "adduser": //add user <address>
+        commandMap.put("decrypt", params -> {
+            if (params.length > 1) return decryptFile(params[1]);
+            return Output.errorPrint("Error: Missing filename for decrypt");
+        });
+
+        commandMap.put("adduser", params -> {
+            if (params.length > 1) {
                 System.out.println("Paste their public key =>");
                 BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                 String publicKey = r.readLine();
                 System.out.println("What is the device's name =>");
                 String name = r.readLine();
-                return addUser(parameters[1], publicKey, name);
-                //if (parameters.length > 3) return addUser(parameters[1], parameters[2], parameters[3]);
-                //else if (parameters.length > 3) return addUser(parameters[1], parameters[2], null);
-            case "users":
-                return listUsers();
-            case "send": //Send <file> <option: name/address> <name/address>
-                if (parameters.length > 2){
-                    Output.print(parameters[2].toLowerCase().contains("name"));
-                    if (parameters[2].toLowerCase().contains("name")) return sendFile(parameters[1], new RecordValue(ColumnName.NAME, parameters[3]));
-                    else if (parameters[2].toLowerCase().contains("address")) return sendFile(parameters[1], new RecordValue(ColumnName.IP_ADDRESS, parameters[3]));
-                }
-                break;
-            case "ping":
-                if (parameters.length > 1) WebsocketSenderClient.sendPing(parameters[1]);
-                break;
-            case "mykeys":
-                Output.print("\n----\nPublic Key: " + Config.getPublicKey() +"\n----\n" +"Private Key (DO NOT SHARE): " + Config.getPrivatekey() +"\n----");
-                break;
-            default:
-                return Output.errorPrint("Unknown Command!");
-        }
+                return addUser(params[1], publicKey, name);
+            }
+            return Output.errorPrint("Error: Missing address for adduser");
+        });
 
-        return false;
+        commandMap.put("users", params -> listUsers());
+
+        commandMap.put("send", params -> {
+            if (params.length > 3) {
+                Output.print(params[2].toLowerCase().contains("name"));
+                if (params[2].toLowerCase().contains("name")) {
+                    return sendFile(params[1], new RecordValue(ColumnName.NAME, params[3]));
+                } else if (params[2].toLowerCase().contains("address")) {
+                    return sendFile(params[1], new RecordValue(ColumnName.IP_ADDRESS, params[3]));
+                }
+                return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
+            }
+            return Output.errorPrint("Error: Insufficient parameters for send");
+        });
+
+        commandMap.put("ping", params -> {
+            if (params.length > 1) {
+                WebsocketSenderClient.sendPing(params[1]);
+                return true;
+            }
+            return Output.errorPrint("Error: Missing address for ping");
+        });
+
+        commandMap.put("mykeys", params -> {
+            Output.print("\n----\nPublic Key: " + Config.getPublicKey() + "\n----\n" +
+                       "Private Key (DO NOT SHARE): " + Config.getPrivatekey() + "\n----");
+            return true;
+        });
+
+        commandMap.put("help", params -> {
+            Output.print("Available commands:");
+            commandMap.keySet().forEach(cmd -> Output.print("  " + cmd));
+            return true;
+        });
     }
 
+    public boolean executeArgs(String[] parameters) throws IOException {
+        if (parameters.length == 0) {
+            return Output.errorPrint("Error: No command provided");
+        }
 
-    //encryptFile
-    //make <<use>> of Encryption.java
-    //Example Execution
-    //  encrypt file.txt
-    //  encrypt full/fill/path/to/file.txt
-    //  (parameter[1] is file)
-    //Expected Outcome:
-    //It should generate an encrypted version of the file
+        String commandKey = parameters[0].toLowerCase();
+        CommandHandler handler = commandMap.get(commandKey);
+
+        if (handler == null) {
+            return Output.errorPrint("Unknown Command!");
+        }
+
+        return handler.handle(parameters);
+    }
+
+    @FunctionalInterface
+    private interface CommandHandler {
+        boolean handle(String[] parameters) throws IOException;
+    }
+
     private boolean encryptFile(String file) {
         return new CryptographyClient(Config.getKeys()).encrypt(file);
     }
@@ -120,9 +148,6 @@ public class CentralMGMTEngine extends WebsocketListener {
         WebsocketSenderClient.sendMessage(endUser.getAddress() + ":5666", packetToBeSent.toJson());
 
         Output.print("Sent: " + packetToBeSent.toJson());
-
-        //we can assume that user exist & file was created
-
         return false;
     }
 
@@ -135,79 +160,49 @@ public class CentralMGMTEngine extends WebsocketListener {
         return new Database().formatPrint();
     }
 
-    //WEBSOCKET INHERITANCE
-    //There is a good reason why CentralMGMT inherits WebsocketListener instead of <<uses>> it
-    //The reason being is that if the websocket gets data...it should to execute decryption & other functions
-    //HOWEVER, it cannot do that because we are using a layered architecture where central execution is done at CentralMGMT subsystem
-    //by doing inheritance...CentralMGMT can directly work with the data
     protected void listen(){
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
-
                 Output.print("Received: " + message);
-
                 try {
                     JSONObject json = new JSONObject(message);
-                    String type = json.getString("type");  // Assumes a "type" field exists
+                    String type = json.getString("type");
                     Output.print("Parsed JSON Type: " + type);
 
-                    switch (type.replaceAll("\\s+", "")){
+                    switch (type.replaceAll("\\s+", "")) {
                         case "PING":
-                        conn.send("PONG!");
+                            conn.send("PONG!");
                             break;
                         case "CONTENT":
                             ContentPacket recievPacket = new ContentPacket(message);
-                            CryptographyClient.decryptBytes(Base64.getDecoder().decode(json.getString("content")), recievPacket.getFileName(), Config.getPrivatekey());
+                            CryptographyClient.decryptBytes(
+                                Base64.getDecoder().decode(json.getString("content")),
+                                recievPacket.getFileName(),
+                                Config.getPrivatekey()
+                            );
                             break;
                         default:
                             Output.print("I didn't find anything!");
                     }
-
-                    // Example: If you had a "content" or "fileName" field
-                    // String content = json.getString("content");
-                    // String fileName = json.getString("fileName");
-                    // CryptographyClient.decryptBytes(Base64.getDecoder().decode(content), fileName);
                 } catch (Exception e) {
                     Output.print("Invalid JSON: " + e.getMessage());
                 }
-
-                //Output.print("Received: " + message);
                 conn.send("Message received: " + message);
-                //ContentPacket recievedMessage = new ContentPacket(message);
-                //CryptographyClient.decryptBytes(recievedMessage.getContentBase64(), recievedMessage.getFileName());
-            
-            }
-
-            //GENERATED BY org.java_websocket
-            @Override
-            public void onOpen(WebSocket conn, ClientHandshake handshake) {
-                // TODO Auto-generated method stub
-                return;
             }
 
             @Override
-            public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-                // TODO Auto-generated method stub
-                return;
-            }
-
+            public void onOpen(WebSocket conn, ClientHandshake handshake) {}
             @Override
-            public void onError(WebSocket conn, Exception ex) {
-                // TODO Auto-generated method stub
-                return;
-            }
-
+            public void onClose(WebSocket conn, int code, String reason, boolean remote) {}
             @Override
-            public void onStart() {
-                // TODO Auto-generated method stub
-                return;
-            }            
+            public void onError(WebSocket conn, Exception ex) {}
+            @Override
+            public void onStart() {}
         };
 
         server.start();
-        
     }
 }
