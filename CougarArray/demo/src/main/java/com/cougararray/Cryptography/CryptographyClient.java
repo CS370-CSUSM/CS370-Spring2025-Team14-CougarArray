@@ -72,7 +72,7 @@ public class CryptographyClient {
         Encryption encryption = new Encryption(algorithm, publicKey); //make a new encryption variable but only use public key as we are only performing encryption
         CryptographyResult output = new CryptographyResult(null, false);
         try {
-            output = encryption.Encrypt(filepath);
+            output = encryption.Encrypt(filepath, publicKey);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
