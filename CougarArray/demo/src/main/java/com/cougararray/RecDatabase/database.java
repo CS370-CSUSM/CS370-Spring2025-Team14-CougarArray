@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
+
 //TODO!
 //Discuss what kind of database to use 
 
@@ -18,21 +21,23 @@ public class Database {
     protected static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_FILE;
 
     public Database() {
-        createDatabase();
-        createUsersTable();
+        if (createDatabase()) createUsersTable();
     }
 
-    private void createDatabase() {
+    private boolean createDatabase() {
         File dbFile = new File(DATABASE_FILE);
         if (!dbFile.exists()) {
+            Output.print("Database File doesn't exist...Creating File...", Status.GOOD);
             try (Connection conn = DriverManager.getConnection(DATABASE_URL)) {
                 if (conn != null) {
-                    System.out.println("Database created successfully.");
+                    Output.print("Database File Created.", Status.GOOD);
+                    return true;
                 }
             } catch (SQLException e) {
-                System.out.println("Error creating database: " + e.getMessage());
+                return Output.errorPrint("Database Creation Failure: " + e.getMessage());
             }
         }
+        return false;
     }
 
     private void createUsersTable() {
@@ -45,9 +50,9 @@ public class Database {
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("Users table verified/created successfully.");
+            Output.print("Created Tables!", Status.GOOD);
         } catch (SQLException e) {
-            System.out.println("Error creating Users table: " + e.getMessage());
+            Output.errorPrint("Error creating Users table: " + e.getMessage());
         }
     }
 
@@ -69,14 +74,21 @@ public class Database {
                 System.out.printf("%-20s | %-20s | %-50s%n", 
                                   ipAddress, 
                                   name != null ? name : "NULL", 
-                                  publicKey);
+                                  abbreviatePublicKey(publicKey));
             }
             return true;
         } catch (SQLException e) {
-            System.out.println("Error retrieving Users table: " + e.getMessage());
+            Output.errorPrint("Error retrieving Users table: " + e.getMessage());
         }
 
         return false;
+    }
+
+    private static String abbreviatePublicKey(String publicKey) {
+        if (publicKey == null || publicKey.length() <= 20) {
+            return publicKey; // if it's short, just return it as-is
+        }
+        return publicKey.substring(0, 15) + "..." + publicKey.substring(publicKey.length() - 5);
     }
 
 
