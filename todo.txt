@@ -1,7 +1,10 @@
-TODO:
+TODO: 
 * Standardized Port
 Not sure where this occured but Lenny started using port 5666 despite agreed upon 6999 so i feel like we need to find time to pick a port to use and rely on that way no port issues occur anymore.
 There should also be a discussion regarding port usage, if user can use a different port and how to save data of another peer different port 
+*Update 4/10/2025*
+We will use port 5666; so there needs to be a way to create a global static final variable so that every websocket-related code uses 5666.
+
 
 * Make use of Setters & Getters in some aspects of the code
 There are parts of the code where variables don't use Setters & Getters and I feel like it's not appropriate standard to directly access a variable 
@@ -13,3 +16,7 @@ So it would be nice to clean up Console Output to make it look more appealing
 
 * Websocket EXECUTE packet & response
 (WIP) Make it a custom packet called for people to use different programming languages to write packets to the websocket and respond to it
+(Part of requirements)
+
+* Make use of singular AES encryption keys
+Use AES key to encrypt & decrypt but then you use publicKey to encrypt AES key then privateKey to decrypt AES key
