@@ -72,6 +72,7 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         commandMap.put("users", params -> listUsers());
 
+        // send (file_path) (name/address) (name / address from database)
         commandMap.put("send", params -> {
             if (params.length > 3) {
                 Output.print(params[2].toLowerCase().contains("name"));
