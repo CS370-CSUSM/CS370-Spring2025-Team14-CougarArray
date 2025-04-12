@@ -3,10 +3,12 @@ package com.cougararray.Cryptography;
 public class CryptographyResult {
     public byte[] encryptedData;
     public boolean successful;
+    public byte[] encryptedKey;
 
     public CryptographyResult() {
         this.encryptedData = null;
         this.successful = false;
+        this.encryptedKey = null;
     }
 
     public CryptographyResult(byte[] encryptedData, boolean resultOfOperation) {
@@ -14,8 +16,10 @@ public class CryptographyResult {
         this.successful = resultOfOperation;
     }
 
-    public boolean CryptographyResult() {
-        return this.successful;
+    public CryptographyResult(byte[] encryptedData, boolean resultOfOperation, byte[] encryptedKey) {
+        this.encryptedData = encryptedData;
+        this.successful = resultOfOperation;
+        this.encryptedKey = encryptedKey;
     }
 
     public boolean successful() {

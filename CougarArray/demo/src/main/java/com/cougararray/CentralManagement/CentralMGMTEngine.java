@@ -145,7 +145,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         Output.print("filepath" + file);
         CryptographyResult output = CryptographyClient.encrypt(file, endUser.getPublicKey());
         if(!output.successful()) return false;
-        ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData);
+        ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData, output.encryptedKey);
         WebsocketSenderClient.sendMessage(endUser.getAddress() + ":5666", packetToBeSent.toJson());
 
         Output.print("Sent: " + packetToBeSent.toJson());
@@ -182,7 +182,8 @@ public class CentralMGMTEngine extends WebsocketListener {
                             CryptographyClient.decryptBytes(
                                 Base64.getDecoder().decode(json.getString("content")),
                                 receivePacket.getFileName(),
-                                Config.getPrivatekey()
+                                Config.getPrivatekey(),
+                                Base64.getDecoder().decode(json.getString("key"))
                             );
                             break;
                         default:

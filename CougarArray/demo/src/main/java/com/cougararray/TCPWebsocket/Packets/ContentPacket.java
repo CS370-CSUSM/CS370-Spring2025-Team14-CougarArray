@@ -8,6 +8,17 @@ import org.json.JSONObject;
 
 public class ContentPacket {
     private String fileName;
+    private byte[] contentBase64; // Encrypted binary content
+    private byte[] key;
+    
+    public byte[] getKey() {
+        return key;
+    }
+
+    public void setKey(byte[] key) {
+        this.key = key;
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -15,8 +26,6 @@ public class ContentPacket {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
-    private byte[] contentBase64; // Encrypted binary content
 
     public byte[] getContentBase64() {
         return contentBase64;
@@ -26,15 +35,17 @@ public class ContentPacket {
         this.contentBase64 = contentBase64;
     }
 
-    public ContentPacket(String fileName, byte[] contentBase64) {
+    public ContentPacket(String fileName, byte[] contentBase64, byte[] key) {
         this.fileName = fileName;
         this.contentBase64 = contentBase64;
+        this.key = key;
     }
 
     public ContentPacket(String rawJson) {
         JSONObject json = new JSONObject(rawJson);
         this.fileName = json.getString("fileName");
         this.contentBase64 = Base64.getDecoder().decode(json.getString("content"));
+        this.key = Base64.getDecoder().decode(json.getString("key"));
     }
     
 
@@ -43,12 +54,14 @@ public class ContentPacket {
         json.put("type", "CONTENT");
         json.put("fileName", fileName);
         json.put("content", Base64.getEncoder().encodeToString(contentBase64));
+        json.put("key", Base64.getEncoder().encodeToString(key));
         return json.toString();
     }
     
+    //update this example code
     public static void main(String[] args) {
         // Simulate original packet
-        ContentPacket original = new ContentPacket("example.txt", new byte[]{10, 20, 30});
+        ContentPacket original = new ContentPacket("example.txt", new byte[]{10, 20, 30}, null);
         String json = original.toJson();
         System.out.println("JSON: " + json);
 

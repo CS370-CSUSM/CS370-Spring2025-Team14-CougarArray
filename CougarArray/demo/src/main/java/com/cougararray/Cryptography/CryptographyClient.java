@@ -7,6 +7,10 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 //This is a subsytem that has both Encryption & Decryption in one place
 public class CryptographyClient {
 
@@ -14,9 +18,14 @@ public class CryptographyClient {
     private static Decrypytion decrypytion;
     private static final String algorithm = "RSA";
 
+    //LOCAL ENCRYPTION & DECRYPTION
+    private static final SecretKey localAESKey = getAESKeyFromString("2zu53sAQMztWMQX+d+FExXucuFkSq/SBwwK2kjQ/wf+42ip+6GjRcb8uioJLVRm6");
+
+
+
     public CryptographyClient(Keys keys) {
-        encryption = new Encryption(algorithm, keys.getPublic());
-        decrypytion = new Decrypytion(algorithm, keys.getPrivate());
+        encryption = new Encryption(algorithm, keys.getPublic(), localAESKey);
+        decrypytion = new Decrypytion(algorithm, keys.getPrivate(), null);
     }
 
     public static Keys generateKeys() {
@@ -47,40 +56,52 @@ public class CryptographyClient {
         testEngine.decrypt("test.txt", "testoutput.txt");
     }
 
+    //Public Functions
     public boolean encrypt(String filePath) {
-        try {
-            return encryption.Encrypt(filePath).successful;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+        CryptographyResult output = encryptCallMethod(filePath);
+        if (output == null) return false;
+        else return output.successful();
     }
 
     public boolean decrypt(String filePath) {
+        CryptographyResult output = decryptCallMethod(filePath, filePath);
+        if (output == null) return false;
+        else return output.successful();
+    }
+
+    public boolean decrypt(String filePath, String fileOutput) {
+        CryptographyResult output = decryptCallMethod(filePath, fileOutput);
+        if (output == null) return false;
+        else return output.successful();
+    }
+
+    //Private Functions
+    private CryptographyResult encryptCallMethod(String filePath)
+    {
         try {
-            return decrypytion.Decrypt(filePath, filePath).successful;
+            return encryption.Encrypt(filePath);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
-    public boolean  decrypt(String filePath, String fileOutput) {
+    private CryptographyResult decryptCallMethod(String filePath, String fileOutput)
+    {
         try {
-            return decrypytion.Decrypt(filePath, fileOutput).successful;
+            return decrypytion.Decrypt(filePath, fileOutput);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
     //Static usage; we are not using variables created inside here
     public static CryptographyResult encrypt(String filepath, String publicKey) {
         CryptographyResult output = new CryptographyResult(null, false);
-        Encryption encryptionLocal = new Encryption(algorithm, publicKey); //temp variable
+        Encryption encryptionLocal = new Encryption(algorithm, publicKey, generateTransactionkey()); //temp variable
         try {
             output = encryptionLocal.Encrypt(filepath, publicKey);
         } catch (Exception e) {
@@ -92,9 +113,9 @@ public class CryptographyClient {
     }
 
     //This is mostly going to be used locally
-    public static boolean decryptBytes(byte[] content, String output, String privateKey)
+    public static boolean decryptBytes(byte[] content, String output, String privateKey, byte[] aesKey)
     {
-        Decrypytion decryptionLocal = new Decrypytion(algorithm, privateKey);
+        Decrypytion decryptionLocal = new Decrypytion(algorithm, privateKey, aesKey);
         try {
             return decryptionLocal.DecryptBytes(content, output).successful;
         } catch (Exception e) {
@@ -103,6 +124,23 @@ public class CryptographyClient {
         }
 
         return false;
+    }
+
+    private static SecretKey generateTransactionkey() {
+        KeyGenerator aesKeyGen;
+        try {
+            aesKeyGen = KeyGenerator.getInstance("AES");
+            aesKeyGen.init(256); // AES-256
+            return aesKeyGen.generateKey();
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
+    }
+
+    private static SecretKey getAESKeyFromString(String base64Key) {
+        byte[] decodedKey = Base64.getDecoder().decode(base64Key);
+        // "AES" tells Java this is an AES key
+        return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
     
 }

@@ -10,14 +10,18 @@ import java.nio.file.Paths;
 import java.security.PrivateKey;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Decrypytion {
 
     private String algorithm; 
     private PrivateKey privateKey;
+    private byte[] encryptedAESKey;
 
-    public Decrypytion(String algorithm, String privateKey) {
+    public Decrypytion(String algorithm, String privateKey, byte[] encryptedAESKey) {
         this.algorithm = algorithm;
+        this.encryptedAESKey = encryptedAESKey;
         try {
             this.privateKey = Keys.getPrivateKeyFromString(privateKey);
         } catch (Exception e) {
@@ -27,21 +31,28 @@ public class Decrypytion {
     
     public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
-        byte[] decryptedData = decryptContent(fileData);
+        byte[] decryptedData = decryptContent(fileData, decryptAESKey(this.privateKey));
 
         Files.write(Paths.get("decrypted"+output), decryptedData);
         return new CryptographyResult(decryptedData, true);
     }
 
     public CryptographyResult DecryptBytes(byte[] fileData, String output) throws Exception {
-        byte[] decryptedData = decryptContent(fileData);
+        byte[] decryptedData = decryptContent(fileData, decryptAESKey(this.privateKey));
         Files.write(Paths.get(output), decryptedData);
         return new CryptographyResult(decryptedData, true);
     }
 
-    private byte[] decryptContent(byte[] content) throws Exception {
-        Cipher cipher = Cipher.getInstance(this.algorithm);
-        cipher.init(Cipher.DECRYPT_MODE, this.privateKey);
-        return cipher.doFinal(content);
+    private byte[] decryptContent(byte[] encryptedContent, SecretKey aesKey) throws Exception {
+        Cipher aesCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        aesCipher.init(Cipher.DECRYPT_MODE, aesKey);
+        return aesCipher.doFinal(encryptedContent);
+    }    
+
+    private SecretKey decryptAESKey(PrivateKey privateKey) throws Exception {
+        Cipher rsaCipher = Cipher.getInstance("RSA");
+        rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedKey = rsaCipher.doFinal(this.encryptedAESKey);
+        return new SecretKeySpec(decryptedKey, "AES");
     }
 }
