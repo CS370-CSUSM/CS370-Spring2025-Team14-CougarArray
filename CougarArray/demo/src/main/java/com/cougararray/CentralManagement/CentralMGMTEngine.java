@@ -22,7 +22,9 @@ import com.cougararray.RecDatabase.ColumnName;
 import com.cougararray.RecDatabase.Database;
 import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdoa;
+import com.cougararray.TCPWebsocket.Packets.ClosePacket;
 import com.cougararray.TCPWebsocket.Packets.ContentPacket;
+import com.cougararray.TCPWebsocket.Packets.ResponsePacket;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 import com.cougararray.TCPWebsocket.WebsocketSenderClient;
 
@@ -172,7 +174,8 @@ public class CentralMGMTEngine extends WebsocketListener {
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
-                Output.print("Received: " + message);
+                //Output.print("Received: " + message);
+                
                 try {
                     JSONObject json = new JSONObject(message);
                     String type = json.getString("type");
@@ -180,24 +183,28 @@ public class CentralMGMTEngine extends WebsocketListener {
 
                     switch (type.replaceAll("\\s+", "")) {
                         case "PING":
-                            conn.send("PONG!");
+                            conn.send("PONG!"); //@TODO! make a pong packet
                             break;
                         case "CONTENT":
                             ContentPacket receivePacket = new ContentPacket(message);
-                            CryptographyClient.decryptBytes(
+                            if (CryptographyClient.decryptBytes(
                                 Base64.getDecoder().decode(json.getString("content")),
                                 receivePacket.getFileName(),
                                 Config.getPrivatekey(),
                                 Base64.getDecoder().decode(json.getString("key"))
-                            );
+                            )) conn.send(ResponsePacket.toJson(0));
                             break;
                         default:
-                            Output.print("I didn't find anything!");
+                            //Output.print("I didn't find anything!");
+                            conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
                     }
                 } catch (Exception e) {
                     Output.print("Invalid JSON: " + e.getMessage());
                 }
-                conn.send("Message received: " + message);
+                
+                //conn.send("Message received: " + message);
+                conn.send(ClosePacket.toJson());
+                conn.close();
             }
 
             @Override
