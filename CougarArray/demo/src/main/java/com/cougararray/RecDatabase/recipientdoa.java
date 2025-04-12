@@ -123,6 +123,12 @@ public class recipientdoa extends Database {
         return this.createRecord(this.Address, this.publicKey, this.Name);
     }
 
+    public boolean deleteuser() {
+        if (this.exists()) return this.deleteRecord(this.getAddress());
+
+        return false;
+    }
+
     
     public void print() {
         String output = "Name - " + this.getName() + "\n" + "Address - " + this.getAddress() + "\n" + "Public Key - " + this.getPublicKey() + "\n" + "In Database? - " + this.persistent;

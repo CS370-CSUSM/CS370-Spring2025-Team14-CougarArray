@@ -105,6 +105,11 @@ public class CentralMGMTEngine extends WebsocketListener {
             commandMap.keySet().forEach(cmd -> Output.print("  " + cmd));
             return true;
         });
+
+        commandMap.put("deleteUser", params -> { //deleteUser <address>
+            recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
+            return newUser.deleteuser();
+        });
     }
 
     public boolean executeArgs(String[] parameters) throws IOException {

@@ -118,10 +118,27 @@ public class Database {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions properly in production
+            e.printStackTrace();
         }
         return false;
     }
+
+    public boolean deleteRecord(String address) {
+        String sql = "DELETE FROM Users WHERE IP_ADDRESS = ?";
+    
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    
+            pstmt.setString(1, address);
+    
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
 
     /**
      * +getUsers()
