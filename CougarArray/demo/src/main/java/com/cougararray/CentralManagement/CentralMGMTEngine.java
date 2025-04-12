@@ -49,6 +49,21 @@ public class CentralMGMTEngine extends WebsocketListener {
         initializeCommandMap();
     }
 
+
+    /* @TODO!
+     * Make Output look much nicer
+     * 
+     * ex of each command usage
+     * encrypt <fileName> (LOCAL USAGE)
+     * decrypt <fileName> (LOCAL USAGE)
+     * adduser (address)
+     * users
+     * send <filePath> <"name"/"address"> <Name / Address of Device> - send private.txt name Lenny
+     * ping <address>
+     * mykeys
+     * help
+     * deleteUser <address>
+     */
     private void initializeCommandMap() {
         commandMap.put("encrypt", params -> {
             if (params.length > 1) return encryptFile(params[1]);
@@ -201,7 +216,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                 } catch (Exception e) {
                     Output.print("Invalid JSON: " + e.getMessage());
                 }
-                
+
                 //conn.send("Message received: " + message);
                 conn.send(ClosePacket.toJson());
                 conn.close();
