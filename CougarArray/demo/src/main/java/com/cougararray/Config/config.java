@@ -15,9 +15,9 @@ public class config {
     private static final String FILE_PATH = "config.properties";
 
     //DEFAULT VALUES
-    private int port = 5666; //by default, operate as a reciever on port 5666
+    private int port = 5666; //by default, operate as a receiver on port 5666
     private boolean actAsSender = true; //by default, you can send files
-    private boolean actAsReciever = true; //by default, you can recieve files
+    private boolean actAsReceiver = true; //by default, you can receive files
 
     private String privateKey = null;
     private String publicKey = null;
@@ -36,8 +36,8 @@ public class config {
         return actAsSender;
     }
 
-    public boolean getAsReciever() {
-        return actAsReciever;
+    public boolean getAsReceiver() {
+        return actAsReceiver;
     }
 
     public String getPublicKey() {
@@ -103,7 +103,7 @@ public class config {
                 properties.load(fis);
                 this.port = Integer.parseInt(properties.getProperty("Port", Integer.toString(this.port)));
                 this.actAsSender = Boolean.parseBoolean(properties.getProperty("actAsSender", Boolean.toString(this.actAsSender)));
-                this.actAsReciever = Boolean.parseBoolean(properties.getProperty("actAsReceiver", Boolean.toString(this.actAsReciever)));
+                this.actAsReceiver = Boolean.parseBoolean(properties.getProperty("actAsReceiver", Boolean.toString(this.actAsReceiver)));
                 this.publicKey = properties.getProperty("publicKey", null);
                 this.privateKey = properties.getProperty("privateKey", null);
             } catch (IOException | NumberFormatException e) {
@@ -121,7 +121,7 @@ public class config {
         // Case #2: The Properties file is not made; Generate it
         properties.setProperty("Port", Integer.toString(this.port));
         properties.setProperty("actAsSender", Boolean.toString(actAsSender));
-        properties.setProperty("actAsReciever", Boolean.toString(actAsReciever));
+        properties.setProperty("actAsReceiver", Boolean.toString(actAsReceiver));
         properties.setProperty("privateKey", "");
         properties.setProperty("publicKey", "");
 

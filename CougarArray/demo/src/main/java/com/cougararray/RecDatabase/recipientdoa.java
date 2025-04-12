@@ -11,12 +11,12 @@ import java.sql.SQLException;
 //if my age was manipulated, then it should manipulate the database's data
 public class recipientdoa extends Database {
 
-    private final String NON_EXISTANT_NULL = "NA";
+    private final String NON_EXISTENT_NULL = "NA";
 
     //Private Variables to Class
     private String Name = null; //this is ok to be NULL!
-    private String Address = NON_EXISTANT_NULL;
-    private String publicKey = NON_EXISTANT_NULL;
+    private String Address = NON_EXISTENT_NULL;
+    private String publicKey = NON_EXISTENT_NULL;
     private boolean persistent = false; //does the record exist? Default: false unless explictly found @TODO! make use of this?
 
     //Getters & Setters
@@ -50,7 +50,7 @@ public class recipientdoa extends Database {
 
     //for it not to exist...all the values would be empty
     public boolean exists() {
-        return Address != NON_EXISTANT_NULL && publicKey != NON_EXISTANT_NULL;
+        return Address != NON_EXISTENT_NULL && publicKey != NON_EXISTENT_NULL;
     }
 
     //Constructor
