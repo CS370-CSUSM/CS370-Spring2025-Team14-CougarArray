@@ -52,7 +52,7 @@ public class WebsocketListener extends Thread{
             public void onClose(WebSocket conn, int code, String reason, boolean remote) {
                 // TODO Auto-generated method stub; handle when socket is closed
                 // output when connection is closed; TODO implement reason for closing connection
-                Output.print("Connection closed: " + conn.getRemoteSocketAddress().toString() + " Reason: " + reason, Status.INFO);
+                Output.print("Connection closed: " + conn.getRemoteSocketAddress().toString() + " Reason: " + reason, Status.OK);
                 // throw new UnsupportedOperationException("Unimplemented method 'onClose'");
             }
 
@@ -60,7 +60,7 @@ public class WebsocketListener extends Thread{
             public void onError(WebSocket conn, Exception ex) {
                 // TODO Auto-generated method stub; handle potential errors (generalized)
                 // outputting provided error message; could also retry x times or just notify user
-                Output.print("Error with connection: " + conn.getRemoteSocketAddress().toString() + " :" + ex.getMessage(), Status.ERROR);
+                Output.print("Error with connection: " + conn.getRemoteSocketAddress().toString() + " :" + ex.getMessage(), Status.BAD);
                 // throw new UnsupportedOperationException("Unimplemented method 'onError'");
             }
 
