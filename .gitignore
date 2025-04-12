@@ -9,3 +9,5 @@ CougarArray/demo/target/maven-status/maven-compiler-plugin/compile/default-compi
 CougarArray/demo/banana.txt
 CougarArray/demo/banana.txt
 private.txt
+decryptedprivate.txt
+private.txt.enc

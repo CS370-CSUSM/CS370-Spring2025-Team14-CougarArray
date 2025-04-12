@@ -19,7 +19,7 @@ public class CryptographyClient {
     private static final String algorithm = "RSA";
 
     //LOCAL ENCRYPTION & DECRYPTION
-    private static final SecretKey localAESKey = getAESKeyFromString("2zu53sAQMztWMQX+d+FExXucuFkSq/SBwwK2kjQ/wf+42ip+6GjRcb8uioJLVRm6");
+    private static final SecretKey localAESKey = getAESKeyFromString("f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=");
 
 
 
@@ -90,7 +90,7 @@ public class CryptographyClient {
     private CryptographyResult decryptCallMethod(String filePath, String fileOutput)
     {
         try {
-            return decrypytion.Decrypt(filePath, fileOutput);
+            return decrypytion.Decrypt(filePath, fileOutput, localAESKey);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -112,7 +112,7 @@ public class CryptographyClient {
         return output;
     }
 
-    //This is mostly going to be used locally
+    //This is mostly going to be used externally
     public static boolean decryptBytes(byte[] content, String output, String privateKey, byte[] aesKey)
     {
         Decrypytion decryptionLocal = new Decrypytion(algorithm, privateKey, aesKey);

@@ -28,6 +28,15 @@ public class Decrypytion {
             e.printStackTrace();
         }
     }
+
+    public CryptographyResult Decrypt(String Filepath, String output, SecretKey localAESKey) throws Exception
+    {
+        byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
+        byte[] decryptedData = decryptContent(fileData, localAESKey);
+
+        Files.write(Paths.get("decrypted"+output), decryptedData);
+        return new CryptographyResult(decryptedData, true);
+    }
     
     public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
