@@ -178,10 +178,10 @@ public class CentralMGMTEngine extends WebsocketListener {
                             conn.send("PONG!");
                             break;
                         case "CONTENT":
-                            ContentPacket recievPacket = new ContentPacket(message);
+                            ContentPacket receivePacket = new ContentPacket(message);
                             CryptographyClient.decryptBytes(
                                 Base64.getDecoder().decode(json.getString("content")),
-                                recievPacket.getFileName(),
+                                receivePacket.getFileName(),
                                 Config.getPrivatekey()
                             );
                             break;
