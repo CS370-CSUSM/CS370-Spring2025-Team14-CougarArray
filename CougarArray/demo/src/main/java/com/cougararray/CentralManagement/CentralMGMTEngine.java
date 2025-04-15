@@ -57,24 +57,28 @@ public class CentralMGMTEngine extends WebsocketListener {
      * encrypt <fileName> (LOCAL USAGE)
      * decrypt <fileName> (LOCAL USAGE)
      * adduser (address)
+     * deleteuser (address)
      * users
      * send <filePath> <"name"/"address"> <Name / Address of Device> - send private.txt name Lenny
      * ping <address>
      * mykeys
      * help
-     * deleteUser <address>
      */
     private void initializeCommandMap() {
+
+        // encrypt <fileName> (LOCAL USAGE)
         commandMap.put("encrypt", params -> {
             if (params.length > 1) return encryptFile(params[1]);
-            return Output.errorPrint("Error: Missing filename for encrypt");
+            return Output.errorPrint("Usage: encrypt <filePath> (LOCAL USAGE)");
         });
 
+        // decrypt <fileName> (LOCAL USAGE)
         commandMap.put("decrypt", params -> {
             if (params.length > 1) return decryptFile(params[1]);
-            return Output.errorPrint("Error: Missing filename for decrypt");
+            return Output.errorPrint("Usage: decrypt <filePath> (LOCAL USAGE)");
         });
-
+        
+        // adduser (address)
         commandMap.put("adduser", params -> {
             if (params.length > 1) {
                 System.out.println("Paste their public key =>");
@@ -84,9 +88,19 @@ public class CentralMGMTEngine extends WebsocketListener {
                 String name = r.readLine();
                 return addUser(params[1], publicKey, name);
             }
-            return Output.errorPrint("Error: Missing address for adduser");
+            return Output.errorPrint("Usage: adduser <address>");
         });
 
+        // deleteuser (address)
+        commandMap.put("deleteuser", params -> { 
+            if (params.length > 1) {
+                recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
+                return newUser.deleteuser();
+            }
+            return Output.errorPrint("Usage: deleteuser <address>");
+        });
+
+        // users
         commandMap.put("users", params -> listUsers());
 
         // send (file_path) (name/address) (name / address from database)
@@ -100,37 +114,30 @@ public class CentralMGMTEngine extends WebsocketListener {
                 }
                 return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
             }
-            return Output.errorPrint("Error: Insufficient parameters for send");
+            return Output.errorPrint("Usage: send <file_path> <name/address> <name/address from database>");
         });
 
+        // ping <address>
         commandMap.put("ping", params -> {
             if (params.length > 1) {
                 WebsocketSenderClient.sendPing(params[1]);
                 return true;
             }
-            return Output.errorPrint("Error: Missing address for ping");
+            return Output.errorPrint("Usage: ping <address>");
         });
-
+        
+        // mykeys
         commandMap.put("mykeys", params -> {
             Output.print("\n----\nPublic Key: " + Config.getPublicKey() + "\n----\n" +
                        "Private Key (DO NOT SHARE): " + Config.getPrivatekey() + "\n----");
             return true;
         });
 
+        // help
         commandMap.put("help", params -> {
             Output.print("Available commands:");
             commandMap.keySet().forEach(cmd -> Output.print("  " + cmd));
             return true;
-        });
-
-        commandMap.put("deleteuser", params -> { //deleteUser <address>
-            
-
-            if (params.length > 1) {
-                recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
-                return newUser.deleteuser();
-            }
-            return Output.errorPrint("Error: Missing address for deleteuser");
         });
     }
 
