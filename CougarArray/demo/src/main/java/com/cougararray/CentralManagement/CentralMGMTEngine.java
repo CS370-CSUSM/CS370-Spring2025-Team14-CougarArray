@@ -123,9 +123,14 @@ public class CentralMGMTEngine extends WebsocketListener {
             return true;
         });
 
-        commandMap.put("deleteUser", params -> { //deleteUser <address>
-            recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
-            return newUser.deleteuser();
+        commandMap.put("deleteuser", params -> { //deleteUser <address>
+            
+
+            if (params.length > 1) {
+                recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
+                return newUser.deleteuser();
+            }
+            return Output.errorPrint("Error: Missing address for deleteuser");
         });
     }
 
