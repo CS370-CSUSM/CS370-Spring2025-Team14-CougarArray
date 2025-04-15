@@ -32,10 +32,11 @@ public class CentralMGMTEngine extends WebsocketListener {
 
     private static final config Config = new config();
     private final Map<String, CommandHandler> commandMap = new HashMap<>();
+    private final Map<String, String> commandUsage = new HashMap<>();
 
     public CentralMGMTEngine() {
         super(Config.getPort());
-        this.start(); // Start Websocket
+        this.start(); 
 
         if (Config.emptyOrInvalidKeys()) {
             Output.print("Keys for Config are Invalid...Updating Keys");
@@ -49,37 +50,31 @@ public class CentralMGMTEngine extends WebsocketListener {
         initializeCommandMap();
     }
 
-
-    /* @TODO!
-     * Make Output look much nicer
-     * 
-     * ex of each command usage
-     * encrypt <fileName> (LOCAL USAGE)
-     * decrypt <fileName> (LOCAL USAGE)
-     * adduser (address)
-     * deleteuser (address)
-     * users
-     * send <filePath> <"name"/"address"> <Name / Address of Device> - send private.txt name Lenny
-     * ping <address>
-     * mykeys
-     * help
-     */
     private void initializeCommandMap() {
 
-        // encrypt <fileName> (LOCAL USAGE)
-        commandMap.put("encrypt", params -> {
+        // Encrypt command
+        final String encryptCmd = "encrypt";
+        String encryptHelp = "Usage: encrypt <filePath> (LOCAL USAGE)\nEncrypts a local file using the current user's public key.";
+        commandUsage.put(encryptCmd, encryptHelp);
+        commandMap.put(encryptCmd, params -> {
             if (params.length > 1) return encryptFile(params[1]);
-            return Output.errorPrint("Usage: encrypt <filePath> (LOCAL USAGE)");
+            return Output.errorPrint(getUsage(encryptCmd));
         });
 
-        // decrypt <fileName> (LOCAL USAGE)
-        commandMap.put("decrypt", params -> {
+        // Decrypt command
+        final String decryptCmd = "decrypt";
+        String decryptHelp = "Usage: decrypt <filePath> (LOCAL USAGE)\nDecrypts a local file using the current user's private key.";
+        commandUsage.put(decryptCmd, decryptHelp);
+        commandMap.put(decryptCmd, params -> {
             if (params.length > 1) return decryptFile(params[1]);
-            return Output.errorPrint("Usage: decrypt <filePath> (LOCAL USAGE)");
+            return Output.errorPrint(getUsage(decryptCmd));
         });
-        
-        // adduser (address)
-        commandMap.put("adduser", params -> {
+
+        // Adduser command
+        final String adduserCmd = "adduser";
+        String adduserHelp = "Usage: adduser <address>\nAdds a new user by specifying their IP address. You will be prompted to input their public key and device name.";
+        commandUsage.put(adduserCmd, adduserHelp);
+        commandMap.put(adduserCmd, params -> {
             if (params.length > 1) {
                 System.out.println("Paste their public key =>");
                 BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
@@ -88,25 +83,33 @@ public class CentralMGMTEngine extends WebsocketListener {
                 String name = r.readLine();
                 return addUser(params[1], publicKey, name);
             }
-            return Output.errorPrint("Usage: adduser <address>");
+            return Output.errorPrint(getUsage(adduserCmd));
         });
 
-        // deleteuser (address)
-        commandMap.put("deleteuser", params -> { 
+        // Deleteuser command
+        final String deleteuserCmd = "deleteuser";
+        String deleteuserHelp = "Usage: deleteuser <address>\nDeletes a user by their IP address.";
+        commandUsage.put(deleteuserCmd, deleteuserHelp);
+        commandMap.put(deleteuserCmd, params -> { 
             if (params.length > 1) {
                 recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
                 return newUser.deleteuser();
             }
-            return Output.errorPrint("Usage: deleteuser <address>");
+            return Output.errorPrint(getUsage(deleteuserCmd));
         });
 
-        // users
-        commandMap.put("users", params -> listUsers());
+        // Users command
+        final String usersCmd = "users";
+        String usersHelp = "Usage: users\nLists all users in the database.";
+        commandUsage.put(usersCmd, usersHelp);
+        commandMap.put(usersCmd, params -> listUsers());
 
-        // send (file_path) (name/address) (name / address from database)
-        commandMap.put("send", params -> {
+        // Send command
+        final String sendCmd = "send";
+        String sendHelp = "Usage: send <filePath> <\"name\"/\"address\"> <Name/Address of Device>\nExample: send private.txt name Lenny\nSends an encrypted file to the specified user by their name or IP address.";
+        commandUsage.put(sendCmd, sendHelp);
+        commandMap.put(sendCmd, params -> {
             if (params.length > 3) {
-                Output.print(params[2].toLowerCase().contains("name"));
                 if (params[2].toLowerCase().contains("name")) {
                     return sendFile(params[1], new RecordValue(ColumnName.NAME, params[3]));
                 } else if (params[2].toLowerCase().contains("address")) {
@@ -114,31 +117,60 @@ public class CentralMGMTEngine extends WebsocketListener {
                 }
                 return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
             }
-            return Output.errorPrint("Usage: send <file_path> <name/address> <name/address from database>");
+            return Output.errorPrint(getUsage(sendCmd));
         });
 
-        // ping <address>
-        commandMap.put("ping", params -> {
+        // Ping command
+        final String pingCmd = "ping";
+        String pingHelp = "Usage: ping <address>\nSends a ping to the specified address to check connectivity.";
+        commandUsage.put(pingCmd, pingHelp);
+        commandMap.put(pingCmd, params -> {
             if (params.length > 1) {
                 WebsocketSenderClient.sendPing(params[1]);
                 return true;
             }
-            return Output.errorPrint("Usage: ping <address>");
+            return Output.errorPrint(getUsage(pingCmd));
         });
-        
-        // mykeys
-        commandMap.put("mykeys", params -> {
+
+        // Mykeys command
+        final String mykeysCmd = "mykeys";
+        String mykeysHelp = "Usage: mykeys\nDisplays the current user's public and private keys.";
+        commandUsage.put(mykeysCmd, mykeysHelp);
+        commandMap.put(mykeysCmd, params -> {
             Output.print("\n----\nPublic Key: " + Config.getPublicKey() + "\n----\n" +
                        "Private Key (DO NOT SHARE): " + Config.getPrivatekey() + "\n----");
             return true;
         });
 
-        // help
-        commandMap.put("help", params -> {
-            Output.print("Available commands:");
-            commandMap.keySet().forEach(cmd -> Output.print("  " + cmd));
+        // Help command
+        final String helpCmd = "help";
+        String helpHelp = "Usage: help [command]\nDisplays help information. If a command is specified, shows detailed usage for that command.";
+        commandUsage.put(helpCmd, helpHelp);
+        commandMap.put(helpCmd, params -> {
+            if (params.length > 1) {
+                String command = params[1].toLowerCase();
+                String helpText = commandUsage.get(command);
+                if (helpText != null) {
+                    Output.print(helpText);
+                } else {
+                    Output.errorPrint("No help available for command: " + command);
+                }
+            } else {
+                Output.print("Available commands:");
+                commandUsage.keySet().forEach(cmd -> Output.print("  " + cmd));
+                Output.print("Use 'help <command>' for details on a specific command.");
+            }
             return true;
         });
+    }
+
+    private String getUsage(String command) {
+        String helpText = commandUsage.get(command);
+        if (helpText == null) {
+            return "Usage information not available.";
+        }
+        String[] lines = helpText.split("\n");
+        return lines.length > 0 ? lines[0] : "Usage information not available.";
     }
 
     public boolean executeArgs(String[] parameters) throws IOException {
