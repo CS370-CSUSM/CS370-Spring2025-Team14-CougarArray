@@ -174,16 +174,16 @@ public class CentralMGMTEngine extends WebsocketListener {
         return lines.length > 0 ? lines[0] : "Usage information not available.";
     }
 
-    public boolean executeArgs(String[] parameters) {
+    public ModalOutput executeArgs(String[] parameters) {
         if (parameters.length == 0) {
-            return Output.errorPrint("Error: No command provided");
+            return new ModalOutput(Output.errorPrint("Error: No command provided"));
         }
 
         String commandKey = parameters[0].toLowerCase();
         CommandHandler handler = commandMap.get(commandKey);
 
         if (handler == null) {
-            return Output.errorPrint("Unknown Command!");
+            return new ModalOutput(Output.errorPrint("Unknown Command!"));
         }
         try {
             return handler.handle(parameters);
