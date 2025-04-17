@@ -186,9 +186,9 @@ public class CentralMGMTEngine extends WebsocketListener {
             return new ModalOutput(Output.errorPrint("Unknown Command!"));
         }
         try {
-            return handler.handle(parameters);
+            return new ModalOutput(handler.handle(parameters));
         } catch (IOException e) {
-            return false;
+            return new ModalOutput(false);
         }
     }
 
@@ -259,7 +259,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                             break;
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
-                            boolean status = executeArgs(breakDownArgs(executePacket.getCommand()));
+                            boolean status = executeArgs(breakDownArgs(executePacket.getCommand())).getStatus();
                             if (status) conn.send(ResponsePacket.toJson(0));
                             else conn.send(ResponsePacket.toJson(1));
                         default:

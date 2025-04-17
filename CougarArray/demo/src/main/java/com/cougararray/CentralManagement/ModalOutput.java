@@ -19,6 +19,10 @@ public class ModalOutput {
         this.error = error;
     }
 
+    public boolean getStatus(){
+        return status;
+    }
+
     public void outputConsole() {
         //TODO! For Console Output
     }
