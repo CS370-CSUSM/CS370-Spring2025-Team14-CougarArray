@@ -174,7 +174,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         return lines.length > 0 ? lines[0] : "Usage information not available.";
     }
 
-    public boolean executeArgs(String[] parameters) throws IOException {
+    public boolean executeArgs(String[] parameters) {
         if (parameters.length == 0) {
             return Output.errorPrint("Error: No command provided");
         }
@@ -185,8 +185,11 @@ public class CentralMGMTEngine extends WebsocketListener {
         if (handler == null) {
             return Output.errorPrint("Unknown Command!");
         }
-
-        return handler.handle(parameters);
+        try {
+            return handler.handle(parameters);
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @FunctionalInterface
