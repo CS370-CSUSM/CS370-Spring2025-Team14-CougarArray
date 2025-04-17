@@ -21,4 +21,9 @@ public class ExecutePacket {
         return json.toString();
     }
 
+    public ExecutePacket(String rawJson) {
+        JSONObject json = new JSONObject(rawJson);
+        this.command = json.getString("execute");
+    }
+
 }

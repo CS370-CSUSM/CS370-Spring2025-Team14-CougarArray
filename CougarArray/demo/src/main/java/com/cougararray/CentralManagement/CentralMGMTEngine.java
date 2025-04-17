@@ -24,6 +24,7 @@ import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdoa;
 import com.cougararray.TCPWebsocket.Packets.ClosePacket;
 import com.cougararray.TCPWebsocket.Packets.ContentPacket;
+import com.cougararray.TCPWebsocket.Packets.ExecutePacket;
 import com.cougararray.TCPWebsocket.Packets.ResponsePacket;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 import com.cougararray.TCPWebsocket.WebsocketSenderClient;
@@ -253,6 +254,11 @@ public class CentralMGMTEngine extends WebsocketListener {
                                 Base64.getDecoder().decode(json.getString("key"))
                             )) conn.send(ResponsePacket.toJson(0));
                             break;
+                        case "EXECUTE":
+                            ExecutePacket executePacket = new ExecutePacket(message);
+                            boolean status = executeArgs(breakDownArgs(executePacket.getCommand()));
+                            if (status) conn.send(ResponsePacket.toJson(0));
+                            else conn.send(ResponsePacket.toJson(1));
                         default:
                             //Output.print("I didn't find anything!");
                             conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
@@ -277,5 +283,14 @@ public class CentralMGMTEngine extends WebsocketListener {
         };
 
         server.start();
+    }
+
+    protected static String[] breakDownArgs(String s){
+        String[] words = s.split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].replaceAll("[^\\w.:]", "");
+            //System.err.println(words[i]);
+        }
+        return words;
     }
 }
