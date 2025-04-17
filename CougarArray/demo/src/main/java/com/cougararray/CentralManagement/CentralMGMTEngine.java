@@ -3,10 +3,12 @@ package com.cougararray.CentralManagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -132,6 +134,26 @@ public class CentralMGMTEngine extends WebsocketListener {
             }
             return Output.errorPrint(getUsage(pingCmd));
         });
+        
+        // ls command
+        final String lsCmd = "ls";
+        String lsHelp = "Usage: ls\n Lists contents of current directory.";
+        commandUsage.put(lsCmd, lsHelp);
+        commandMap.put(lsCmd, params -> {
+            File currentDir = new File("."); // Current directory
+            File[] files = currentDir.listFiles();
+    
+            if (files != null) {
+                Arrays.sort(files); // Sort files alphabetically
+                for (File file : files) {
+                    System.out.println(file.getName());
+                }
+            } else {
+                Output.errorPrint("Could not list files in directory.");
+            }
+            return true;
+        });
+    
 
         // Mykeys command
         final String mykeysCmd = "mykeys";

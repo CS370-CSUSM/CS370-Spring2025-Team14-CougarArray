@@ -1,4 +1,5 @@
 com/cougararray/TCPWebsocket/Packets/PingPacket.class
+com/cougararray/CentralManagement/ModalOutput.class
 com/cougararray/TCPWebsocket/Packets/ClosePacket.class
 com/cougararray/RecDatabase/ColumnName.class
 com/cougararray/TCPWebsocket/WebsocketListener$1.class
@@ -20,6 +21,7 @@ com/cougararray/RecDatabase/Database.class
 com/cougararray/Config/config.class
 com/cougararray/OutputT/Output.class
 com/cougararray/CentralManagement/Console.class
+com/cougararray/TCPWebsocket/Packets/ExecutePacket.class
 com/cougararray/Cryptography/CryptographyResult.class
 com/cougararray/OutputT/Colors.class
 com/cougararray/RecDatabase/recipientdoa.class
