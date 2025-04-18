@@ -200,6 +200,12 @@ public class CentralMGMTEngine extends WebsocketListener {
         });
     }
 
+    /**
+     * Returns usage info for a command
+     *
+     * @param command The command keyword ("encrypt" or "users")
+     * @return String containing usage instructions
+     */
     private String getUsage(String command) {
         String helpText = commandUsage.get(command);
         if (helpText == null) {
@@ -209,6 +215,12 @@ public class CentralMGMTEngine extends WebsocketListener {
         return lines.length > 0 ? lines[0] : "Usage information not available.";
     }
 
+    /**
+     * Executes CLI arguments
+     *
+     * @param parameters Command arguments, index[0] holds the command
+     * @return ModalOutput object with success/failure status
+     */
     public ModalOutput executeArgs(String[] parameters) {
         if (parameters.length == 0) {
             return new ModalOutput(Output.errorPrint("Error: No command provided"));
@@ -227,19 +239,40 @@ public class CentralMGMTEngine extends WebsocketListener {
         }
     }
 
+    /**
+     * Functional interface for defining CLI behavior
+     * Each handler takes string array arguments and returns boolean on success/fail scenarios
+     */
     @FunctionalInterface
     private interface CommandHandler {
         boolean handle(String[] parameters) throws IOException;
     }
 
+    /**
+     * Encrypts a file using user's key
+     * @param file Path to the file to encrypt
+     * @return true if encryption is successful, false otherwise
+     */
     private boolean encryptFile(String file) {
         return new CryptographyClient(Config.getKeys()).encrypt(file);
     }
 
+    /**
+     * Decrypts a file using user's private key
+     * @param file Path to the file to decrypt
+     * @return true if decryption is successful, false otherwise
+     */
     private boolean decryptFile(String file) {
         return new CryptographyClient(Config.getKeys()).decrypt(file);
     }
 
+    /**
+     * Encrypts and sends a file to the specified recipient based on IP or name
+     *
+     * @param file The file path to send
+     * @param record The IP (or name) of the recipient
+     * @return true if file is sent, false otherwise
+     */
     private boolean sendFile(String file, RecordValue record) {
         Output.print("sending file...");
         Output.print(record.returnStatement());
@@ -254,18 +287,35 @@ public class CentralMGMTEngine extends WebsocketListener {
         WebsocketSenderClient.sendMessage(endUser.getAddress() + ":5666", packetToBeSent.toJson());
 
         Output.print("Sent: " + packetToBeSent.toJson());
-        return false;
+        return true;
     }
 
+    /**
+     * Adds a new user to the database
+     *
+     * @param address   The IP address of the new user
+     * @param publicKey The user's public key
+     * @param name      The name of the device/user
+     * @return true if the user is successfully added
+     */
     private boolean addUser(String address, String publicKey, String name){
         recipientdoa newUser = new recipientdoa(address, publicKey, name);
         return newUser.createUser();
     }
 
+    /**
+     * Lists all registered users
+     *
+     * @return true if listing is successful
+     */
     private boolean listUsers() {
         return new Database().formatPrint();
     }
 
+    /**
+     * Starts WebSocket server and listens for incoming packets
+     *
+     */
     protected void listen(){
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
