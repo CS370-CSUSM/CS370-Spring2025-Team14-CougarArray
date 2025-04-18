@@ -4,14 +4,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-//subsystem
-//This does NOT focus on execution; only on acting as a View
+/**
+ * Console provides a CLI for user interaction
+ *
+ * Primarily acts as the "View"
+ * Backend logic will be found in CentralMGMTEngine
+ */
 public class Console extends CentralMGMTEngine {
 
     public Console() {
         super();
     }
 
+    /**
+     * Accepting input commands from user
+     * @throws IOException if read input is invalid
+     */
     public void view() throws IOException {
 
         while(true)

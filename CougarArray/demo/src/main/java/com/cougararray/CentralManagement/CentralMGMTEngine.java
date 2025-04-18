@@ -31,6 +31,19 @@ import com.cougararray.TCPWebsocket.Packets.ResponsePacket;
 import com.cougararray.TCPWebsocket.WebsocketListener;
 import com.cougararray.TCPWebsocket.WebsocketSenderClient;
 
+/**
+ * CentralMGMTEngine holds backend logic for console
+ *
+ * Responsibilities:
+ * - Handles registration and execution of CLI commands (e.g., encrypt, decrypt, send, adduser).
+ * - Manages users via a local database.
+ * - Sends and receives encrypted content over WebSocket.
+ * - Interfaces with CryptographyClient and various packets for secure comms.
+ * - Initializes key-pair if not already valid in configuration.
+ *
+ * Extends WebsocketListener and sets up a WebSocketServer
+ * for handling incoming encrypted packets.
+ */
 public class CentralMGMTEngine extends WebsocketListener {
 
     private static final config Config = new config();
@@ -289,7 +302,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                             conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
                     }
                 } catch (Exception e) {
-                    Output.print("Invalid JSON: " + e.getMessage());
+                    Output.print("Invalidif  JSON: " + e.getMessage());
                 }
 
                 //conn.send("Message received: " + message);
@@ -310,6 +323,11 @@ public class CentralMGMTEngine extends WebsocketListener {
         server.start();
     }
 
+    /**
+     * Breaks command input into valid arguments
+     * @param s raw user input
+     * @return String[] of valid arguments
+     */
     protected static String[] breakDownArgs(String s){
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
