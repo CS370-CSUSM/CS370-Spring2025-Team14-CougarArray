@@ -6,6 +6,7 @@ package com.cougararray;
 import java.io.IOException;
 
 import com.cougararray.CentralManagement.Console;
+
 /**
  * Main entry point for CougarArray
  * Initializes and displays console
