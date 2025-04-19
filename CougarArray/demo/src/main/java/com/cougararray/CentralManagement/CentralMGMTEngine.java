@@ -246,7 +246,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         
         String outputS = baos.toString().trim();
         System.setOut(originalOut);
-        System.out.println(outputS);
+        //System.out.println(outputS); debug purposes
         output.setOutput(outputS);
         return new ModalOutput(true, outputS);
     }
