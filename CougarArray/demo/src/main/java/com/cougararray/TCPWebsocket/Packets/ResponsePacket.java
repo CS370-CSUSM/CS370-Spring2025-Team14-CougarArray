@@ -11,6 +11,28 @@ public class ResponsePacket {
 
     //{"CODE" : int, "COMMENT" : string}
 
+    private int status;
+    private String output;
+
+    public ResponsePacket(int status, String output) {
+        this.status = status;
+        this.output = output;
+    }
+
+    public ResponsePacket success(String output) {
+        return new ResponsePacket(0, output);
+    }
+
+    public ResponsePacket unsuccess(String output) {
+        return new ResponsePacket(1, output);
+    }
+
+    public ResponsePacket error(String output) {
+        return new ResponsePacket(2, output);
+    }
+
+
+
     public static String toJson(int status) {
         JSONObject json = new JSONObject();
         json.put("CODE", status);

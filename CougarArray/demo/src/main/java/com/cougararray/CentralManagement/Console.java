@@ -45,7 +45,7 @@ public class Console extends CentralMGMTEngine {
             // Reading data using readLine
             String s = r.readLine();
             String[] args = breakDownArgs(s);
-            executeArgs(args);
+            System.out.println(executeArgs(args).getOutput());
         }
     }
 }

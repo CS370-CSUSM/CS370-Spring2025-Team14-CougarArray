@@ -1,8 +1,10 @@
 package com.cougararray.CentralManagement;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Base64;
@@ -221,22 +223,32 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @param parameters Command arguments, index[0] holds the command
      * @return ModalOutput object with success/failure status
      */
-    public ModalOutput executeArgs(String[] parameters) {
+    public ModalOutput executeArgs(String[] parameters) throws IOException {
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+
+        
         if (parameters.length == 0) {
-            return new ModalOutput(Output.errorPrint("Error: No command provided"));
+            return new ModalOutput(false, "Error: No command provided", true);
         }
 
         String commandKey = parameters[0].toLowerCase();
         CommandHandler handler = commandMap.get(commandKey);
 
         if (handler == null) {
-            return new ModalOutput(Output.errorPrint("Unknown Command!"));
+            return new ModalOutput(false, "Unknown Command!", true);
         }
-        try {
-            return new ModalOutput(handler.handle(parameters));
-        } catch (IOException e) {
-            return new ModalOutput(false);
-        }
+
+        System.setOut(new PrintStream(baos));
+        ModalOutput output = new ModalOutput(handler.handle(parameters));
+        
+        
+        String outputS = baos.toString().trim();
+        System.setOut(originalOut);
+        System.out.println(outputS);
+        output.setOutput(outputS);
+        return new ModalOutput(true, outputS);
     }
 
     /**
@@ -344,9 +356,8 @@ public class CentralMGMTEngine extends WebsocketListener {
                             break;
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
-                            boolean status = executeArgs(breakDownArgs(executePacket.getCommand())).getStatus();
-                            if (status) conn.send(ResponsePacket.toJson(0));
-                            else conn.send(ResponsePacket.toJson(1));
+                            ModalOutput status = executeArgs(breakDownArgs(executePacket.getCommand()));
+                            conn.send(ResponsePacket.toJson(status.outputStatusToInt(), status.getOutput()));                            
                         default:
                             //Output.print("I didn't find anything!");
                             conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
