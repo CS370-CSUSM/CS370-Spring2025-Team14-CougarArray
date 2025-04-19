@@ -334,7 +334,6 @@ public class CentralMGMTEngine extends WebsocketListener {
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
-                //Output.print("Received: " + message);
                 
                 try {
                     JSONObject json = new JSONObject(message);
@@ -372,7 +371,9 @@ public class CentralMGMTEngine extends WebsocketListener {
             }
 
             @Override
-            public void onOpen(WebSocket conn, ClientHandshake handshake) {}
+            public void onOpen(WebSocket conn, ClientHandshake handshake) {
+                Output.print("NEW CONNECTION!");
+            }
             @Override
             public void onClose(WebSocket conn, int code, String reason, boolean remote) {}
             @Override
