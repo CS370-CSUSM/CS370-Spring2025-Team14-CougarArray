@@ -2,7 +2,7 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
+demo-1.0-SNAPSHOT.jar
 ### Eclipse ###
 .apt_generated
 .classpath
@@ -33,3 +33,4 @@ bin/
 *.class 
 config.properties
 *.properties
+createdFiles.lst
