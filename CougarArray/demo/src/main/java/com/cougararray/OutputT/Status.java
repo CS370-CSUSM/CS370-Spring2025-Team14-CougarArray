@@ -23,7 +23,7 @@ public enum Status {
     }
 
     public String OutputCode() {
-        String output = Colors.RESET + "[" + this.getColorCode() + this.getStatusName() + Colors.RESET + "]";
+        String output = "[" + this.getColorCode() + this.getStatusName() + Colors.RESET + "]";
         return output;
     }
 }
