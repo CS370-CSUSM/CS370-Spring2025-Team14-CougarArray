@@ -100,13 +100,12 @@ public class CentralMGMTEngine extends WebsocketListener {
                     return Output.errorPrint(getUsage("adduser"));
                 }
 
-                @SuppressWarnings("resource") // resource "leak" but apparently i can do this safely??
                 PrintStream consoleOut = new PrintStream(new FileOutputStream(FileDescriptor.out));
                 consoleOut.print("Paste their public key => ");
                 BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                 String publicKey = r.readLine();
         
-                consoleOut.print("What is the device’s name => ");
+                consoleOut.print("What is the device's name => ");
                 String name = r.readLine();
         
                 if (publicKey == null || publicKey.isEmpty() || name == null || name.isEmpty()) {
@@ -122,8 +121,6 @@ public class CentralMGMTEngine extends WebsocketListener {
                 return Output.errorPrint("Unexpected error: " + e.getMessage());
             }
         });
-        
-
 
         // Deleteuser command
         final String deleteuserCmd = "deleteuser";
