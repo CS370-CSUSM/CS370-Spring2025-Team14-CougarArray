@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.HashMap;
@@ -92,17 +94,36 @@ public class CentralMGMTEngine extends WebsocketListener {
         final String adduserCmd = "adduser";
         String adduserHelp = "Usage: adduser <address>\nAdds a new user by specifying their IP address. You will be prompted to input their public key and device name.";
         commandUsage.put(adduserCmd, adduserHelp);
-        commandMap.put(adduserCmd, params -> {
-            if (params.length > 1) {
-                System.out.println("Paste their public key =>");
+        commandMap.put("adduser", params -> {
+            try {
+                if (params.length < 2) {
+                    return Output.errorPrint(getUsage("adduser"));
+                }
+
+                @SuppressWarnings("resource") // resource "leak" but apparently i can do this safely??
+                PrintStream consoleOut = new PrintStream(new FileOutputStream(FileDescriptor.out));
+                consoleOut.print("Paste their public key => ");
                 BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
                 String publicKey = r.readLine();
-                System.out.println("What is the device's name =>");
+        
+                consoleOut.print("What is the device’s name => ");
                 String name = r.readLine();
+        
+                if (publicKey == null || publicKey.isEmpty() || name == null || name.isEmpty()) {
+                    return Output.errorPrint("Public key and name cannot be empty.");
+                }
+        
                 return addUser(params[1], publicKey, name);
+            } catch (IOException ioe) {
+                ioe.printStackTrace(); // Add this line
+                return Output.errorPrint("I/O error: " + ioe.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace(); // This line will help trace general crashes
+                return Output.errorPrint("Unexpected error: " + e.getMessage());
             }
-            return Output.errorPrint(getUsage(adduserCmd));
         });
+        
+
 
         // Deleteuser command
         final String deleteuserCmd = "deleteuser";

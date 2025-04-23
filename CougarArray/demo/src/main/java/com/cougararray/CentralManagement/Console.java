@@ -3,15 +3,10 @@ package com.cougararray.CentralManagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 
-/**
- * Console provides a CLI for user interaction
- *
- * Primarily acts as the "View"
- * Backend logic will be found in CentralMGMTEngine
- */
 public class Console extends CentralMGMTEngine {
 
     public Console() {
@@ -20,9 +15,10 @@ public class Console extends CentralMGMTEngine {
 
     /**
      * Accepting input commands from user
-     * @throws IOException if read input is invalid
      */
-    public void view() throws IOException {
+    public void view() {
+        // single shared reader on stdin
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         try {
             Thread.sleep(500);
@@ -34,18 +30,32 @@ public class Console extends CentralMGMTEngine {
         Output.print("CougarArray initialized!", Status.GOOD);
         Output.print("To see available commands, type help", Status.GOOD);
 
-        while(true)
-        {
-            // >>> indicating it is the user's "turn" (is one '>' preferred?)
+        while (true) {
             System.out.print(">>> ");
 
-            // Enter data using BufferReader
-            BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+            String line;
+            try {
+                line = reader.readLine();
+            } catch (IOException ioe) {
+                // I/O error reading the command
+                Output.errorPrint("I/O error: " + ioe.getMessage());
+                continue;
+            }
 
-            // Reading data using readLine
-            String s = r.readLine();
-            String[] args = breakDownArgs(s);
-            System.out.println(executeArgs(args).getOutput());
+            if (line == null) {
+                // EOF (e.g. Ctrl-D), exit cleanly
+                Output.print("Input stream closed, shutting down.", Status.GOOD);
+                break;
+            }
+
+            String[] args = breakDownArgs(line);
+
+            try {
+                // executeArgs can itself throw IOException if any handler leaks it
+                System.out.println(executeArgs(args).getOutput());
+            } catch (IOException ioe) {
+                Output.errorPrint("Error running command: " + ioe.getMessage());
+            }
         }
     }
 }
