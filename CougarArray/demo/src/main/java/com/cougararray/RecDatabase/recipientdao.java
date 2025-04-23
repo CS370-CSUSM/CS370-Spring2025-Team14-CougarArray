@@ -9,7 +9,7 @@ import java.sql.SQLException;
 //This class represents an entity/object of a list of objects from a database
 //ex. if we made "Lenny" Recipient then it would get lenny's data
 //if my age was manipulated, then it should manipulate the database's data
-public class recipientdoa extends Database {
+public class recipientdao extends Database {
 
     private final String NON_EXISTENT_NULL = "NA";
 
@@ -55,19 +55,19 @@ public class recipientdoa extends Database {
 
     //Constructor
     //Find User via Database
-    public recipientdoa(RecordValue record) {
+    public recipientdao(RecordValue record) {
         super(); //execute Database.java constructor in case we didn't create a database beforehand
         this.persistent = getUser(record.returnStatement());
     }
 
     //Constructor
     //Create User
-    public recipientdoa(String Address, String publicKey) {
+    public recipientdao(String Address, String publicKey) {
         super();
         this.Address = Address;
         this.publicKey = publicKey;
     }
-    public recipientdoa(String Address, String publicKey, String name) {
+    public recipientdao(String Address, String publicKey, String name) {
         super();
         this.Address = Address;
         this.publicKey = publicKey;
@@ -125,7 +125,7 @@ public class recipientdoa extends Database {
 
     public boolean deleteuser() {
         if (this.exists()) return this.deleteRecord(this.getAddress());
-
+        // case if user doesn't exist can be improved later
         return false;
     }
 
@@ -144,11 +144,11 @@ public class recipientdoa extends Database {
     //Output new PublicKey
     //Revert it back
     public static void main(String[] args) {
-        //recipientdoa localhost = new recipientdoa("127.0.0.1", "Test", "localhost");
+        //recipientdao localhost = new recipientdao("127.0.0.1", "Test", "localhost");
         //localhost.print();
         //System.err.println("-----------");
         //localhost.createUser();
-        recipientdoa localhost = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
+        recipientdao localhost = new recipientdao(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
         localhost.print();
         System.out.println(localhost.exists());
         //localhost.setPublicKey("Test2");

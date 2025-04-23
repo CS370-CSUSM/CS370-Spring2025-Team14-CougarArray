@@ -27,7 +27,7 @@ import com.cougararray.OutputT.Status;
 import com.cougararray.RecDatabase.ColumnName;
 import com.cougararray.RecDatabase.Database;
 import com.cougararray.RecDatabase.RecordValue;
-import com.cougararray.RecDatabase.recipientdoa;
+import com.cougararray.RecDatabase.recipientdao;
 import com.cougararray.TCPWebsocket.Packets.ClosePacket;
 import com.cougararray.TCPWebsocket.Packets.ContentPacket;
 import com.cougararray.TCPWebsocket.Packets.ExecutePacket;
@@ -128,7 +128,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         commandUsage.put(deleteuserCmd, deleteuserHelp);
         commandMap.put(deleteuserCmd, params -> { 
             if (params.length > 1) {
-                recipientdoa newUser = new recipientdoa(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
+                recipientdao newUser = new recipientdao(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
                 return newUser.deleteuser();
             }
             return Output.errorPrint(getUsage(deleteuserCmd));
@@ -306,7 +306,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     private boolean sendFile(String file, RecordValue record) {
         Output.print("sending file...");
         Output.print(record.returnStatement());
-        recipientdoa endUser = new recipientdoa(record);
+        recipientdao endUser = new recipientdao(record);
         if (!endUser.exists()) return false;
         Output.print("User exists!");
         Output.print("publicKey" + endUser.getPublicKey());
@@ -329,7 +329,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if the user is successfully added
      */
     private boolean addUser(String address, String publicKey, String name){
-        recipientdoa newUser = new recipientdoa(address, publicKey, name);
+        recipientdao newUser = new recipientdao(address, publicKey, name);
         return newUser.createUser();
     }
 
