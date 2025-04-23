@@ -15,12 +15,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Decrypytion {
 
-    private String algorithm; 
     private PrivateKey privateKey;
     private byte[] encryptedAESKey;
 
     public Decrypytion(String algorithm, String privateKey, byte[] encryptedAESKey) {
-        this.algorithm = algorithm;
         this.encryptedAESKey = encryptedAESKey;
         try {
             this.privateKey = Keys.getPrivateKeyFromString(privateKey);

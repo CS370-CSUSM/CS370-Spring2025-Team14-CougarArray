@@ -11,12 +11,7 @@ public class ResponsePacket {
 
     //{"CODE" : int, "COMMENT" : string}
 
-    private int status;
-    private String output;
-
     public ResponsePacket(int status, String output) {
-        this.status = status;
-        this.output = output;
     }
 
     public ResponsePacket success(String output) {

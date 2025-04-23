@@ -15,15 +15,12 @@ import javax.crypto.SecretKey;
 
 public class Encryption {
 
-    private String algorithm; 
-    private PublicKey publicKey;
     private SecretKey aesKey;
     
     public Encryption(String algorithm, String publicKey, SecretKey aesKey) {
         this.aesKey = aesKey;
-        this.algorithm = algorithm;
         try {
-            this.publicKey = Keys.getPublicKeyFromString(publicKey);
+            Keys.getPublicKeyFromString(publicKey);
         } catch (Exception e) {
             e.printStackTrace();
         }
