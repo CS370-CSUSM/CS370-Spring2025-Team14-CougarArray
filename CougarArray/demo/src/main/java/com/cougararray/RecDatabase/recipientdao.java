@@ -123,8 +123,11 @@ public class recipientdao extends Database {
         return this.createRecord(this.Address, this.publicKey, this.Name);
     }
 
-    public boolean deleteuser() {
-        if (this.exists()) return this.deleteRecord(this.getAddress());
+    public boolean deleteuser() 
+    {
+        boolean temp = this.exists();
+        if (temp) return this.deleteRecord(this.getAddress());
+        if (!temp) System.out.println("User does not exist. Ensure you entered the right IP address.");
         // case if user doesn't exist can be improved later
         return false;
     }

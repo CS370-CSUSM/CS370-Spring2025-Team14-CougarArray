@@ -14,6 +14,7 @@ com/cougararray/Cryptography/CryptographyClient.class
 com/cougararray/CentralManagement/CentralMGMTEngine$1.class
 com/cougararray/Main.class
 com/cougararray/TCPWebsocket/WebsocketSenderClient.class
+com/cougararray/RecDatabase/recipientdao.class
 com/cougararray/Cryptography/Decrypytion.class
 com/cougararray/OutputT/Status.class
 com/cougararray/TCPWebsocket/Packets/ResponsePacket.class
@@ -24,5 +25,4 @@ com/cougararray/CentralManagement/Console.class
 com/cougararray/TCPWebsocket/Packets/ExecutePacket.class
 com/cougararray/Cryptography/CryptographyResult.class
 com/cougararray/OutputT/Colors.class
-com/cougararray/RecDatabase/recipientdoa.class
 com/cougararray/TCPWebsocket/WebsocketSenderClient$1.class
