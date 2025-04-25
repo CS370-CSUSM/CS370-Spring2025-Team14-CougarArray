@@ -19,6 +19,7 @@ public class Database {
 
     private static final String DATABASE_FILE = "database.sql";
     protected static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_FILE;
+    private static boolean isTableVerified = false;
 
     public Database() {
         createDatabase();
@@ -48,7 +49,10 @@ public class Database {
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            Output.print("Users table verified/created successfully.", Status.GOOD);
+            if (!isTableVerified) {
+                Output.print("Users table verified/created successfully.", Status.GOOD);
+                isTableVerified = true;
+            }
         } catch (SQLException e) {
             Output.print("Error creating Users table: " + e.getMessage(), Status.BAD);
         }
@@ -79,7 +83,7 @@ public class Database {
             }
             return true;
         } catch (SQLException e) {
-            System.out.println("Error retrieving Users table: " + e.getMessage());
+            Output.print("Error retrieving Users table: " + e.getMessage(), Status.BAD);
         }
 
         return false;

@@ -108,16 +108,28 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         // Deleteuser command
         final String deleteuserCmd = "deleteuser";
-        String deleteuserHelp = "Usage: deleteuser <address>\nDeletes a user by their IP address.";
+        String deleteuserHelp = "Usage: deleteuser <address|name>\nDeletes a user by their IP address or name.";
         commandUsage.put(deleteuserCmd, deleteuserHelp);
-        commandMap.put(deleteuserCmd, params -> { 
+        commandMap.put(deleteuserCmd, params -> {
             if (params.length > 1) {
-                recipientdao newUser = new recipientdao(new RecordValue(ColumnName.IP_ADDRESS, params[1]));
-                return newUser.deleteuser();
+                // Try finding user by address first
+                String address = params[1];
+                recipientdao user = new recipientdao(new RecordValue(ColumnName.IP_ADDRESS, address));
+                
+                // If user with given address doesn't exist, try by name
+                if (!user.exists()) {
+                    user = new recipientdao(new RecordValue(ColumnName.NAME, address));
+                }
+
+                if (user.exists()) {
+                    return user.deleteuser();
+                } else {
+                    return Output.errorPrint("User not found. Ensure the address or name is correct.");
+                }
             }
             return Output.errorPrint(getUsage(deleteuserCmd));
         });
-
+        
         // Users command
         final String usersCmd = "users";
         String usersHelp = "Usage: users\nLists all users in the database.";

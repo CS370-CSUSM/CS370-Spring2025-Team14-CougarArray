@@ -123,23 +123,30 @@ public class recipientdao extends Database {
     }
 
     public boolean createUser() {
-        return this.createRecord(this.Address, this.publicKey, this.Name);
-    }
-
-    public boolean deleteuser() 
-    {
-        boolean temp = this.exists();
-        if (temp) return this.deleteRecord(this.getAddress());
-        if (!temp) Output.print("User does not exist. Ensure you entered the right IP address.", Status.BAD);
-        // case if user doesn't exist can be improved later
+        boolean created = this.createRecord(this.Address, this.publicKey, this.Name);
+        if (created) {
+            Output.print("User " + this.getName() + " added.", Status.GOOD);
+            return true;
+        }
         return false;
     }
 
-    
-    
+    public boolean deleteuser() {
+        boolean temp = this.exists();
+        if (temp) {
+            boolean deleted = this.deleteRecord(this.getAddress());
+            if (deleted) {
+                Output.print("User " + this.getName() + " deleted.", Status.GOOD);
+                return true;
+            }
+        } else {
+            Output.print("User does not exist.", Status.BAD);
+        }
+        return false;
+    }
+
     public void print() {
-        String output = "Name - " + this.getName() + "\n" + "Address - " + this.getAddress() + "\n" + "Public Key - " + this.getPublicKey() + "\n" + "In Database? - " + this.persistent;
-        Output.print(output, Status.DASH);
+        Output.print("Name - " + this.getName() + "\n" + "Address - " + this.getAddress() + "\n" + "Public Key - " + this.getPublicKey() + "\n" + "In Database? - " + this.persistent, Status.DASH);
     }
 
     //TEST
