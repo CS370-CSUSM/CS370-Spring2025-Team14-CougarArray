@@ -24,6 +24,19 @@ public class Output {
         return false;
     }
 
+    // Inline print option
+    public static void printInline(String message, Status status) {
+        System.out.print(status.OutputCode() + " " + message); // no newline!
+    }
+
+    public static void printInline(String message) {
+        printInline(message, Status.OK);
+    }
+
+    public static void printInline(Object obj) {
+        printInline(obj.toString(), Status.OK);
+    }
+
     public static void main(String[] args){
         print("Testing for Output.java");
         

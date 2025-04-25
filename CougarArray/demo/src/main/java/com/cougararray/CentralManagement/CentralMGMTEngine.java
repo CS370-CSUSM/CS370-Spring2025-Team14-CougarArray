@@ -248,14 +248,18 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         
         if (parameters.length == 0) {
-            return new ModalOutput(false, "Error: No command provided", true);
+            Output.printInline("Error: No command provided. Try 'help'", Status.BAD);
+            String outputS = baos.toString().trim();
+            return new ModalOutput(false, outputS, true);
         }
 
         String commandKey = parameters[0].toLowerCase();
         CommandHandler handler = commandMap.get(commandKey);
 
         if (handler == null) {
-            return new ModalOutput(false, "Unknown Command!", true);
+            Output.printInline("Unknown command! Try 'help'", Status.BAD);
+            String outputS = baos.toString().trim();
+            return new ModalOutput(false, outputS, true);
         }
 
         System.setOut(new PrintStream(baos));
