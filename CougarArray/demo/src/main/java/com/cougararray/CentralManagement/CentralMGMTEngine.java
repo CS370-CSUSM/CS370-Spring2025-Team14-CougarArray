@@ -51,7 +51,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     private final Map<String, String> commandUsage = new HashMap<>();
 
     public CentralMGMTEngine() {
-        super(Config.getPort());
+        super();
         this.start(); 
 
         if (Config.emptyOrInvalidKeys()) {
