@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
+
 //TODO!
 //Discuss what kind of database to use 
 
@@ -27,10 +30,10 @@ public class Database {
         if (!dbFile.exists()) {
             try (Connection conn = DriverManager.getConnection(DATABASE_URL)) {
                 if (conn != null) {
-                    System.out.println("Database created successfully.");
+                    Output.print("Database created successfully.", Status.GOOD);
                 }
             } catch (SQLException e) {
-                System.out.println("Error creating database: " + e.getMessage());
+                Output.print("Error creating database: " + e.getMessage(), Status.BAD);
             }
         }
     }
@@ -45,9 +48,9 @@ public class Database {
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("Users table verified/created successfully.");
+            Output.print("Users table verified/created successfully.", Status.GOOD);
         } catch (SQLException e) {
-            System.out.println("Error creating Users table: " + e.getMessage());
+            Output.print("Error creating Users table: " + e.getMessage(), Status.BAD);
         }
     }
 
@@ -101,7 +104,7 @@ public class Database {
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions properly in production
+            Output.printStackTrace(e); // Handle exceptions properly in production
         }
     }
 
@@ -118,7 +121,7 @@ public class Database {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            Output.printStackTrace(e);
         }
         return false;
     }
@@ -134,7 +137,7 @@ public class Database {
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            Output.printStackTrace(e);
         }
         return false;
     }

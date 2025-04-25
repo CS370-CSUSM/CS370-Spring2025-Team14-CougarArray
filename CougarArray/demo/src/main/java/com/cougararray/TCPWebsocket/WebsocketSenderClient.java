@@ -45,7 +45,7 @@ public class WebsocketSenderClient {
             }
         } catch (Exception e) {
             Output.print("Error sending message: " + e.getMessage(), Status.BAD);
-            e.printStackTrace();
+            Output.printStackTrace(e);
         }
     }
 
@@ -83,14 +83,14 @@ public class WebsocketSenderClient {
                 @Override
                 public void onError(Exception ex) {
                     Output.print("WebSocket error", Status.BAD);
-                    ex.printStackTrace();
+                    Output.printStackTrace(ex);
                 }
             };
 
             client.connectBlocking(); // Wait for the connection to complete
         } catch (Exception e) {
             Output.print("Error connecting to WebSocket server: " + e.getMessage(), Status.BAD);
-            e.printStackTrace();
+            Output.printStackTrace(e);
         }
     }
 

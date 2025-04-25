@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
+
 //Recipient DOA inherits Database;
 //This class represents an entity/object of a list of objects from a database
 //ex. if we made "Lenny" Recipient then it would get lenny's data
@@ -91,7 +94,7 @@ public class recipientdao extends Database {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Error retrieving user: " + e.getMessage());
+            Output.print("Error retrieving user: " + e.getMessage(), Status.BAD);
         }
         return false;
     }
@@ -108,12 +111,12 @@ public class recipientdao extends Database {
 
             int rowsAffected = pstmt.executeUpdate();
             if (rowsAffected == 0) {
-                System.out.println("No records updated. User with IP " + identifier + " not found.");
+                Output.print("No records updated. User with IP " + identifier + " not found.", Status.BAD);
                 return false;
             }
             return true;
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions properly in production
+            Output.printStackTrace(e); // Handle exceptions properly in production
         }
 
         return false;
@@ -127,15 +130,16 @@ public class recipientdao extends Database {
     {
         boolean temp = this.exists();
         if (temp) return this.deleteRecord(this.getAddress());
-        if (!temp) System.out.println("User does not exist. Ensure you entered the right IP address.");
+        if (!temp) Output.print("User does not exist. Ensure you entered the right IP address.", Status.BAD);
         // case if user doesn't exist can be improved later
         return false;
     }
 
     
+    
     public void print() {
         String output = "Name - " + this.getName() + "\n" + "Address - " + this.getAddress() + "\n" + "Public Key - " + this.getPublicKey() + "\n" + "In Database? - " + this.persistent;
-        System.out.println(output);
+        Output.print(output, Status.DASH);
     }
 
     //TEST
@@ -153,7 +157,7 @@ public class recipientdao extends Database {
         //localhost.createUser();
         recipientdao localhost = new recipientdao(new RecordValue(ColumnName.IP_ADDRESS, "127.0.0.1"));
         localhost.print();
-        System.out.println(localhost.exists());
+        Output.print(localhost.exists());
         //localhost.setPublicKey("Test2");
         //System.err.println("-----------");
         //localhost.print();

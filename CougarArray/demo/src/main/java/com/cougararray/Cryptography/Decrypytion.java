@@ -29,7 +29,7 @@ public class Decrypytion {
 
     public CryptographyResult Decrypt(String Filepath, String output, SecretKey localAESKey) throws Exception
     {
-        byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
+        byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
         byte[] decryptedData = decryptContent(fileData, localAESKey);
 
         Files.write(Paths.get("decrypted_"+output), decryptedData);
@@ -37,7 +37,7 @@ public class Decrypytion {
     }
     
     public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
-        byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
+        byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
         byte[] decryptedData = decryptContent(fileData, decryptAESKey(this.privateKey));
 
         Files.write(Paths.get("decrypted_"+output), decryptedData);

@@ -2,7 +2,7 @@ package com.cougararray.TCPWebsocket.Packets;
 
 import java.util.Base64;
 
-import javax.swing.text.AbstractDocument.Content;
+import com.cougararray.OutputT.Output;
 
 import org.json.JSONObject;
 
@@ -63,11 +63,11 @@ public class ContentPacket {
         // Simulate original packet
         ContentPacket original = new ContentPacket("example.txt", new byte[]{10, 20, 30}, null);
         String json = original.toJson();
-        System.out.println("JSON: " + json);
+        Output.print("JSON: " + json);
 
         // Deserialize
         ContentPacket recovered = new ContentPacket(json);
-        System.out.println("Recovered filename: " + recovered.getFileName());
-        System.out.println("Recovered content: " + java.util.Arrays.toString(recovered.getContentBase64()));
+        Output.print("Recovered filename: " + recovered.getFileName());
+        Output.print("Recovered content: " + java.util.Arrays.toString(recovered.getContentBase64()));
     }
 }

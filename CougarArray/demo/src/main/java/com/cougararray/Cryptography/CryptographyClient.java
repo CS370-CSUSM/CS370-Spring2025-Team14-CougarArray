@@ -1,5 +1,8 @@
 package com.cougararray.Cryptography;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.NoSuchFileException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -15,27 +18,46 @@ import javax.crypto.spec.SecretKeySpec;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 
-//This is a subsytem that has both Encryption & Decryption in one place
 public class CryptographyClient {
 
     private static Encryption encryption;
     private static Decrypytion decrypytion;
     private static final String algorithm = "RSA";
 
-    //LOCAL ENCRYPTION & DECRYPTION
-    private static final SecretKey localAESKey = getAESKeyFromString("f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=");
+    // LOCAL ENCRYPTION & DECRYPTION
+    private static final SecretKey localAESKey;
 
-
+    static {
+        SecretKey key = null;
+        try {
+            key = getAESKeyFromString("f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=");
+        } catch (IllegalArgumentException e) {
+            Output.print("Failed to initialize AES key: " + e.getMessage(), Status.BAD);
+            throw new ExceptionInInitializerError("Invalid AES key initialization");
+        }
+        localAESKey = key;
+    }
 
     public CryptographyClient(Keys keys) {
-        encryption = new Encryption(algorithm, keys.getPublic(), localAESKey);
-        decrypytion = new Decrypytion(algorithm, keys.getPrivate(), null);
+        if (keys == null) {
+            throw new IllegalArgumentException("Keys cannot be null");
+        }
+        if (keys.getPublic() == null || keys.getPrivate() == null) {
+            throw new IllegalArgumentException("Invalid key pair provided");
+        }
+
+        try {
+            encryption = new Encryption(algorithm, keys.getPublic(), localAESKey);
+            decrypytion = new Decrypytion(algorithm, keys.getPrivate(), null);
+        } catch (Exception e) {
+            throw new CryptographicInitializationException("Failed to initialize cryptographic components", e);
+        }
     }
 
     public static Keys generateKeys() {
         try {
             KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(algorithm);
-            keyPairGen.initialize(2048); // Use 2048-bit RSA key
+            keyPairGen.initialize(2048);
             KeyPair keyPair = keyPairGen.generateKeyPair();
 
             PublicKey pubKey = keyPair.getPublic();
@@ -46,151 +68,166 @@ public class CryptographyClient {
             return new Keys(privateKey, publicKey);
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
+            Output.print("Failed to generate keys: " + e.getMessage(), Status.BAD);
+            throw new CryptographicOperationException("Key generation failed", e);
         }
     }
 
+    // Main method remains unchanged as per user request
     public static void main(String[] args) throws Exception {
-
         Keys keys = generateKeys();
-
         CryptographyClient testEngine = new CryptographyClient(keys);
-        testEngine.encrypt("test.txt");   
+        testEngine.encrypt("test.txt");
         testEngine.decrypt("test.txt", "testoutput.txt");
     }
 
-    //Public Functions
+    // Public Functions with improved error handling
     public boolean encrypt(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            Output.print("Invalid file path provided for encryption", Status.BAD);
+            return false;
+        }
+
         try {
+            validateFileExists(filePath);
             CryptographyResult output = encryptCallMethod(filePath);
-            if (output == null) 
-            {
-                Output.print("Encryption of file " + filePath + " failed ", Status.BAD);
+            
+            if (output == null || !output.successful()) {
+                Output.print("Encryption of file " + filePath + " failed", Status.BAD);
                 return false;
             }
-            else
-            {   
-                Output.print("Encryption of file " + filePath + " successful ", Status.GOOD);
-                Output.print("Created file " + filePath + ".enc", Status.GOOD);
-                return output.successful();
-            }
+            
+            Output.print("Encryption of file " + filePath + " successful", Status.GOOD);
+            Output.print("Created file " + filePath + ".enc", Status.GOOD);
+            return true;
+
+        } catch (Exception e) {
+            Output.print("Encryption failed: " + e.getMessage(), Status.BAD);
+            return false;
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     public boolean decrypt(String filePath) {
-        try {
-            CryptographyResult output = decryptCallMethod(filePath, filePath);
-            if (output == null)
-            {
-                Output.print("Decryption of file " + filePath + " failed ", Status.BAD);
-                return false;
-            }
-            else {
-                Output.print("Decryption of file " + filePath + " successful ", Status.GOOD);
-                return output.successful();
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return false;
+        return decrypt(filePath, filePath);
     }
 
     public boolean decrypt(String filePath, String fileOutput) {
-        try{
+        if (filePath == null || filePath.trim().isEmpty()) {
+            Output.print("Invalid input file path provided for decryption", Status.BAD);
+            return false;
+        }
+        if (fileOutput == null || fileOutput.trim().isEmpty()) {
+            Output.print("Invalid output file path provided for decryption", Status.BAD);
+            return false;
+        }
+
+        try {
+            validateFileExists(filePath);
             CryptographyResult output = decryptCallMethod(filePath, fileOutput);
-            if (output == null) return false;
-            else return output.successful();
+            
+            if (output == null || !output.successful()) {
+                Output.print("Decryption of file " + filePath + "failed", Status.BAD);
+                return false;
+            }
+            
+            Output.print("Decryption of file " + filePath + "successful", Status.GOOD);
+            return true;
+
+        } catch (Exception e) {
+            Output.print("Decryption failed: " + e.getMessage(), Status.BAD);
+            return false;
         }
-        catch (Exception e)
-        {
-            Output.print("Decryption of file " + filePath + " failed ", Status.BAD);
-        }
-        
-        return false;
     }
 
-    //Private Functions
-    private CryptographyResult encryptCallMethod(String filePath)
-    {
+    // Private Functions with improved error handling
+    private CryptographyResult encryptCallMethod(String filePath) {
         try {
             return encryption.Encrypt(filePath);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
+            throw new CryptographicOperationException("Encryption operation failed", e);
         }
     }
 
-    private CryptographyResult decryptCallMethod(String filePath, String fileOutput)
-    {
+    private CryptographyResult decryptCallMethod(String filePath, String fileOutput) {
         try {
             return decrypytion.Decrypt(filePath, fileOutput, localAESKey);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
+            throw new CryptographicOperationException("Decryption operation failed", e);
         }
     }
 
-    //Static usage; we are not using variables created inside here
+    // Static methods with improved error handling
     public static CryptographyResult encrypt(String filepath, String publicKey) {
-        CryptographyResult output = new CryptographyResult(null, false);
-        Encryption encryptionLocal = new Encryption(algorithm, publicKey, generateTransactionkey()); //temp variable
-        try {
-            output = encryptionLocal.Encrypt(filepath, publicKey);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Output.print("Encryption of file " + filepath + " failed ", Status.BAD);
+        if (filepath == null || publicKey == null) {
+            Output.print("Invalid parameters for encryption", Status.BAD);
+            return new CryptographyResult(null, false);
         }
 
-        return output;
+        try {
+            validateFileExists(filepath);
+            Encryption encryptionLocal = new Encryption(algorithm, publicKey, generateTransactionkey());
+            return encryptionLocal.Encrypt(filepath, publicKey);
+        } catch (Exception e) {
+            Output.print("Static encryption failed: " + e.getMessage(), Status.BAD);
+            return new CryptographyResult(null, false);
+        }
     }
 
-    //This is mostly going to be used externally
-    public static boolean decryptBytes(byte[] content, String output, String privateKey, byte[] aesKey)
-    {
-        Decrypytion decryptionLocal = new Decrypytion(algorithm, privateKey, aesKey);
-        try {
-            return decryptionLocal.DecryptBytes(content, output).successful;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Output.print("Failed to decrypt bytes", Status.BAD);
+    public static boolean decryptBytes(byte[] content, String output, String privateKey, byte[] aesKey) {
+        if (content == null || privateKey == null || aesKey == null) {
+            Output.print("Invalid parameters for byte decryption", Status.BAD);
+            return false;
         }
 
-        return false;
+        try {
+            Decrypytion decryptionLocal = new Decrypytion(algorithm, privateKey, aesKey);
+            return decryptionLocal.DecryptBytes(content, output).successful();
+        } catch (Exception e) {
+            Output.print("Byte decryption failed: " + e.getMessage(), Status.BAD);
+            return false;
+        }
     }
 
+    // Utility methods
     private static SecretKey generateTransactionkey() {
-        KeyGenerator aesKeyGen;
         try {
-            aesKeyGen = KeyGenerator.getInstance("AES");
-            aesKeyGen.init(256); // AES-256
+            KeyGenerator aesKeyGen = KeyGenerator.getInstance("AES");
+            aesKeyGen.init(256);
             return aesKeyGen.generateKey();
         } catch (NoSuchAlgorithmException e) {
-            return null;
+            throw new CryptographicOperationException("AES algorithm not available", e);
         }
     }
 
     private static SecretKey getAESKeyFromString(String base64Key) {
-        byte[] decodedKey = Base64.getDecoder().decode(base64Key);
-        // "AES" tells Java this is an AES key
-        return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        try {
+            byte[] decodedKey = Base64.getDecoder().decode(base64Key);
+            return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        } catch (IllegalArgumentException e) {
+            throw new CryptographicOperationException("Invalid Base64 AES key", e);
+        }
     }
-    
+
+    private static void validateFileExists(String filePath) throws NoSuchFileException {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            throw new NoSuchFileException("File not found: " + filePath);
+        }
+        if (!Files.isReadable(path)) {
+            throw new SecurityException("No read access to file: " + filePath);
+        }
+    }
+
+    // Custom exceptions
+    private static class CryptographicOperationException extends RuntimeException {
+        public CryptographicOperationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    private static class CryptographicInitializationException extends RuntimeException {
+        public CryptographicInitializationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 }
-
-//TODO
-//Make it so where it asks to input "public key or private key", just replace it with Key class
-//I been having headache because putting in the wrong key really does screw everything up
-//i hate this.
-
-//TODO
-//make a unit test

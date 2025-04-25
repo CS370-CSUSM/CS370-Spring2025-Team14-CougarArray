@@ -1,7 +1,5 @@
 package com.cougararray.TCPWebsocket.Packets;
 
-import java.util.Base64;
-
 import org.json.JSONObject;
 
 public class PingPacket {

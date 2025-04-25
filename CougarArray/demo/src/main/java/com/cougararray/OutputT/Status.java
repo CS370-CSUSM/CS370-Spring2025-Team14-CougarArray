@@ -6,7 +6,9 @@ public enum Status {
      */
     OK(Colors.DARK_GRAY), 
     BAD(Colors.RED), 
-    GOOD(Colors.GREEN);
+    GOOD(Colors.GREEN),
+    DASH(Colors.DARK_GRAY),
+    NONE(Colors.NONE);
 
     private final String colorCode;
 
@@ -19,11 +21,14 @@ public enum Status {
     }
 
     private String getStatusName() {
-        return this.name();
-    }
+    return this == DASH ? "-" : this.name();
+}
 
-    public String OutputCode() {
-        String output = "[" + this.getColorCode() + this.getStatusName() + Colors.RESET + "]";
-        return output;
+public String OutputCode() {
+    if (this == NONE) {
+        return "";
+    } else {
+        return "[" + this.getColorCode() + this.getStatusName() + Colors.RESET + "]";
     }
+}
 }

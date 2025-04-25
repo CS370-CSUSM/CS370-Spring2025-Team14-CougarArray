@@ -1,13 +1,9 @@
 package com.cougararray.CentralManagement;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.HashMap;
@@ -90,36 +86,24 @@ public class CentralMGMTEngine extends WebsocketListener {
             return Output.errorPrint(getUsage(decryptCmd));
         });
 
-        // Adduser command
+            // Adduser command
         final String adduserCmd = "adduser";
-        String adduserHelp = "Usage: adduser <address>\nAdds a new user by specifying their IP address. You will be prompted to input their public key and device name.";
+        String adduserHelp = "Usage: adduser <address> <name> <publicKey>\nAdds a new user with their IP, public key, and device name.";
         commandUsage.put(adduserCmd, adduserHelp);
-        commandMap.put("adduser", params -> {
-            try {
-                if (params.length < 2) {
-                    return Output.errorPrint(getUsage("adduser"));
-                }
-
-                PrintStream consoleOut = new PrintStream(new FileOutputStream(FileDescriptor.out));
-                consoleOut.print("Paste their public key => ");
-                BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-                String publicKey = r.readLine();
-        
-                consoleOut.print("What is the device's name => ");
-                String name = r.readLine();
-        
-                if (publicKey == null || publicKey.isEmpty() || name == null || name.isEmpty()) {
-                    return Output.errorPrint("Public key and name cannot be empty.");
-                }
-        
-                return addUser(params[1], publicKey, name);
-            } catch (IOException ioe) {
-                ioe.printStackTrace(); // Add this line
-                return Output.errorPrint("I/O error: " + ioe.getMessage());
-            } catch (Exception e) {
-                e.printStackTrace(); // This line will help trace general crashes
-                return Output.errorPrint("Unexpected error: " + e.getMessage());
+        commandMap.put(adduserCmd, params -> {
+            if (params.length < 4) {
+                return Output.errorPrint(getUsage(adduserCmd));
             }
+
+            String address = params[1];
+            String name = params[2];
+            String publicKey = params[3];
+
+            if (publicKey.isEmpty() || name.isEmpty()) {
+                return Output.errorPrint("Public key and name cannot be empty.");
+            }
+
+            return addUser(address, publicKey, name);
         });
 
         // Deleteuser command
@@ -179,7 +163,7 @@ public class CentralMGMTEngine extends WebsocketListener {
             if (files != null) {
                 Arrays.sort(files); // Sort files alphabetically
                 for (File file : files) {
-                    System.out.println(file.getName());
+                    Output.print(file.getName(), Status.DASH);
                 }
             } else {
                 Output.errorPrint("Could not list files in directory.");
@@ -207,14 +191,14 @@ public class CentralMGMTEngine extends WebsocketListener {
                 String command = params[1].toLowerCase();
                 String helpText = commandUsage.get(command);
                 if (helpText != null) {
-                    Output.print(helpText);
+                    Output.print(helpText, Status.DASH);
                 } else {
                     Output.errorPrint("No help available for command: " + command);
                 }
             } else {
-                Output.print("Available commands:");
-                commandUsage.keySet().forEach(cmd -> Output.print("  " + cmd));
-                Output.print("Use 'help <command>' for details on a specific command.");
+                Output.print("Available commands:", Status.DASH);
+                commandUsage.keySet().forEach(cmd -> Output.print("  " + cmd, Status.DASH));
+                Output.print("Use 'help <command>' for details on a specific command.", Status.DASH);
             }
             return true;
         });
@@ -312,7 +296,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         Output.print(record.returnStatement());
         recipientdao endUser = new recipientdao(record);
         if (!endUser.exists()) return false;
-        Output.print("User exists!");
+        Output.print("User exists!", Status.GOOD);
         Output.print("publicKey" + endUser.getPublicKey());
         Output.print("filepath" + file);
         CryptographyResult output = CryptographyClient.encrypt(file, endUser.getPublicKey());
