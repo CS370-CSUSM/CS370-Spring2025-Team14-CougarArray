@@ -1,5 +1,6 @@
 package com.cougararray.Cryptography;
 
+import java.nio.file.NoSuchFileException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -10,6 +11,9 @@ import java.util.Base64;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
 
 //This is a subsytem that has both Encryption & Decryption in one place
 public class CryptographyClient {
@@ -58,21 +62,59 @@ public class CryptographyClient {
 
     //Public Functions
     public boolean encrypt(String filePath) {
-        CryptographyResult output = encryptCallMethod(filePath);
-        if (output == null) return false;
-        else return output.successful();
+        try {
+            CryptographyResult output = encryptCallMethod(filePath);
+            if (output == null) 
+            {
+                Output.print("Encryption of file " + filePath + " failed ", Status.BAD);
+                return false;
+            }
+            else
+            {   
+                Output.print("Encryption of file " + filePath + " successful ", Status.GOOD);
+                Output.print("Created file " + filePath + ".enc", Status.GOOD);
+                return output.successful();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean decrypt(String filePath) {
-        CryptographyResult output = decryptCallMethod(filePath, filePath);
-        if (output == null) return false;
-        else return output.successful();
+        try {
+            CryptographyResult output = decryptCallMethod(filePath, filePath);
+            if (output == null)
+            {
+                Output.print("Decryption of file " + filePath + " failed ", Status.BAD);
+                return false;
+            }
+            else {
+                Output.print("Decryption of file " + filePath + " successful ", Status.GOOD);
+                return output.successful();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean decrypt(String filePath, String fileOutput) {
-        CryptographyResult output = decryptCallMethod(filePath, fileOutput);
-        if (output == null) return false;
-        else return output.successful();
+        try{
+            CryptographyResult output = decryptCallMethod(filePath, fileOutput);
+            if (output == null) return false;
+            else return output.successful();
+        }
+        catch (Exception e)
+        {
+            Output.print("Decryption of file " + filePath + " failed ", Status.BAD);
+        }
+        
+        return false;
     }
 
     //Private Functions
@@ -106,7 +148,7 @@ public class CryptographyClient {
             output = encryptionLocal.Encrypt(filepath, publicKey);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            Output.print("Encryption of file " + filepath + " failed ", Status.BAD);
         }
 
         return output;
@@ -120,7 +162,7 @@ public class CryptographyClient {
             return decryptionLocal.DecryptBytes(content, output).successful;
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            Output.print("Failed to decrypt bytes", Status.BAD);
         }
 
         return false;

@@ -32,7 +32,7 @@ public class Decrypytion {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
         byte[] decryptedData = decryptContent(fileData, localAESKey);
 
-        Files.write(Paths.get("decrypted"+output), decryptedData);
+        Files.write(Paths.get("decrypted_"+output), decryptedData);
         return new CryptographyResult(decryptedData, true);
     }
     
@@ -40,7 +40,7 @@ public class Decrypytion {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath + ".enc"));
         byte[] decryptedData = decryptContent(fileData, decryptAESKey(this.privateKey));
 
-        Files.write(Paths.get("decrypted"+output), decryptedData);
+        Files.write(Paths.get("decrypted_"+output), decryptedData);
         return new CryptographyResult(decryptedData, true);
     }
 
