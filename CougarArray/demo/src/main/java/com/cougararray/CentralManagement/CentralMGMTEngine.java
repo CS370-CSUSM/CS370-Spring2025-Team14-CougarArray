@@ -99,8 +99,18 @@ public class CentralMGMTEngine extends WebsocketListener {
             String name = params[2];
             String publicKey = params[3];
 
-            if (publicKey.isEmpty() || name.isEmpty()) {
+            if (publicKey.isEmpty() && name.isEmpty()) {
                 return Output.errorPrint("Public key and name cannot be empty.");
+            }
+
+            if (name.isEmpty())
+            {
+                return Output.errorPrint("Name cannot be empty.");
+            }
+
+            if (publicKey.isEmpty())
+            {
+                return Output.errorPrint("Public key cannot be empty.");
             }
 
             return addUser(address, publicKey, name);
@@ -129,7 +139,7 @@ public class CentralMGMTEngine extends WebsocketListener {
             }
             return Output.errorPrint(getUsage(deleteuserCmd));
         });
-        
+
         // Users command
         final String usersCmd = "users";
         String usersHelp = "Usage: users\nLists all users in the database.";
