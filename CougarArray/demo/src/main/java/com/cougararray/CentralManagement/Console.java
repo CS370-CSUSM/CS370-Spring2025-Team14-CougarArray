@@ -20,15 +20,17 @@ public class Console extends CentralMGMTEngine {
         // single shared reader on stdin
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
+        // 500ms delay for initialization message
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        System.out.println("--------------------------------------");
+        System.out.println("-".repeat(79)); // 79 dashes matches other output lengths
         Output.print("CougarArray initialized!", Status.GOOD);
-        Output.print("To see available commands, type help", Status.GOOD);
+        Output.print("CougarArray allows you to encrypt, decrypt, send, and receive files over your local network!", Status.DASH);
+        Output.print("To get started, type 'help' to see available commands", Status.DASH);
 
         while (true) {
             System.out.print(">>> ");
