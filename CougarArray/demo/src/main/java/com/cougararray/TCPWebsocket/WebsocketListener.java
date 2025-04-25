@@ -16,12 +16,8 @@ import com.cougararray.OutputT.Status;
 //Socket is for CLIENT side tasks (for sending stuff)
 public class WebsocketListener extends Thread{
 
-    protected int port;
+    protected int port = 5666;
     protected WebSocketServer server;
-
-    public WebsocketListener(int port){
-        this.port = port;
-    }
 
     //extension of Thread
     public void run(){
@@ -76,23 +72,7 @@ public class WebsocketListener extends Thread{
         server.start();
     }
 
-
+}
     //To test Websocket; you can write Websocket.java itself and see if it can send a message to itself.
     //Ideally, if you are to execute Main.java, this code is NOT executed. If you executed Websocket.java then this code is executed.
     //This is helpful for testing purposes.
-
-    //@TODO!
-    //Better Logging; I feel like to a new user, they have 0 idea what any of this is...
-    //Better documentation
-    public static void main(String args[]) {
-
-        int port = 6999; // default test port
-
-        WebsocketListener websocketListener = new WebsocketListener(port);
-        websocketListener.start();
-
-        WebsocketSenderClient.sendPing("127.0.0.1:6999");
-        WebsocketSenderClient.sendMessage("127.0.0.1:6999", "Hi!");
-
-    }
-}
