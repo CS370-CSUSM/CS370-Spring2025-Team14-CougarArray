@@ -29,8 +29,8 @@ public class Console extends CentralMGMTEngine {
 
         System.out.println("-".repeat(79)); // 79 dashes matches other output lengths
         Output.print("CougarArray initialized!", Status.GOOD);
-        Output.print("CougarArray allows you to encrypt, decrypt, send, and receive files over your local network!", Status.DASH);
-        Output.print("To get started, type 'help' to see available commands", Status.DASH);
+        Output.print("New here? Type 'about'.", Status.DASH);
+        Output.print("Experienced user? Type 'help' to see available commands.", Status.DASH);
 
         while (true) {
             System.out.print(">>> ");
