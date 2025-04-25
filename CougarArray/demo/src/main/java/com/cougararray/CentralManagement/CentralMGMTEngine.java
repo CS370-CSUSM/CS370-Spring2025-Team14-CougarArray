@@ -243,7 +243,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         commandUsage.put(aboutCmd, aboutHelp);
         commandMap.put(aboutCmd, params -> {
             Output.print("CougarArray allows you to encrypt, decrypt, send, and receive files over your local network!", Status.DASH);
-            Output.print("You may also navigate to the README at https://github.com/CS370-CSUSM/CS370-Spring2025-Team14-CougarArray", Status.DASH);
+            // Output.print("You may also navigate to the README at https://github.com/CS370-CSUSM/CS370-Spring2025-Team14-CougarArray", Status.DASH);
             return true;
         });
     }
