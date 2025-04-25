@@ -162,7 +162,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                     }
                     else
                     {
-                        return Output.errorPrint("User " + name + " does not exist in local users table.");
+                        return Output.errorPrint("User " + name + " does not exist in local database.");
                     }
                     
                 } else if (params[2].toLowerCase().contains("address")) 
