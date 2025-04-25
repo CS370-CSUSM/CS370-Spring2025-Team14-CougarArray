@@ -134,7 +134,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                 if (user.exists()) {
                     return user.deleteuser();
                 } else {
-                    return Output.errorPrint("User not found. Ensure the address or name is correct.");
+                    return Output.errorPrint("User " + params[1] + " not found. Ensure the address or name is correct.");
                 }
             }
             return Output.errorPrint(getUsage(deleteuserCmd));
@@ -152,9 +152,21 @@ public class CentralMGMTEngine extends WebsocketListener {
         commandUsage.put(sendCmd, sendHelp);
         commandMap.put(sendCmd, params -> {
             if (params.length > 3) {
+                
                 if (params[2].toLowerCase().contains("name")) {
-                    return sendFile(params[1], new RecordValue(ColumnName.NAME, params[3]));
-                } else if (params[2].toLowerCase().contains("address")) {
+                    String name = params[1];
+                    recipientdao user = new recipientdao(new RecordValue(ColumnName.NAME, name));
+                    if(user.exists())
+                    {
+                        return sendFile(params[1], new RecordValue(ColumnName.NAME, params[3]));
+                    }
+                    else
+                    {
+                        return Output.errorPrint("User " + name + " does not exist in local users table.");
+                    }
+                    
+                } else if (params[2].toLowerCase().contains("address")) 
+                {
                     return sendFile(params[1], new RecordValue(ColumnName.IP_ADDRESS, params[3]));
                 }
                 return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
