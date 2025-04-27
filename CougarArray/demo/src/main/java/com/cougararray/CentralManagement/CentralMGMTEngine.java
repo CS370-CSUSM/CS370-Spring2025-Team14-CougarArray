@@ -154,7 +154,7 @@ public class CentralMGMTEngine extends WebsocketListener {
             if (params.length > 3) {
                 
                 if (params[2].toLowerCase().contains("name")) {
-                    String name = params[1];
+                    String name = params[3];
                     recipientdao user = new recipientdao(new RecordValue(ColumnName.NAME, name));
                     if(user.exists())
                     {
