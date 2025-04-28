@@ -259,8 +259,10 @@ public class CentralMGMTEngine extends WebsocketListener {
                 String command = params[1].toLowerCase();
                 String helpText = commandUsage.get(command);
                 if (helpText != null) {
+                    Output.print("[CentralMGMTEngine.executeArgs]: Showing help for command: " + command, Status.DEBUG);
                     Output.print(helpText, Status.DASH);
                 } else {
+                    Output.print("[CentralMGMTEngine.executeArgs]: No help entry found for command: " + command, Status.DEBUG);
                     Output.errorPrint("No help available for command: " + command);
                 }
             } else {
