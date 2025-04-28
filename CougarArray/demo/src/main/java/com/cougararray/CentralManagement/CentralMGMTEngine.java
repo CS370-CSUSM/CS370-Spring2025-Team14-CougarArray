@@ -443,7 +443,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     protected static String[] breakDownArgs(String s){
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
-            words[i] = words[i].replaceAll("[^\\w.:]", "");
+            words[i] = words[i].replaceAll("^\\s+|\\s+$", ""); //.replaceAll("[^\\w.:]", "");
             //System.err.println(words[i]);
         }
         return words;
