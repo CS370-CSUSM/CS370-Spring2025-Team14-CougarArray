@@ -88,7 +88,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         String configHelp = "Usage: config\n Lists the current program configuration";
         commandUsage.put(configCmd, configHelp);
         commandMap.put(configCmd, params -> {
-            
+    
             String port = Config.getPort();
             Output.print("Port: " + (port != null ? port : "Not set (default: 5666)"), Status.OK);
         
@@ -202,12 +202,21 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         // Ping command
         final String pingCmd = "ping";
-        String pingHelp = "Usage: ping <address>\nSends a ping to the specified address to check connectivity.";
+        String pingHelp = "Usage: ping <address> [port]\nSends a ping to the specified address to check connectivity.";
         commandUsage.put(pingCmd, pingHelp);
         commandMap.put(pingCmd, params -> {
             if (params.length > 1) {
-                WebsocketSenderClient.sendPing(params[1] + ":5666");
+                WebsocketSenderClient.sendPing(params[1] + Config.getPort());
                 return true;
+            }
+            if(params.length == 2)
+            {
+                WebsocketSenderClient.sendPing(params[1]);
+                return true;
+            }
+            if(params.length == 3)
+            {
+                WebsocketSenderClient.sendPing(params[1] + params[2]);
             }
             return Output.errorPrint(getUsage(pingCmd));
         });

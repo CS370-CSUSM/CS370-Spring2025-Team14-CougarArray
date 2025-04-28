@@ -109,7 +109,7 @@ public class config {
 
         // Case #1: If file exists, load it
         if (file.exists()) {
-            Output.print("Loading Config File...");
+            //Output.print("Loading Config File...");
             try (FileInputStream fis = new FileInputStream(file)) {
                 properties.load(fis);
                 this.publicKey = properties.getProperty("publicKey", null);
@@ -129,6 +129,8 @@ public class config {
         }
 
         generateConfig(properties, file);
+
+        loadConfig();
     }
 
     private void generateConfig(Properties properties, File file) {
