@@ -16,6 +16,11 @@ public class config {
 
     private String privateKey = null;
     private String publicKey = null;
+    private String port = null;
+    private String debugMode = null;
+    private String actAsSender = null;
+    private String actAsReceiver = null;
+
 
     public String getPublicKey() {
         return publicKey;
@@ -23,6 +28,22 @@ public class config {
 
     public String getPrivatekey() {
         return privateKey;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public String getDebug() {
+        return debugMode;
+    }
+
+    public String getActAsSender() {
+        return actAsSender;
+    }
+
+    public String getActAsReceiver() {
+        return actAsReceiver;
     }
 
     public boolean emptyOrInvalidKeys() {
@@ -81,6 +102,10 @@ public class config {
                 properties.load(fis);
                 this.publicKey = properties.getProperty("publicKey", null);
                 this.privateKey = properties.getProperty("privateKey", null);
+                this.actAsReceiver = properties.getProperty("actAsReceiver", null);
+                this.actAsSender = properties.getProperty("actAsSender",  null);
+                this.port = properties.getProperty("port", null);
+                this.debugMode = properties.getProperty("debugMode", null);
             } catch (IOException | NumberFormatException e) {
                 Output.print("Error reading properties file: " + e.getMessage(), Status.BAD);
             }
@@ -96,6 +121,10 @@ public class config {
         // Case #2: The Properties file is not made; Generate it
         properties.setProperty("privateKey", "");
         properties.setProperty("publicKey", "");
+        properties.setProperty("port", "5666");
+        properties.setProperty("actAsSender", "true");
+        properties.setProperty("actAsReceiver", "true");
+        properties.setProperty("debugMode", "true");
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             properties.store(fos, "Configuration Settings");

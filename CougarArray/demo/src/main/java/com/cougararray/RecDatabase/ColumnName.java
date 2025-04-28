@@ -1,25 +1,28 @@
+// ColumnName.java
 package com.cougararray.RecDatabase;
 
 public enum ColumnName {
-    /*
-     * Instead of the developer having to type "RED" or pulling the Colors Red, they can instead type the status
-     */
-    IP_ADDRESS("IP_ADDRESS"), 
-    NAME("NAME"), 
-    PUBLICKEY("PUBLICKEY");
+    IP_ADDRESS("IP_ADDRESS"),
+    PORT      ("PORT"),
+    NAME      ("NAME"),
+    PUBLICKEY ("PUBLICKEY");
 
     private final String type;
-    private String value;
+    private String       value;
 
-    ColumnName(String type) { 
+    ColumnName(String type) {
         this.type = type;
     }
 
     public String getkeyType() {
-        return this.type;
+        return type;
     }
 
     public String getValue() {
-        return this.value;
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

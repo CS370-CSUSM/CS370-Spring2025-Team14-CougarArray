@@ -1,14 +1,14 @@
 package com.cougararray.CentralManagement;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -24,12 +24,12 @@ import com.cougararray.RecDatabase.ColumnName;
 import com.cougararray.RecDatabase.Database;
 import com.cougararray.RecDatabase.RecordValue;
 import com.cougararray.RecDatabase.recipientdao;
+import com.cougararray.TCPWebsocket.WebsocketListener;
+import com.cougararray.TCPWebsocket.WebsocketSenderClient;
 import com.cougararray.TCPWebsocket.Packets.ClosePacket;
 import com.cougararray.TCPWebsocket.Packets.ContentPacket;
 import com.cougararray.TCPWebsocket.Packets.ExecutePacket;
 import com.cougararray.TCPWebsocket.Packets.ResponsePacket;
-import com.cougararray.TCPWebsocket.WebsocketListener;
-import com.cougararray.TCPWebsocket.WebsocketSenderClient;
 
 /**
  * CentralMGMTEngine holds backend logic for console
@@ -62,12 +62,49 @@ public class CentralMGMTEngine extends WebsocketListener {
                 Output.errorPrint("Godammit. How did you get here?");
             }
         }
+
+        String configPort = Config.getPort();
+        if (configPort != null && !configPort.isEmpty()) {
+            try {
+                this.port = Integer.parseInt(configPort);
+            } catch (NumberFormatException e) {
+                Output.print("Invalid port in config, using default 5666", Status.BAD);
+                this.port = 5666;
+            }
+        } else {
+            this.port = 5666; // Default if not set
+        }
+    
         
         initializeCommandMap();
     }
 
+
     private void initializeCommandMap() {
 
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: Initializing command map...", Status.OK);
+        }
+        final String configCmd = "config";
+        String configHelp = "Usage: config\n Lists the current program configuration";
+        commandUsage.put(configCmd, configHelp);
+        commandMap.put(configCmd, params -> {
+            
+            String port = Config.getPort();
+            Output.print("Port: " + (port != null ? port : "Not set (default: 5666)"), Status.OK);
+        
+            String debugMode = Config.getDebug();
+            Output.print("Debug Mode: " + (debugMode != null ? debugMode : "Not set"), Status.OK);
+            
+            String actAsSender = Config.getActAsSender();
+            Output.print("Act as Sender: " + (actAsSender != null ? actAsSender : "Not set"), Status.OK);
+            
+            String actAsReceiver = Config.getActAsReceiver();
+            Output.print("Act as Receiver: " + (actAsReceiver != null ? actAsReceiver : "Not set"), Status.OK);
+
+            return true;
+        });
+        
         // Encrypt command
         final String encryptCmd = "encrypt";
         String encryptHelp = "Usage: encrypt <filePath> (LOCAL USAGE)\nEncrypts a local file using the current user's public key.";
@@ -88,34 +125,25 @@ public class CentralMGMTEngine extends WebsocketListener {
 
             // Adduser command
         final String adduserCmd = "adduser";
-        String adduserHelp = "Usage: adduser <address> <name> <publicKey>\nAdds a new user with their IP, public key, and device name.";
+        String adduserHelp = "Usage: adduser <address> [port] <name> <publicKey>\n If port is omitted or blank, defaults to 5666.";
         commandUsage.put(adduserCmd, adduserHelp);
+    
         commandMap.put(adduserCmd, params -> {
-            if (params.length < 4) {
+            // Either 4 args (no port) or 5 args (with port)
+            if (params.length != 4 && params.length != 5) {
                 return Output.errorPrint(getUsage(adduserCmd));
             }
-
-            String address = params[1];
-            String name = params[2];
-            String publicKey = params[3];
-
-            if (publicKey.isEmpty() && name.isEmpty()) {
-                return Output.errorPrint("Public key and name cannot be empty.");
-            }
-
-            if (name.isEmpty())
-            {
-                return Output.errorPrint("Name cannot be empty.");
-            }
-
-            if (publicKey.isEmpty())
-            {
-                return Output.errorPrint("Public key cannot be empty.");
-            }
-
-            return addUser(address, publicKey, name);
+    
+            String address    = params[1];
+            String portString = (params.length == 5) ? params[2] : "";
+            String name       = (params.length == 5) ? params[3] : params[2];
+            String publicKey  = (params.length == 5) ? params[4] : params[3];
+    
+            if (name.isEmpty())      return Output.errorPrint("Name cannot be empty.");
+            if (publicKey.isEmpty()) return Output.errorPrint("Public key cannot be empty.");
+    
+            return addUser(address, portString, name, publicKey);
         });
-
         // Deleteuser command
         final String deleteuserCmd = "deleteuser";
         String deleteuserHelp = "Usage: deleteuser <address|name>\nDeletes a user by their IP address or name.";
@@ -148,28 +176,22 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         // Send command
         final String sendCmd = "send";
-        String sendHelp = "Usage: send <filePath> <\"name\"/\"address\"> <Name/Address of Device>\nExample: send private.txt name Lenny\nSends an encrypted file to the specified user by their name or IP address.";
+        String sendHelp = "Usage: send <filePath> <\"name\"/\"address\"> <Name/Address>\nSends an encrypted file to the specified user.";
         commandUsage.put(sendCmd, sendHelp);
         commandMap.put(sendCmd, params -> {
+            if (!"true".equalsIgnoreCase(Config.getActAsSender())) {
+                return Output.errorPrint("ActAsSender is disabled in config.");
+            }
             if (params.length > 3) {
-                
-                if (params[2].toLowerCase().contains("name")) {
-                    String name = params[3];
-                    recipientdao user = new recipientdao(new RecordValue(ColumnName.NAME, name));
-                    if(user.exists())
-                    {
-                        return sendFile(params[1], new RecordValue(ColumnName.NAME, params[3]));
-                    }
-                    else
-                    {
-                        return Output.errorPrint("User " + name + " does not exist in local database.");
-                    }
-                    
-                } else if (params[2].toLowerCase().contains("address")) 
-                {
-                    return sendFile(params[1], new RecordValue(ColumnName.IP_ADDRESS, params[3]));
+                RecordValue rv;
+                if (params[2].equalsIgnoreCase("name")) {
+                    rv = new RecordValue(ColumnName.NAME, params[3]);
+                } else if (params[2].equalsIgnoreCase("address")) {
+                    rv = new RecordValue(ColumnName.IP_ADDRESS, params[3]);
+                } else {
+                    return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
                 }
-                return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
+                return sendFile(params[1], rv);
             }
             return Output.errorPrint(getUsage(sendCmd));
         });
@@ -271,9 +293,13 @@ public class CentralMGMTEngine extends WebsocketListener {
      */
     public ModalOutput executeArgs(String[] parameters) throws IOException {
         
+        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
 
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: Executing command - " + Arrays.toString(parameters), Status.DASH);
+        }
         
         if (parameters.length == 0) {
             Output.printInline("Error: No command provided. Try 'help'", Status.BAD);
@@ -283,6 +309,7 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         String commandKey = parameters[0].toLowerCase();
         CommandHandler handler = commandMap.get(commandKey);
+        
 
         if (handler == null) {
             Output.printInline("Unknown command! Try 'help'", Status.BAD);
@@ -291,6 +318,10 @@ public class CentralMGMTEngine extends WebsocketListener {
         }
 
         System.setOut(new PrintStream(baos));
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: Found handler for command: " + commandKey, Status.DASH);
+        }
+
         ModalOutput output = new ModalOutput(handler.handle(parameters));
         
         
@@ -316,6 +347,9 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if encryption is successful, false otherwise
      */
     private boolean encryptFile(String file) {
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: encryptFile() called with file: " + file, Status.OK);
+        }
         return new CryptographyClient(Config.getKeys()).encrypt(file);
     }
 
@@ -325,6 +359,9 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if decryption is successful, false otherwise
      */
     private boolean decryptFile(String file) {
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: decryptFile() called with file: " + file, Status.OK);
+        }
         return new CryptographyClient(Config.getKeys()).decrypt(file);
     }
 
@@ -336,41 +373,51 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if file is sent, false otherwise
      */
     private boolean sendFile(String file, RecordValue record) {
-        Output.print("sending file...");
-        Output.print(record.returnStatement());
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: sendFile() to record: " + record.toString(), Status.DASH);
+        }
         recipientdao endUser = new recipientdao(record);
-        if (!endUser.exists()) return false;
-        Output.print("User exists!", Status.GOOD);
-        Output.print("publicKey" + endUser.getPublicKey());
-        Output.print("filepath" + file);
-        CryptographyResult output = CryptographyClient.encrypt(file, endUser.getPublicKey());
-        if(!output.successful()) return false;
-        ContentPacket packetToBeSent = new ContentPacket(file, output.encryptedData, output.encryptedKey);
-        WebsocketSenderClient.sendMessage(endUser.getAddress() + ":5666", packetToBeSent.toJson());
+        if (!endUser.exists()) {
+            return Output.errorPrint("User not found in database.");
+        }
+        Output.print("Sending file to " + endUser.getAddress() + ":" + endUser.getPort() + "...", Status.DASH);
 
-        Output.print("Sent: " + packetToBeSent.toJson());
+        CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
+        if (!cry.successful()) return false;
+
+        ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey);
+        String target = endUser.getAddress() + ":" + endUser.getPort();
+        WebsocketSenderClient.sendMessage(target, packet.toJson());
+        Output.print("Sent to " + target  + packet.toJson(), Status.GOOD);
         return true;
     }
 
-    /**
-     * Adds a new user to the database
-     *
-     * @param address   The IP address of the new user
-     * @param publicKey The user's public key
-     * @param name      The name of the device/user
-     * @return true if the user is successfully added
-     */
-    private boolean addUser(String address, String publicKey, String name){
-        recipientdao newUser = new recipientdao(address, publicKey, name);
+    private boolean addUser(String address, String portString, String name, String publicKey) {
+        int port = 5666; // default
+
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: addUser() called with address: " + address + ", port: " + portString + ", name: " + name, Status.DASH);
+        }
+        
+        if (portString != null && !portString.isEmpty()) {
+            try {
+                port = Integer.parseInt(portString);
+            } catch (NumberFormatException e) {
+                Output.print( "Invalid port '" + portString + "', using default 5666", Status.BAD);
+            }
+        }
+        recipientdao newUser = new recipientdao(address, port, publicKey, name);
         return newUser.createUser();
     }
-
     /**
      * Lists all registered users
      *
      * @return true if listing is successful
      */
     private boolean listUsers() {
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: listUsers() called", Status.DASH);
+        }
         return new Database().formatPrint();
     }
 
@@ -379,12 +426,23 @@ public class CentralMGMTEngine extends WebsocketListener {
      *
      */
     protected void listen(){
+        String actAsReceiverConfig = Config.getActAsReceiver();
+        if (actAsReceiverConfig == null || !actAsReceiverConfig.equalsIgnoreCase("true")) {
+            Output.print("WebSocket server (receiver) is disabled in config.", Status.OK);
+            return;
+        }
+    
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
+
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: WebSocket server is starting...", Status.DASH);
+        }
 
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
-                
+                if (Config.getDebug().equalsIgnoreCase("true")) {
+                Output.print("Debug: Received message - " + message, Status.DASH);
                 try {
                     JSONObject json = new JSONObject(message);
                     String type = json.getString("type");
@@ -412,13 +470,17 @@ public class CentralMGMTEngine extends WebsocketListener {
                             conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
                     }
                 } catch (Exception e) {
-                    Output.print("Invalidif  JSON: " + e.getMessage());
+                    Output.print("Invalid if  JSON: " + e.getMessage());
+                    if (Config.getDebug().equalsIgnoreCase("true")) {
+                        Output.print("Debug: JSON parsing failed, raw message: " + message, Status.DASH);
+                    }
                 }
 
                 //conn.send("Message received: " + message);
                 conn.send(ClosePacket.toJson());
                 conn.close();
             }
+        }
 
             @Override
             public void onOpen(WebSocket conn, ClientHandshake handshake) {
@@ -441,10 +503,16 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return String[] of valid arguments
      */
     protected static String[] breakDownArgs(String s){
+        if (Config.getDebug().equalsIgnoreCase("true")) {
+            Output.print("Debug: Raw command string: " + s, Status.DASH);
+        }
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             words[i] = words[i].replaceAll("^\\s+|\\s+$", ""); //.replaceAll("[^\\w.:]", "");
             //System.err.println(words[i]);
+            if (Config.getDebug().equalsIgnoreCase("true")) {
+                Output.print("Debug: Parsed word: " + words[i], Status.DASH);
+            }
         }
         return words;
     }
