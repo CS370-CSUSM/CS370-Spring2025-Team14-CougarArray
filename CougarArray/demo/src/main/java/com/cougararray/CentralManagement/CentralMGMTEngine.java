@@ -88,27 +88,27 @@ public class CentralMGMTEngine extends WebsocketListener {
 
 
         final String configCmd = "config";
-        String configHelp = "Usage: config\n Lists the current program configuration";
+        String configHelp = "Usage: config\nLists the current program configuration";
         commandUsage.put(configCmd, configHelp);
         commandMap.put(configCmd, params -> {
     
             String port = Config.getPort();
-            Output.print("Port: " + (port != null ? port : "Not set (default: 5666)"), Status.OK);
+            Output.print("Port: " + (port != null ? port : "Not set (default: 5666)"), Status.DASH);
         
             String debugMode = Config.getDebug();
-            Output.print("Debug Mode: " + (debugMode != null ? debugMode : "Not set"), Status.OK);
+            Output.print("Debug Mode: " + (debugMode != null ? debugMode : "Not set"), Status.DASH);
             
             String actAsSender = Config.getActAsSender();
-            Output.print("Act as Sender: " + (actAsSender != null ? actAsSender : "Not set"), Status.OK);
+            Output.print("Act as Sender: " + (actAsSender != null ? actAsSender : "Not set"), Status.DASH);
             
             String actAsReceiver = Config.getActAsReceiver();
-            Output.print("Act as Receiver: " + (actAsReceiver != null ? actAsReceiver : "Not set"), Status.OK);
+            Output.print("Act as Receiver: " + (actAsReceiver != null ? actAsReceiver : "Not set"), Status.DASH);
 
             String decryptedPrefix = Config.getDecryptedPrefix();
-            Output.print("Decrypted Prefix: " + (decryptedPrefix != null ? decryptedPrefix : "Not set"), Status.OK);
+            Output.print("Decrypted Prefix: " + (decryptedPrefix != null ? decryptedPrefix : "Not set"), Status.DASH);
 
             String encryptedSuffix = Config.getEncryptedSuffix();
-            Output.print("Encrypted Suffix: " + (encryptedSuffix != null ? encryptedSuffix : "Not set"), Status.OK);
+            Output.print("Encrypted Suffix: " + (encryptedSuffix != null ? encryptedSuffix : "Not set"), Status.DASH);
             return true;
         });
         
@@ -132,7 +132,7 @@ public class CentralMGMTEngine extends WebsocketListener {
 
             // Adduser command
         final String adduserCmd = "adduser";
-        String adduserHelp = "Usage: adduser <address> [port] <name> <publicKey>\n If port is omitted or blank, defaults to 5666.";
+        String adduserHelp = "Usage: adduser <address> [port] <name> <publicKey>\nIf port is omitted or blank, defaults to 5666.";
         commandUsage.put(adduserCmd, adduserHelp);
     
         commandMap.put(adduserCmd, params -> {
@@ -222,7 +222,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         
         // ls command
         final String lsCmd = "ls";
-        String lsHelp = "Usage: ls\n Lists contents of current directory.";
+        String lsHelp = "Usage: ls\nLists contents of current directory.";
         commandUsage.put(lsCmd, lsHelp);
         commandMap.put(lsCmd, params -> {
             File currentDir = new File("."); // Current directory
@@ -399,7 +399,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     private boolean addUser(String address, String portString, String name, String publicKey) {
         int port = 5666; // default
 
-            Output.print("[CentralMGMTEngine.addUser] called with address: " + address + ", port: " + portString + ", name: " + name, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.addUser] called with address: " + address + ", port: " + portString + ", name: " + name + ", key: " + publicKey, Status.DEBUG);
         
         
         if (portString != null && !portString.isEmpty()) {
