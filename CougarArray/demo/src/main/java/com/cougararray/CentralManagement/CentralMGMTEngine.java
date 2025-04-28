@@ -101,6 +101,11 @@ public class CentralMGMTEngine extends WebsocketListener {
             String actAsReceiver = Config.getActAsReceiver();
             Output.print("Act as Receiver: " + (actAsReceiver != null ? actAsReceiver : "Not set"), Status.OK);
 
+            String decryptedPrefix = Config.getDecryptedPrefix();
+            Output.print("Decrypted Prefix: " + (decryptedPrefix != null ? decryptedPrefix : "Not set"), Status.OK);
+
+            String encryptedSuffix = Config.getEncryptedSuffix();
+            Output.print("Encrypted Suffix: " + (encryptedSuffix != null ? encryptedSuffix : "Not set"), Status.OK);
             return true;
         });
         

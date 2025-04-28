@@ -13,8 +13,10 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.cougararray.Config.config;;
 public class Decrypytion {
 
+    private static final config Config = new config();
     private PrivateKey privateKey;
     private byte[] encryptedAESKey;
 
@@ -32,7 +34,7 @@ public class Decrypytion {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
         byte[] decryptedData = decryptContent(fileData, localAESKey);
 
-        Files.write(Paths.get("decrypted_"+output), decryptedData);
+        Files.write(Paths.get(Config.getDecryptedPrefix()+output), decryptedData);
         return new CryptographyResult(decryptedData, true);
     }
     
@@ -40,7 +42,7 @@ public class Decrypytion {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
         byte[] decryptedData = decryptContent(fileData, decryptAESKey(this.privateKey));
 
-        Files.write(Paths.get("decrypted_"+output), decryptedData);
+        Files.write(Paths.get(Config.getDecryptedPrefix()+output), decryptedData);
         return new CryptographyResult(decryptedData, true);
     }
 

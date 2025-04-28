@@ -15,9 +15,11 @@ import javax.crypto.SecretKey;
 
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
+import com.cougararray.Config.config;
 
 public class Encryption {
 
+    private static final config Config = new config();
     private SecretKey aesKey;
     
     public Encryption(String algorithm, String publicKey, SecretKey aesKey) {
@@ -38,7 +40,7 @@ public class Encryption {
         //not needed
         //byte[] encryptedKey = encryptAESKey(aesKey, externalPublicKey);
 
-        Files.write(Paths.get(Filepath + ".enc"), encryptedData);
+        Files.write(Paths.get(Filepath + Config.getEncryptedSuffix()), encryptedData);
         return new CryptographyResult(encryptedData, true, null);
 
     }

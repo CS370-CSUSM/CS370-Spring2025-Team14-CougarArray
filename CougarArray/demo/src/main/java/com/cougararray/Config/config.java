@@ -20,6 +20,8 @@ public class config {
     private String debugMode = null;
     private String actAsSender = null;
     private String actAsReceiver = null;
+    private String decryptedPrefix = null;
+    private String encryptedSuffix = null;
 
 
     public String getPublicKey() {
@@ -44,6 +46,16 @@ public class config {
 
     public String getActAsReceiver() {
         return actAsReceiver;
+    }
+
+    public String getDecryptedPrefix()
+    {
+        return decryptedPrefix;
+    }
+
+    public String getEncryptedSuffix()
+    {
+        return encryptedSuffix;
     }
 
     public boolean emptyOrInvalidKeys() {
@@ -102,10 +114,13 @@ public class config {
                 properties.load(fis);
                 this.publicKey = properties.getProperty("publicKey", null);
                 this.privateKey = properties.getProperty("privateKey", null);
-                this.actAsReceiver = properties.getProperty("actAsReceiver", null);
-                this.actAsSender = properties.getProperty("actAsSender",  null);
-                this.port = properties.getProperty("port", null);
-                this.debugMode = properties.getProperty("debugMode", null);
+                this.actAsReceiver = properties.getProperty("actAsReceiver", "true");
+                this.actAsSender = properties.getProperty("actAsSender",  "true");
+                this.port = properties.getProperty("port", "5666");
+                this.debugMode = properties.getProperty("debugMode", "false");
+                this.decryptedPrefix = properties.getProperty("decryptedPrefix", "decrypted_");
+                this.encryptedSuffix = properties.getProperty("encryptedSuffix", ".enc");
+
             } catch (IOException | NumberFormatException e) {
                 Output.print("Error reading properties file: " + e.getMessage(), Status.BAD);
             }
@@ -125,6 +140,8 @@ public class config {
         properties.setProperty("actAsSender", "true");
         properties.setProperty("actAsReceiver", "true");
         properties.setProperty("debugMode", "false");
+        properties.setProperty("decryptedPrefix", "decrypted_");
+        properties.setProperty("encryptedSuffix", ".enc");
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             properties.store(fos, "Configuration Settings");

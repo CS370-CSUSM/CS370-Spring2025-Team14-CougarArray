@@ -17,12 +17,14 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
+import com.cougararray.Config.config;
 
 public class CryptographyClient {
 
     private static Encryption encryption;
     private static Decrypytion decrypytion;
     private static final String algorithm = "RSA";
+    private static final config Config = new config();
 
     // LOCAL ENCRYPTION & DECRYPTION
     private static final SecretKey localAESKey;
@@ -98,7 +100,7 @@ public class CryptographyClient {
             }
             
             Output.print("Encryption of file " + filePath + " successful", Status.GOOD);
-            Output.print("Created file " + filePath + ".enc", Status.GOOD);
+            Output.print("Created file " + filePath, Status.GOOD);
             return true;
 
         } catch (Exception e) {
@@ -108,7 +110,7 @@ public class CryptographyClient {
     }
 
     public boolean decrypt(String filePath) {
-        String outputPath = filePath.replaceAll("\\.enc$", "");
+        String outputPath = filePath.replaceAll("\\" + Config.getEncryptedSuffix() + "$", "");
         return decrypt(filePath, outputPath);
     }
 
@@ -132,7 +134,7 @@ public class CryptographyClient {
             }
             
             Output.print("Decryption of file " + filePath + " successful", Status.GOOD);
-            String cleanedFilePath = filePath.replace(".enc", "");
+            String cleanedFilePath = filePath.replaceAll("\\" + Config.getEncryptedSuffix() + "$", "");
             Output.print("Created file decrypted_" + cleanedFilePath , Status.GOOD);
             return true;
 
