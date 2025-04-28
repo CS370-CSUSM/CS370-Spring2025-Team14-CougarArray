@@ -53,7 +53,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     public CentralMGMTEngine() {
         super();
         this.start();
-        Output.print("Debug: [CentralMGMTEngine.<init>]: Starting constructor", Status.DEBUG);
+        Output.print("[CentralMGMTEngine.<init>]: Starting constructor", Status.DEBUG);
 
         if (Config.emptyOrInvalidKeys()) {
             Output.print("Keys for Config are Invalid... Updating Keys", Status.OK);
@@ -74,7 +74,7 @@ public class CentralMGMTEngine extends WebsocketListener {
             }
         } else {
             this.port = 5666; // Default if not set
-            Output.print("Debug: [CentralMGMTEngine.<init>]: Using port " + this.port, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.<init>]: Using port " + this.port, Status.DEBUG);
         }
     
         
@@ -84,7 +84,7 @@ public class CentralMGMTEngine extends WebsocketListener {
 
     private void initializeCommandMap() {
 
-        Output.print("Debug: [CentralMGMTEngine.initializeCommandMap]: Initializing CLI command mappings", Status.DEBUG);
+        Output.print("[CentralMGMTEngine.initializeCommandMap]: Initializing CLI command mappings", Status.DEBUG);
 
 
         final String configCmd = "config";
@@ -309,7 +309,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
 
-        Output.print("Debug: [CentralMGMTEngine.executeArgs]: Received parameters: " + Arrays.toString(parameters), Status.DEBUG);
+        Output.print("[CentralMGMTEngine.executeArgs]: Received parameters: " + Arrays.toString(parameters), Status.DEBUG);
         
         if (parameters.length == 0) {
             Output.printInline("Error: No command provided. Try 'help'", Status.BAD);
@@ -329,7 +329,7 @@ public class CentralMGMTEngine extends WebsocketListener {
 
         System.setOut(new PrintStream(baos));
         
-            Output.print("Debug: [CentralMGMTEngine.executeArgs]: Found handler for command: " + commandKey, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.executeArgs]: Found handler for command: " + commandKey, Status.DEBUG);
         
         ModalOutput output = new ModalOutput(handler.handle(parameters));
         
@@ -356,7 +356,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if encryption is successful, false otherwise
      */
     private boolean encryptFile(String file) {
-            Output.print("Debug: [CentralMGMTEngine.encryptFile]: invoked with file: " + file, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.encryptFile]: invoked with file: " + file, Status.DEBUG);
         return new CryptographyClient(Config.getKeys()).encrypt(file);
     }
 
@@ -366,7 +366,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if decryption is successful, false otherwise
      */
     private boolean decryptFile(String file) {
-            Output.print("Debug: [CentralMGMTEngine.decryptFile] invoked with file: " + file, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.decryptFile] invoked with file: " + file, Status.DEBUG);
         return new CryptographyClient(Config.getKeys()).decrypt(file);
     }
 
@@ -378,7 +378,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if file is sent, false otherwise
      */
     private boolean sendFile(String file, RecordValue record) {
-            Output.print("Debug: [CentralMGMTEngine.sendFile] to record: " + record.toString(), Status.DEBUG);
+            Output.print("[CentralMGMTEngine.sendFile] to record: " + record.toString(), Status.DEBUG);
         
         recipientdao endUser = new recipientdao(record);
         if (!endUser.exists()) {
@@ -399,7 +399,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     private boolean addUser(String address, String portString, String name, String publicKey) {
         int port = 5666; // default
 
-            Output.print("Debug: [CentralMGMTEngine.addUser] called with address: " + address + ", port: " + portString + ", name: " + name, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.addUser] called with address: " + address + ", port: " + portString + ", name: " + name, Status.DEBUG);
         
         
         if (portString != null && !portString.isEmpty()) {
@@ -418,7 +418,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if listing is successful
      */
     private boolean listUsers() {
-            Output.print("Debug: [CentralMGMTEngine.listUsers] called", Status.DEBUG);
+            Output.print("[CentralMGMTEngine.listUsers] called", Status.DEBUG);
         
         return new Database().formatPrint();
     }
@@ -436,27 +436,27 @@ public class CentralMGMTEngine extends WebsocketListener {
     
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
-        Output.print("Debug: [CentralMGMTEngine.listen]: WebSocket attempting to start...", Status.DEBUG);
+        Output.print("[CentralMGMTEngine.listen]: WebSocket attempting to start...", Status.DEBUG);
         
 
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
-                Output.print("Debug: [CentralMGMTEngine.listen]: Received message - " + message, Status.DEBUG);
+                Output.print("[CentralMGMTEngine.listen]: Received message - " + message, Status.DEBUG);
                 try {
                     JSONObject json = new JSONObject(message);
                     String type = json.getString("type");
                     Output.print("Parsed JSON Type: " + type);
-                    Output.print("Debug: [CentralMGMTEngine.listen] Parsed JSON Type: " + type, Status.DEBUG);
+                    Output.print("[CentralMGMTEngine.listen] Parsed JSON Type: " + type, Status.DEBUG);
 
 
                     switch (type.replaceAll("\\s+", "")) {
                         case "PING":
-                            Output.print("Debug: [CentralMGMTEngine.listen] Received PING packet, sending PONG...", Status.DEBUG);
+                            Output.print("[CentralMGMTEngine.listen] Received PING packet, sending PONG...", Status.DEBUG);
                             conn.send("PONG!"); //@TODO! make a pong packet
                             break;
                         case "CONTENT":
-                            Output.print("Debug: [CentralMGMTEngine.listen] Received CONTENT packet, decrypting...", Status.DEBUG);
+                            Output.print("[CentralMGMTEngine.listen] Received CONTENT packet, decrypting...", Status.DEBUG);
                             ContentPacket receivePacket = new ContentPacket(message);
                             if (CryptographyClient.decryptBytes(
                                 Base64.getDecoder().decode(json.getString("content")),
@@ -470,15 +470,15 @@ public class CentralMGMTEngine extends WebsocketListener {
                             ModalOutput status = executeArgs(breakDownArgs(executePacket.getCommand()));
                             conn.send(ResponsePacket.toJson(status.outputStatusToInt(), status.getOutput()));                            
                         default:
-                            Output.print("Debug: [CentralMGMTEngine.listen] Unknown packet type received.", Status.BAD);
+                            Output.print("[CentralMGMTEngine.listen] Unknown packet type received.", Status.BAD);
                             conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
                     }
                 } catch (Exception e) {
                     Output.print("Invalid JSON: " + e.getMessage());
-                    Output.print("Debug: [CentralMGMTEngine.listen] JSON parsing failed, raw message: " + message, Status.DEBUG);
+                    Output.print("[CentralMGMTEngine.listen] JSON parsing failed, raw message: " + message, Status.DEBUG);
                 }
 
-                Output.print("Debug: [CentralMGMTEngine.listen] Closing WebSocket connection after message handling.", Status.DEBUG);
+                Output.print("[CentralMGMTEngine.listen] Closing WebSocket connection after message handling.", Status.DEBUG);
                 //conn.send("Message received: " + message);
                 conn.send(ClosePacket.toJson());
                 conn.close();
@@ -505,12 +505,12 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return String[] of valid arguments
      */
     protected static String[] breakDownArgs(String s){
-        Output.print("Debug: [CentralMGMTEngine.breakDownArgs]: Raw command string: " + s, Status.DEBUG);
+        Output.print("[CentralMGMTEngine.breakDownArgs]: Raw command string: " + s, Status.DEBUG);
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             words[i] = words[i].replaceAll("^\\s+|\\s+$", ""); //.replaceAll("[^\\w.:]", "");
             //System.err.println(words[i]);
-            Output.print("Debug: [CentralMGMTEngine.breakDownArgs]: Parsed word: " + words[i], Status.DEBUG);
+            Output.print("[CentralMGMTEngine.breakDownArgs]: Parsed word: " + words[i], Status.DEBUG);
         }
         return words;
     }
