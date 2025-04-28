@@ -8,7 +8,8 @@ public enum Status {
     BAD(Colors.RED), 
     GOOD(Colors.GREEN),
     DASH(Colors.DARK_GRAY),
-    NONE(Colors.NONE);
+    NONE(Colors.NONE),
+    DEBUG(Colors.PURPLE);
 
     private final String colorCode;
 

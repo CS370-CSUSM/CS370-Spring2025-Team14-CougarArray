@@ -82,9 +82,8 @@ public class CentralMGMTEngine extends WebsocketListener {
 
     private void initializeCommandMap() {
 
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: Initializing command map...", Status.OK);
-        }
+        Output.print("Debug: Initializing command map...", Status.DEBUG);
+        
         final String configCmd = "config";
         String configHelp = "Usage: config\n Lists the current program configuration";
         commandUsage.put(configCmd, configHelp);
@@ -297,9 +296,8 @@ public class CentralMGMTEngine extends WebsocketListener {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
 
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: Executing command - " + Arrays.toString(parameters), Status.DASH);
-        }
+            Output.print("Debug: Executing command - " + Arrays.toString(parameters), Status.DEBUG);
+
         
         if (parameters.length == 0) {
             Output.printInline("Error: No command provided. Try 'help'", Status.BAD);
@@ -318,9 +316,9 @@ public class CentralMGMTEngine extends WebsocketListener {
         }
 
         System.setOut(new PrintStream(baos));
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: Found handler for command: " + commandKey, Status.DASH);
-        }
+        
+            Output.print("Debug: Found handler for command: " + commandKey, Status.DEBUG);
+        
 
         ModalOutput output = new ModalOutput(handler.handle(parameters));
         
@@ -347,9 +345,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if encryption is successful, false otherwise
      */
     private boolean encryptFile(String file) {
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: encryptFile() called with file: " + file, Status.OK);
-        }
+            Output.print("Debug: encryptFile() called with file: " + file, Status.DEBUG);
         return new CryptographyClient(Config.getKeys()).encrypt(file);
     }
 
@@ -359,9 +355,7 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if decryption is successful, false otherwise
      */
     private boolean decryptFile(String file) {
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: decryptFile() called with file: " + file, Status.OK);
-        }
+            Output.print("Debug: decryptFile() called with file: " + file, Status.DEBUG);
         return new CryptographyClient(Config.getKeys()).decrypt(file);
     }
 
@@ -373,9 +367,8 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if file is sent, false otherwise
      */
     private boolean sendFile(String file, RecordValue record) {
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: sendFile() to record: " + record.toString(), Status.DASH);
-        }
+            Output.print("Debug: sendFile() to record: " + record.toString(), Status.DEBUG);
+        
         recipientdao endUser = new recipientdao(record);
         if (!endUser.exists()) {
             return Output.errorPrint("User not found in database.");
@@ -395,9 +388,8 @@ public class CentralMGMTEngine extends WebsocketListener {
     private boolean addUser(String address, String portString, String name, String publicKey) {
         int port = 5666; // default
 
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: addUser() called with address: " + address + ", port: " + portString + ", name: " + name, Status.DASH);
-        }
+            Output.print("Debug: addUser() called with address: " + address + ", port: " + portString + ", name: " + name, Status.DEBUG);
+        
         
         if (portString != null && !portString.isEmpty()) {
             try {
@@ -415,9 +407,8 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if listing is successful
      */
     private boolean listUsers() {
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: listUsers() called", Status.DASH);
-        }
+            Output.print("Debug: listUsers() called", Status.DEBUG);
+        
         return new Database().formatPrint();
     }
 
@@ -434,15 +425,13 @@ public class CentralMGMTEngine extends WebsocketListener {
     
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: WebSocket server is starting...", Status.DASH);
-        }
+        Output.print("Debug: WebSocket server is starting...", Status.DEBUG);
+        
 
         server = new WebSocketServer(new InetSocketAddress(port)) {
             @Override
             public void onMessage(WebSocket conn, String message) {
-                if (Config.getDebug().equalsIgnoreCase("true")) {
-                Output.print("Debug: Received message - " + message, Status.DASH);
+                Output.print("Debug: Received message - " + message, Status.DEBUG);
                 try {
                     JSONObject json = new JSONObject(message);
                     String type = json.getString("type");
@@ -471,15 +460,13 @@ public class CentralMGMTEngine extends WebsocketListener {
                     }
                 } catch (Exception e) {
                     Output.print("Invalid if  JSON: " + e.getMessage());
-                    if (Config.getDebug().equalsIgnoreCase("true")) {
-                        Output.print("Debug: JSON parsing failed, raw message: " + message, Status.DASH);
-                    }
+                    Output.print("Debug: JSON parsing failed, raw message: " + message, Status.DEBUG);
+                    
                 }
 
                 //conn.send("Message received: " + message);
                 conn.send(ClosePacket.toJson());
                 conn.close();
-            }
         }
 
             @Override
@@ -503,16 +490,12 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return String[] of valid arguments
      */
     protected static String[] breakDownArgs(String s){
-        if (Config.getDebug().equalsIgnoreCase("true")) {
-            Output.print("Debug: Raw command string: " + s, Status.DASH);
-        }
+        Output.print("Debug: Raw command string: " + s, Status.DEBUG);
         String[] words = s.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             words[i] = words[i].replaceAll("^\\s+|\\s+$", ""); //.replaceAll("[^\\w.:]", "");
             //System.err.println(words[i]);
-            if (Config.getDebug().equalsIgnoreCase("true")) {
-                Output.print("Debug: Parsed word: " + words[i], Status.DASH);
-            }
+            Output.print("Debug: Parsed word: " + words[i], Status.DEBUG);
         }
         return words;
     }

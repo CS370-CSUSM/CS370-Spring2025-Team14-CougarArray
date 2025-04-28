@@ -1,8 +1,14 @@
 package com.cougararray.OutputT;
 
+import com.cougararray.Config.config;
+
 public class Output {
+    private static final config Config = new config();
     
     public static void print(String message, Status status) {
+        if (status == Status.DEBUG && !Config.getDebug().equalsIgnoreCase("true")) {
+            return;  // Do nothing if debugMode is false
+        }
         String[] lines = message.split("\n");
         for (String line : lines) {
             System.out.println(status.OutputCode() + " " + line);

@@ -8,4 +8,5 @@ public class Colors {
     public static final String BLUE = "\u001B[34m";
     public static final String DARK_GRAY = "\u001B[90m"; 
     public static final String NONE = "";
+    public static final String PURPLE = "\u001B[35m";
 }
