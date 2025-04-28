@@ -108,7 +108,8 @@ public class CryptographyClient {
     }
 
     public boolean decrypt(String filePath) {
-        return decrypt(filePath, filePath);
+        String outputPath = filePath.replaceAll("\\.enc$", "");
+        return decrypt(filePath, outputPath);
     }
 
     public boolean decrypt(String filePath, String fileOutput) {
@@ -130,7 +131,9 @@ public class CryptographyClient {
                 return false;
             }
             
-            Output.print("Decryption of file " + filePath + "successful", Status.GOOD);
+            Output.print("Decryption of file " + filePath + " successful", Status.GOOD);
+            String cleanedFilePath = filePath.replace(".enc", "");
+            Output.print("Created file decrypted_" + cleanedFilePath , Status.GOOD);
             return true;
 
         } catch (Exception e) {

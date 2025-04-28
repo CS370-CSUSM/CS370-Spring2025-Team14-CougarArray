@@ -124,7 +124,7 @@ public class config {
         properties.setProperty("port", "5666");
         properties.setProperty("actAsSender", "true");
         properties.setProperty("actAsReceiver", "true");
-        properties.setProperty("debugMode", "true");
+        properties.setProperty("debugMode", "false");
 
         try (FileOutputStream fos = new FileOutputStream(file)) {
             properties.store(fos, "Configuration Settings");
