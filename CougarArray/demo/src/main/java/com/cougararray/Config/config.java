@@ -59,7 +59,7 @@ public class config {
         return encryptedSuffix;
     }
 
-    public String aesKey()
+    public String getAESKey()
     {
         return aesKey;
     }
