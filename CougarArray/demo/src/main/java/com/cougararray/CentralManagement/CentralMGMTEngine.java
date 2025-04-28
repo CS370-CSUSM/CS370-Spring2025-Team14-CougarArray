@@ -468,7 +468,8 @@ public class CentralMGMTEngine extends WebsocketListener {
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
                             ModalOutput status = executeArgs(breakDownArgs(executePacket.getCommand()));
-                            conn.send(ResponsePacket.toJson(status.outputStatusToInt(), status.getOutput()));                            
+                            conn.send(ResponsePacket.toJson(status.outputStatusToInt(), status.getOutput()));
+                            break;
                         default:
                             Output.print("[CentralMGMTEngine.listen] Unknown packet type received.", Status.BAD);
                             conn.send(ResponsePacket.toJson(1, "Inappropriate Packet."));
