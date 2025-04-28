@@ -242,7 +242,8 @@ public class CentralMGMTEngine extends WebsocketListener {
         String mykeysHelp = "Usage: mykeys\nDisplays the current user's public and private keys.";
         commandUsage.put(mykeysCmd, mykeysHelp);
         commandMap.put(mykeysCmd, params -> {
-            Output.print("Public Key: " + Config.getPublicKey() + "\n\n" + "Private Key (DO NOT SHARE): " + Config.getPrivateKey() + "\n");
+            Output.print("AES Key: " + Config.getAESKey());
+            Output.print("Public Key: " + Config.getPublicKey() + "\n" + "Private Key (DO NOT SHARE): " + Config.getPrivateKey() + "\n");
             return true;
         });
 
