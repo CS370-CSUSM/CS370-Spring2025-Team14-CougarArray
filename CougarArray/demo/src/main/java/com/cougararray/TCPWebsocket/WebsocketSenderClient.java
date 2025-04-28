@@ -83,7 +83,7 @@ public class WebsocketSenderClient {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    Output.print("Connection closed.", Status.BAD);
+                    Output.print("Connection closed.", Status.DASH);
                 }
 
                 @Override
