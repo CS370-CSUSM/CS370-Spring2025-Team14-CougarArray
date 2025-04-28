@@ -32,7 +32,7 @@ public class CryptographyClient {
     static {
         SecretKey key = null;
         try {
-            key = getAESKeyFromString("f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=");
+            key = getAESKeyFromString(Config.getAESKey());
         } catch (IllegalArgumentException e) {
             Output.print("Failed to initialize AES key: " + e.getMessage(), Status.BAD);
             throw new ExceptionInInitializerError("Invalid AES key initialization");

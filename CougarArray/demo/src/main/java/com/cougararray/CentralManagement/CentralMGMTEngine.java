@@ -55,7 +55,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         this.start(); 
 
         if (Config.emptyOrInvalidKeys()) {
-            Output.print("Keys for Config are Invalid...Updating Keys");
+            Output.print("Keys for Config are Invalid... Updating Keys", Status.OK);
             if (Config.setKeys(CryptographyClient.generateKeys())) {
                 Output.print("Successfully generated keys", Status.GOOD);
             } else {
@@ -205,10 +205,6 @@ public class CentralMGMTEngine extends WebsocketListener {
         String pingHelp = "Usage: ping <address> [port]\nSends a ping to the specified address to check connectivity.";
         commandUsage.put(pingCmd, pingHelp);
         commandMap.put(pingCmd, params -> {
-            if (params.length > 1) {
-                WebsocketSenderClient.sendPing(params[1] + Config.getPort());
-                return true;
-            }
             if(params.length == 2)
             {
                 WebsocketSenderClient.sendPing(params[1]);
@@ -246,8 +242,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         String mykeysHelp = "Usage: mykeys\nDisplays the current user's public and private keys.";
         commandUsage.put(mykeysCmd, mykeysHelp);
         commandMap.put(mykeysCmd, params -> {
-            Output.print("Public Key: " + Config.getPublicKey() + "\n\n" +
-                       "Private Key (DO NOT SHARE): " + Config.getPrivatekey() + "\n");
+            Output.print("Public Key: " + Config.getPublicKey() + "\n\n" + "Private Key (DO NOT SHARE): " + Config.getPrivateKey() + "\n");
             return true;
         });
 
@@ -277,7 +272,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         String aboutHelp = "Usage: about\nDisplays information about the program.";
         commandUsage.put(aboutCmd, aboutHelp);
         commandMap.put(aboutCmd, params -> {
-            Output.print("CougarArray allows you to encrypt, decrypt, send, and receive files over your local network!", Status.DASH);
+            Output.print("CougarArray allows you to encrypt, decrypt, send, and receive files over your local network & internet!", Status.DASH);
             // Output.print("You may also navigate to the README at https://github.com/CS370-CSUSM/CS370-Spring2025-Team14-CougarArray", Status.DASH);
             return true;
         });
@@ -333,7 +328,6 @@ public class CentralMGMTEngine extends WebsocketListener {
         
             Output.print("Debug: Found handler for command: " + commandKey, Status.DEBUG);
         
-
         ModalOutput output = new ModalOutput(handler.handle(parameters));
         
         
@@ -439,7 +433,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
-        Output.print("Debug: WebSocket server is starting...", Status.DEBUG);
+        //Output.print("Debug: WebSocket server is starting...", Status.DEBUG);
         
 
         server = new WebSocketServer(new InetSocketAddress(port)) {
@@ -460,7 +454,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                             if (CryptographyClient.decryptBytes(
                                 Base64.getDecoder().decode(json.getString("content")),
                                 receivePacket.getFileName(),
-                                Config.getPrivatekey(),
+                                Config.getPrivateKey(),
                                 Base64.getDecoder().decode(json.getString("key"))
                             )) conn.send(ResponsePacket.toJson(0));
                             break;
