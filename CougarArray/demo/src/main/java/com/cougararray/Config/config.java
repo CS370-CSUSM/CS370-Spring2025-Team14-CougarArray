@@ -35,6 +35,7 @@ public class config {
             this.privateKey = keys.getPrivate();
             return true;
         }
+        Output.print("Error setting keys", Status.BAD);
         return false;
     }
 
@@ -56,7 +57,7 @@ public class config {
                 props.store(out, null);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Output.print("Error updating properties key: " + e.getMessage(), Status.BAD);
             return false;
         }
 

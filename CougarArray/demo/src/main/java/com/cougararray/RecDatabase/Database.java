@@ -108,7 +108,7 @@ public class Database {
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            Output.printStackTrace(e); // Handle exceptions properly in production
+            Output.print("Error creating record: " + e.getMessage(), Status.BAD); // Handle exceptions properly in production
         }
     }
 
@@ -125,7 +125,7 @@ public class Database {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            Output.printStackTrace(e);
+            Output.print("Error creating record: " + e.getMessage(), Status.BAD);
         }
         return false;
     }
@@ -141,7 +141,7 @@ public class Database {
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException e) {
-            Output.printStackTrace(e);
+            Output.print("Error deleting record: " + e.getMessage(), Status.BAD);
         }
         return false;
     }

@@ -13,6 +13,9 @@ import java.security.PublicKey;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;
+
 public class Encryption {
 
     private SecretKey aesKey;
@@ -22,7 +25,7 @@ public class Encryption {
         try {
             Keys.getPublicKeyFromString(publicKey);
         } catch (Exception e) {
-            e.printStackTrace();
+            Output.print("Error reading publicKey in Encryption: " + e.getMessage(), Status.BAD);
         }
     }
 

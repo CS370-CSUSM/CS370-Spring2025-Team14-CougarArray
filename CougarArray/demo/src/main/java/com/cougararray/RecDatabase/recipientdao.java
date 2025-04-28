@@ -30,7 +30,11 @@ public class recipientdao extends Database {
 
     public void setName(String name) {
         if (updateUser("IP_ADDRESS", getAddress(), "NAME", getName())) this.Name = name;
-        else return; //TODO! what to do in "ELSE" cases?
+        else 
+        {
+            Output.print("Error setting name.", Status.BAD);
+            return;
+        } //TODO! what to do in "ELSE" cases?
     }
     
     public String getAddress() {
@@ -39,7 +43,11 @@ public class recipientdao extends Database {
 
     public void setAddress(String address) {
         if (updateUser("PUBLICKEY", getPublicKey(), "ADDRESS", getAddress())) this.Address = address;
-        else return; //TODO! what to do in "ELSE" cases?
+        else
+        {
+            Output.print("Error setting address.", Status.BAD);
+            return;
+        }  //TODO! what to do in "ELSE" cases?
     }
 
     public String getPublicKey() {
@@ -48,7 +56,11 @@ public class recipientdao extends Database {
 
     public void setPublicKey(String publicKey) {
         if (updateUser("IP_ADDRESS", getAddress(), "PUBLICKEY", getPublicKey())) this.publicKey = publicKey;
-        else return; //TODO! what to do in "ELSE" cases?
+        else 
+        {
+            Output.print("Error setting publicKey.", Status.BAD);
+            return;
+        } //TODO! what to do in "ELSE" cases?
     }
 
     //for it not to exist...all the values would be empty
@@ -116,7 +128,7 @@ public class recipientdao extends Database {
             }
             return true;
         } catch (SQLException e) {
-            Output.printStackTrace(e); // Handle exceptions properly in production
+            Output.print("Error updating user:" + e.getMessage(), Status.BAD); // Handle exceptions properly in production
         }
 
         return false;
@@ -128,6 +140,7 @@ public class recipientdao extends Database {
             Output.print("User " + this.getName() + " added.", Status.GOOD);
             return true;
         }
+        Output.print("Error adding user: " + this.getName(), Status.BAD);
         return false;
     }
 
@@ -142,6 +155,7 @@ public class recipientdao extends Database {
         } else {
             Output.print("User does not exist.", Status.BAD);
         }
+        Output.print("Error deleting user: " + this.getName(), Status.BAD);
         return false;
     }
 
