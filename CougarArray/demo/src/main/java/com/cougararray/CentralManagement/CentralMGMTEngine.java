@@ -180,7 +180,7 @@ public class CentralMGMTEngine extends WebsocketListener {
         commandUsage.put(pingCmd, pingHelp);
         commandMap.put(pingCmd, params -> {
             if (params.length > 1) {
-                WebsocketSenderClient.sendPing(params[1]);
+                WebsocketSenderClient.sendPing(params[1] + ":5666");
                 return true;
             }
             return Output.errorPrint(getUsage(pingCmd));
