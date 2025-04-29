@@ -24,7 +24,7 @@ public class config {
     private String encryptedSuffix = null;
     private String aesKey = null;
 
-
+    // in theory none of these nulls should ever be hit, but extra safety nets work well
     public String getPublicKey() {
         return publicKey;
     }
@@ -34,33 +34,75 @@ public class config {
     }
 
     public String getPort() {
+        if(port == null)
+        {
+            Output.errorPrint("Port cannot be null (getPort)");
+            Output.errorPrint("Utilizing default port 5666");
+            return "5666";
+        }
         return port;
     }
 
     public String getDebug() {
+        if(debugMode == null)
+        {
+            Output.errorPrint("debugMode cannot be null (getDebug)");
+            Output.errorPrint("Utilizing default debugMode: false");
+            return "false";
+        }
         return debugMode;
     }
 
     public String getActAsSender() {
+        if(actAsSender == null)
+        {
+            Output.errorPrint("actAsSender cannot be null (getActAsSender)");
+            Output.errorPrint("Utilizing default actAsSender: true");
+            return "true";
+        }
         return actAsSender;
     }
 
     public String getActAsReceiver() {
+        if(actAsReceiver == null)
+        {
+            Output.errorPrint("actAsReceiver cannot be null (getActAsReceiver)");
+            Output.errorPrint("Utilizing default actAsReceiver: true");
+            return "true";
+        }
         return actAsReceiver;
     }
 
     public String getDecryptedPrefix()
     {
+        if(decryptedPrefix == null)
+        {
+            Output.errorPrint("decryptedPrefix cannot be null (getDecryptedPrefix)");
+            Output.errorPrint("Utilizing default decryptedPrefix: decrypted_");
+            return "decrypted_";
+        }
         return decryptedPrefix;
     }
 
     public String getEncryptedSuffix()
     {
+        if(encryptedSuffix == null)
+        {
+            Output.errorPrint("encryptedSuffix cannot be null (getEncryptedSuffix)");
+            Output.errorPrint("Utilizing default encryptedSuffix: .enc");
+            return ".enc";
+        }
         return encryptedSuffix;
     }
 
     public String getAESKey()
     {
+        if(aesKey == null)
+        {
+            Output.errorPrint("aesKey cannot be null (getAESKey)");
+            Output.errorPrint("Utilizing default aesKey: f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=");
+            return ".enc";
+        }
         return aesKey;
     }
     public boolean emptyOrInvalidKeys() {
