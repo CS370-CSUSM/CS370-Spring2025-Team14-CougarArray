@@ -18,6 +18,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <slf4j.version>2.0.12</slf4j.version>
         <logback.version>1.5.3</logback.version>
+        <mainClass>com.cougararray.Main</mainClass>
     </properties>
 
     <dependencies>
@@ -28,11 +29,37 @@
             <version>${slf4j.version}</version>
         </dependency>
         
-        <!-- Logback implementation (includes SLF4J binding) -->
+        <!-- Logback implementation -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
     </dependencies>
+
+    <!-- New Build Configuration -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${mainClass}</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
