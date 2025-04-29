@@ -20,6 +20,7 @@ com/cougararray/Cryptography/Decrypytion.class
 com/cougararray/OutputT/Status.class
 com/cougararray/TCPWebsocket/Packets/ResponsePacket.class
 com/cougararray/RecDatabase/Database.class
+com/cougararray/Cryptography/FileHasher.class
 com/cougararray/Config/config.class
 com/cougararray/OutputT/Output.class
 com/cougararray/CentralManagement/Console.class

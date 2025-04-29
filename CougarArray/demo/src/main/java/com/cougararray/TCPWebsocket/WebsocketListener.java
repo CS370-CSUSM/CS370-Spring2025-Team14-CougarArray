@@ -6,6 +6,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import com.cougararray.Config.config;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 
@@ -14,8 +15,8 @@ import com.cougararray.OutputT.Status;
 //ServerSocket is for SERVER side tasks (for receiving stuff)
 //Socket is for CLIENT side tasks (for sending stuff)
 public class WebsocketListener extends Thread{
-
-    protected int port = 5666;
+    private static final config Config = new config();
+    protected int port = Integer.parseInt(Config.getPort());
     protected WebSocketServer server;
 
     //extension of Thread
