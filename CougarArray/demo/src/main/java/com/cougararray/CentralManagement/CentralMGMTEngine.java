@@ -202,6 +202,12 @@ public class CentralMGMTEngine extends WebsocketListener {
                 } else {
                     return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
                 }
+                try {
+                    Output.print("Original file hash (SHA-256): " + FileHasher.hashFile(params[1]), Status.GOOD);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 return sendFile(params[1], rv);
             }
             return Output.errorPrint(getUsage(sendCmd));
@@ -435,6 +441,7 @@ public class CentralMGMTEngine extends WebsocketListener {
     try {
         String encryptedHash = FileHasher.hashBytes(cry.encryptedData);
         Output.print("[CentralMGMTEngine.sendFile] Encrypted data hash: " + encryptedHash, Status.DEBUG);
+        
         Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
         ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey, encryptedHash);
         String target = endUser.getAddress() + ":" + endUser.getPort();
