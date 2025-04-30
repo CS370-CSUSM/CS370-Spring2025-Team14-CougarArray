@@ -200,8 +200,17 @@ public class CentralMGMTEngine extends WebsocketListener {
                 } else {
                     return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
                 }
+                String originalHash;
+                try {
+                    originalHash = FileHasher.hashFile(params[1]);
+                    Output.print("Original file hash (SHA-256): " + originalHash, Status.GOOD);
+                } catch (Exception e) {
+                    Output.errorPrint(e.getMessage());
+                }
+                
                 return sendFile(params[1], rv);
             }
+            
             return Output.errorPrint(getUsage(sendCmd));
         });
 
