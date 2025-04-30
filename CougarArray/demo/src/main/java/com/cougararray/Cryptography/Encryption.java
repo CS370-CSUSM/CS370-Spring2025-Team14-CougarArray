@@ -37,7 +37,7 @@ public class Encryption {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
         String originalHash = FileHasher.hashBytes(fileData);
         Output.print("[Encryption.Encrypt] Original file hash: " + originalHash, Status.DEBUG);
-    
+        
         byte[] encryptedData = encryptContent(fileData);
         String encryptedHash = FileHasher.hashBytes(encryptedData);
         Output.print("[Encryption.Encrypt] Encrypted data hash: " + encryptedHash, Status.DEBUG);
