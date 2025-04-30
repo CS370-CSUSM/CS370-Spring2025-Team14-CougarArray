@@ -101,7 +101,7 @@ public class config {
         {
             Output.errorPrint("aesKey cannot be null (getAESKey)");
             Output.errorPrint("Utilizing default aesKey: f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=");
-            return ".enc";
+            return "f7WR0m1rkaaiD968N9/Bd7M1jC/Y7pZ5F80jszBdPIY=";
         }
         return aesKey;
     }
