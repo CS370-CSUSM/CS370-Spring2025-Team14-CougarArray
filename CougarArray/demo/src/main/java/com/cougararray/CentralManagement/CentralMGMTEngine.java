@@ -19,6 +19,7 @@ import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
 import com.cougararray.Cryptography.CryptographyResult;
 import com.cougararray.Cryptography.FileHasher;
+import com.cougararray.Cryptography.Keys;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 import com.cougararray.RecDatabase.ColumnName;
@@ -246,8 +247,9 @@ public class CentralMGMTEngine extends WebsocketListener {
         String mykeysHelp = "Usage: mykeys\nDisplays the current user's public and private keys.";
         commandUsage.put(mykeysCmd, mykeysHelp);
         commandMap.put(mykeysCmd, params -> {
-            Output.print("AES Key: " + Config.getAESKey());
-            Output.print("Public Key: " + Config.getPublicKey() + "\n" + "Private Key (DO NOT SHARE): " + Config.getPrivateKey() + "\n");
+            Output.print("Public Key: " + Config.getPublicKey(), Status.DASH);
+            Output.print("Private Key: [REDACTED]", Status.DASH);
+            Output.print("AES Key: [REDACTED]", Status.DASH);
             return true;
         });
 
@@ -289,6 +291,46 @@ public class CentralMGMTEngine extends WebsocketListener {
                 return true;
             } catch (Exception e) {
                 Output.errorPrint("Error generating hash: " + e.getMessage());
+                return false;
+            }
+        });
+
+        // Verify command
+        final String verifyCmd = "verify";
+        String verifyHelp = "Usage: verify <filePath> <expectedHash>\nVerifies the SHA-256 hash of a file.";
+        commandUsage.put(verifyCmd, verifyHelp);
+        commandMap.put(verifyCmd, params -> {
+            if (params.length < 3) {
+                return Output.errorPrint(getUsage(verifyCmd));
+            }
+            String filePath = params[1];
+            String expectedHash = params[2].toLowerCase();
+            try {
+                String actualHash = FileHasher.hashFile(filePath);
+                if (actualHash.equals(expectedHash)) {
+                    Output.print("File hash matches expected hash.", Status.GOOD);
+                    return true;
+                } else {
+                    Output.print("Hash mismatch. Expected: " + expectedHash + ", Actual: " + actualHash, Status.BAD);
+                    return false;
+                }
+            } catch (Exception e) {
+                Output.errorPrint("Error verifying file: " + e.getMessage());
+                return false;
+            }
+        });
+
+        // Regenkeys command
+        final String regenkeysCmd = "regenkeys";
+        String regenkeysHelp = "Usage: regenkeys\nGenerates new RSA key pair and updates the configuration.";
+        commandUsage.put(regenkeysCmd, regenkeysHelp);
+        commandMap.put(regenkeysCmd, params -> {
+            Keys newKeys = CryptographyClient.generateKeys();
+            if (Config.setKeys(newKeys)) {
+                Output.print("Successfully regenerated keys. Restart the application for changes to take full effect.", Status.GOOD);
+                return true;
+            } else {
+                Output.errorPrint("Failed to update keys in configuration.");
                 return false;
             }
         });
