@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -21,7 +19,6 @@ import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
 import com.cougararray.Cryptography.CryptographyResult;
 import com.cougararray.Cryptography.FileHasher;
-import com.cougararray.Cryptography.Keys;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 import com.cougararray.RecDatabase.ColumnName;
@@ -202,12 +199,6 @@ public class CentralMGMTEngine extends WebsocketListener {
                 } else {
                     return Output.errorPrint("Error: Invalid option for send command. Use 'name' or 'address'.");
                 }
-                try {
-                    Output.print("Original file hash (SHA-256): " + FileHasher.hashFile(params[1]), Status.GOOD);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
                 return sendFile(params[1], rv);
             }
             return Output.errorPrint(getUsage(sendCmd));
@@ -255,9 +246,8 @@ public class CentralMGMTEngine extends WebsocketListener {
         String mykeysHelp = "Usage: mykeys\nDisplays the current user's public and private keys.";
         commandUsage.put(mykeysCmd, mykeysHelp);
         commandMap.put(mykeysCmd, params -> {
-            Output.print("Public Key: " + Config.getPublicKey(), Status.DASH);
-            Output.print("Private Key: [REDACTED]", Status.DASH);
-            Output.print("AES Key: [REDACTED]", Status.DASH);
+            Output.print("AES Key: " + Config.getAESKey());
+            Output.print("Public Key: " + Config.getPublicKey() + "\n" + "Private Key (DO NOT SHARE): " + Config.getPrivateKey() + "\n");
             return true;
         });
 
@@ -284,42 +274,21 @@ public class CentralMGMTEngine extends WebsocketListener {
             return true;
         });
 
-        // Regenkeys command
-        final String regenkeysCmd = "regenkeys";
-        String regenkeysHelp = "Usage: regenkeys\nGenerates new RSA key pair and updates the configuration.";
-        commandUsage.put(regenkeysCmd, regenkeysHelp);
-        commandMap.put(regenkeysCmd, params -> {
-            Keys newKeys = CryptographyClient.generateKeys();
-            if (Config.setKeys(newKeys)) {
-                Output.print("Successfully regenerated keys.", Status.GOOD);
-                return true;
-            } else {
-                Output.errorPrint("Failed to update keys in configuration.");
-                return false;
-            }
-        });
-
-        // Verify command
-        final String verifyCmd = "verify";
-        String verifyHelp = "Usage: verify <filePath> <expectedHash>\nVerifies the SHA-256 hash of a file.";
-        commandUsage.put(verifyCmd, verifyHelp);
-        commandMap.put(verifyCmd, params -> {
-            if (params.length < 3) {
-                return Output.errorPrint(getUsage(verifyCmd));
+        // Hash command
+        final String hashCmd = "hash";
+        String hashHelp = "Usage: hash <filePath>\nGenerates SHA-256 hash of the specified file.";
+        commandUsage.put(hashCmd, hashHelp);
+        commandMap.put(hashCmd, params -> {
+            if (params.length < 2) {
+                return Output.errorPrint(getUsage(hashCmd));
             }
             String filePath = params[1];
-            String expectedHash = params[2].toLowerCase();
             try {
-                String actualHash = FileHasher.hashFile(filePath);
-                if (actualHash.equals(expectedHash)) {
-                    Output.print("File hash matches expected hash.", Status.GOOD);
-                    return true;
-                } else {
-                    Output.print("Hash mismatch. Expected: " + expectedHash + ", Actual: " + actualHash, Status.BAD);
-                    return false;
-                }
+                String hash = FileHasher.hashFile(filePath);
+                Output.print("SHA-256 hash of " + filePath + ": " + hash, Status.GOOD);
+                return true;
             } catch (Exception e) {
-                Output.errorPrint("Error verifying file: " + e.getMessage());
+                Output.errorPrint("Error generating hash: " + e.getMessage());
                 return false;
             }
         });
@@ -333,10 +302,7 @@ public class CentralMGMTEngine extends WebsocketListener {
             // Output.print("You may also navigate to the README at https://github.com/CS370-CSUSM/CS370-Spring2025-Team14-CougarArray", Status.DASH);
             return true;
         });
-    
     }
-
-
 
     /**
      * Returns usage info for a command
@@ -434,29 +400,28 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if file is sent, false otherwise
      */
     private boolean sendFile(String file, RecordValue record) {
-    recipientdao endUser = new recipientdao(record);
-    if (!endUser.exists()) return false;
-
-    CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
-    try {
-        String encryptedHash = FileHasher.hashBytes(cry.encryptedData);
-        Output.print("[CentralMGMTEngine.sendFile] Encrypted data hash: " + encryptedHash, Status.DEBUG);
-        
-        Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
-        ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey, encryptedHash);
-        String target = endUser.getAddress() + ":" + endUser.getPort();
-        WebsocketSenderClient.sendMessage(target, packet.toJson());
-        return true;
-    } catch (Exception e) {
-        Output.errorPrint("Error hashing encrypted data: " + e.getMessage());
-        return false;
+        recipientdao endUser = new recipientdao(record);
+        if (!endUser.exists()) return false;
+    
+        CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
+        try {
+            String encryptedHash = FileHasher.hashBytes(cry.encryptedData);
+            Output.print("[CentralMGMTEngine.sendFile] Encrypted data hash: " + encryptedHash, Status.DEBUG);
+            Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
+            ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey, encryptedHash);
+            String target = endUser.getAddress() + ":" + endUser.getPort();
+            WebsocketSenderClient.sendMessage(target, packet.toJson());
+            return true;
+        } catch (Exception e) {
+            Output.errorPrint("Error hashing encrypted data: " + e.getMessage());
+            return false;
+        }
     }
-}
 
     private boolean addUser(String address, String portString, String name, String publicKey) {
         int port = 5666; // default
 
-        Output.print("[CentralMGMTEngine.addUser] called with address: " + address + ", port: " + portString + ", name: " + name + ", key: " + publicKey, Status.DEBUG);
+            Output.print("[CentralMGMTEngine.addUser] called with address: " + address + ", port: " + portString + ", name: " + name + ", key: " + publicKey, Status.DEBUG);
         
         
         if (portString != null && !portString.isEmpty()) {
@@ -490,6 +455,7 @@ public class CentralMGMTEngine extends WebsocketListener {
             Output.print("WebSocket server (receiver) is disabled in config.", Status.OK);
             return;
         }
+    
         Output.print("Starting WebSocket Receiver on port " + port, Status.GOOD);
 
         Output.print("[CentralMGMTEngine.listen]: WebSocket attempting to start...", Status.DEBUG);
@@ -512,38 +478,15 @@ public class CentralMGMTEngine extends WebsocketListener {
                             conn.send("PONG!"); //@TODO! make a pong packet
                             break;
                         case "CONTENT":
-                        ContentPacket receivePacket = new ContentPacket(message);
-                        byte[] encryptedContent = Base64.getDecoder().decode(json.getString("content"));
-                        String receivedHash = json.getString("hash");
-
-                        try {
-                            String computedHash = FileHasher.hashBytes(encryptedContent);
-                            if (!computedHash.equals(receivedHash)) {
-                                Output.errorPrint("Encrypted data corrupted during transfer.");
-                                conn.send(ResponsePacket.toJson(2, "Data corrupted"));
-                                break;
-                            }
-                        } catch (Exception e) {
-                            Output.errorPrint("Hash verification failed: " + e.getMessage());
-                            conn.send(ResponsePacket.toJson(2, "Hash error"));
+                            Output.print("[CentralMGMTEngine.listen] Received CONTENT packet, decrypting...", Status.DEBUG);
+                            ContentPacket receivePacket = new ContentPacket(message);
+                            if (CryptographyClient.decryptBytes(
+                                Base64.getDecoder().decode(json.getString("content")),
+                                receivePacket.getFileName(),
+                                Config.getPrivateKey(),
+                                Base64.getDecoder().decode(json.getString("key"))
+                            )) conn.send(ResponsePacket.toJson(0));
                             break;
-                        }
-
-                        if (CryptographyClient.decryptBytes(encryptedContent, receivePacket.getFileName(), 
-                        Config.getPrivateKey(), Base64.getDecoder().decode(json.getString("key")))) {
-                        try {
-                            byte[] decryptedData = Files.readAllBytes(Paths.get(receivePacket.getFileName()));
-                            String decryptedHash = FileHasher.hashBytes(decryptedData);
-                            Output.print("[CentralMGMTEngine.listen] Decrypted file hash: " + decryptedHash, Status.DEBUG);
-                            Output.print("Decrypted file hash (SHA-256): " + decryptedHash, Status.GOOD);
-                        } catch (Exception e) {
-                                Output.print("Could not compute decrypted hash: " + e.getMessage(), Status.DEBUG);
-                        }
-                            conn.send(ResponsePacket.toJson(0));
-                        } else {
-                            conn.send(ResponsePacket.toJson(1, "Decryption failed"));
-                        }
-                        break;
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
                             ModalOutput status = executeArgs(breakDownArgs(executePacket.getCommand()));
