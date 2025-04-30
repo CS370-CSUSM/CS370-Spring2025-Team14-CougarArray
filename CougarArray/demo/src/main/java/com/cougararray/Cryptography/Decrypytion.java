@@ -96,7 +96,8 @@ public class Decrypytion {
     }
 
     private String sanitizeFilename(String filename) {
-        return filename.replaceAll("[\\\\/:*?\"<>|]", "_");
+        // Replace illegal characters and trim whitespace
+        return filename.trim().replaceAll("[\\\\/:*?\"<>|]", "_").replaceAll("\\s+", "_");
     }
 
     public CryptographyResult DecryptBytes(byte[] fileData, String output) throws Exception {
@@ -120,7 +121,7 @@ public class Decrypytion {
 }
 
     private SecretKey decryptAESKey(PrivateKey privateKey) throws Exception {
-        Cipher rsaCipher = Cipher.getInstance("RSA");
+        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
         rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] decryptedKey = rsaCipher.doFinal(this.encryptedAESKey);
         return new SecretKeySpec(decryptedKey, "AES");

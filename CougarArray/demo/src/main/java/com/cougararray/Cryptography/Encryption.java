@@ -32,7 +32,7 @@ public class Encryption {
         }
     }
 
-    //Local Use
+    //Local Use 
     public CryptographyResult Encrypt(String Filepath) throws Exception {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
         String originalHash = FileHasher.hashBytes(fileData);
@@ -77,7 +77,7 @@ public class Encryption {
 }
 
     private byte[] encryptAESKey(PublicKey publicKey) throws Exception {
-        Cipher rsaCipher = Cipher.getInstance("RSA");
+        Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
         rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
         return rsaCipher.doFinal(this.aesKey.getEncoded());
     }
