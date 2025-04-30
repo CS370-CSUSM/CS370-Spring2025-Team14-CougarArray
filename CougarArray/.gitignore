@@ -34,3 +34,6 @@ bin/
 config.properties
 *.properties
 createdFiles.lst
+
+demo-1.0-SNAPSHOT.jar
+CougarArray/demo/target/original-demo-1.0-SNAPSHOT.jar
