@@ -10,7 +10,12 @@ public class ContentPacket {
     private String fileName;
     private byte[] contentBase64; // Encrypted binary content
     private byte[] key;
+    private String encryptedHash;
     
+    public String getEncryptedHash() {
+        return encryptedHash;
+    }
+
     public byte[] getKey() {
         return key;
     }
@@ -35,10 +40,11 @@ public class ContentPacket {
         this.contentBase64 = contentBase64;
     }
 
-    public ContentPacket(String fileName, byte[] contentBase64, byte[] key) {
+    public ContentPacket(String fileName, byte[] contentBase64, byte[] key, String encryptedHash) {
         this.fileName = fileName;
         this.contentBase64 = contentBase64;
         this.key = key;
+        this.encryptedHash = encryptedHash;
     }
 
     public ContentPacket(String rawJson) {
@@ -55,13 +61,14 @@ public class ContentPacket {
         json.put("fileName", fileName);
         json.put("content", Base64.getEncoder().encodeToString(contentBase64));
         json.put("key", Base64.getEncoder().encodeToString(key));
+        json.put("hash", encryptedHash);
         return json.toString();
     }
     
     //update this example code
     public static void main(String[] args) {
         // Simulate original packet
-        ContentPacket original = new ContentPacket("example.txt", new byte[]{10, 20, 30}, null);
+        ContentPacket original = new ContentPacket("example.txt", new byte[]{10, 20, 30}, null, null);
         String json = original.toJson();
         Output.print("JSON: " + json);
 

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import org.json.JSONObject;
 import com.cougararray.Config.config;
 import com.cougararray.Cryptography.CryptographyClient;
 import com.cougararray.Cryptography.CryptographyResult;
+import com.cougararray.Cryptography.FileHasher;
 import com.cougararray.OutputT.Output;
 import com.cougararray.OutputT.Status;
 import com.cougararray.RecDatabase.ColumnName;
@@ -380,23 +383,21 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if file is sent, false otherwise
      */
     private boolean sendFile(String file, RecordValue record) {
-            Output.print("[CentralMGMTEngine.sendFile] to record: " + record.toString(), Status.DEBUG);
-        
-        recipientdao endUser = new recipientdao(record);
-        if (!endUser.exists()) {
-            return Output.errorPrint("User not found in database.");
-        }
-        Output.print("Sending file to " + endUser.getAddress() + ":" + endUser.getPort() + "...", Status.DASH);
+    recipientdao endUser = new recipientdao(record);
+    if (!endUser.exists()) return false;
 
-        CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
-        if (!cry.successful()) return false;
-
-        ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey);
+    CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
+    try {
+        String encryptedHash = FileHasher.hashBytes(cry.encryptedData);
+        ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey, encryptedHash);
         String target = endUser.getAddress() + ":" + endUser.getPort();
         WebsocketSenderClient.sendMessage(target, packet.toJson());
-        Output.print("Sent to " + target  + packet.toJson(), Status.GOOD);
         return true;
+    } catch (Exception e) {
+        Output.errorPrint("Error hashing encrypted data: " + e.getMessage());
+        return false;
     }
+}
 
     private boolean addUser(String address, String portString, String name, String publicKey) {
         int port = 5666; // default
@@ -458,15 +459,38 @@ public class CentralMGMTEngine extends WebsocketListener {
                             conn.send("PONG!"); //@TODO! make a pong packet
                             break;
                         case "CONTENT":
-                            Output.print("[CentralMGMTEngine.listen] Received CONTENT packet, decrypting...", Status.DEBUG);
-                            ContentPacket receivePacket = new ContentPacket(message);
-                            if (CryptographyClient.decryptBytes(
-                                Base64.getDecoder().decode(json.getString("content")),
-                                receivePacket.getFileName(),
-                                Config.getPrivateKey(),
-                                Base64.getDecoder().decode(json.getString("key"))
-                            )) conn.send(ResponsePacket.toJson(0));
+                        ContentPacket receivePacket = new ContentPacket(message);
+                        byte[] encryptedContent = Base64.getDecoder().decode(json.getString("content"));
+                        String receivedHash = json.getString("hash");
+
+                        try {
+                            String computedHash = FileHasher.hashBytes(encryptedContent);
+                            if (!computedHash.equals(receivedHash)) {
+                                Output.errorPrint("Encrypted data corrupted during transfer.");
+                                conn.send(ResponsePacket.toJson(2, "Data corrupted"));
+                                break;
+                            }
+                        } catch (Exception e) {
+                            Output.errorPrint("Hash verification failed: " + e.getMessage());
+                            conn.send(ResponsePacket.toJson(2, "Hash error"));
                             break;
+                        }
+
+                        if (CryptographyClient.decryptBytes(encryptedContent, receivePacket.getFileName(), 
+                                Config.getPrivateKey(), Base64.getDecoder().decode(json.getString("key")))) {
+                            // Optional: Log decrypted file hash
+                            try {
+                                byte[] decryptedData = Files.readAllBytes(Paths.get(receivePacket.getFileName()));
+                                String decryptedHash = FileHasher.hashBytes(decryptedData);
+                                Output.print("Decrypted file hash: " + decryptedHash, Status.DEBUG);
+                            } catch (Exception e) {
+                                Output.print("Could not compute decrypted hash: " + e.getMessage(), Status.DEBUG);
+                            }
+                            conn.send(ResponsePacket.toJson(0));
+                        } else {
+                            conn.send(ResponsePacket.toJson(1, "Decryption failed"));
+                        }
+                        break;
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
                             ModalOutput status = executeArgs(breakDownArgs(executePacket.getCommand()));
