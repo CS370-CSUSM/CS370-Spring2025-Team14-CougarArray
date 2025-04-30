@@ -203,7 +203,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                 String originalHash;
                 try {
                     originalHash = FileHasher.hashFile(params[1]);
-                    Output.print("Original file hash (SHA-256): " + originalHash, Status.GOOD);
+                    Output.print("Original file " + params[1] +  " hash (SHA-256): " + originalHash, Status.GOOD);
                 } catch (Exception e) {
                     Output.errorPrint(e.getMessage());
                 }
@@ -537,6 +537,8 @@ public class CentralMGMTEngine extends WebsocketListener {
                                 Config.getPrivateKey(),
                                 Base64.getDecoder().decode(json.getString("key"))
                             )) conn.send(ResponsePacket.toJson(0));
+                            String hash = FileHasher.hashFile(receivePacket.getFileName());
+                            Output.print("SHA-256 hash of " + receivePacket.getFileName() + ": " + hash, Status.GOOD);
                             break;
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
