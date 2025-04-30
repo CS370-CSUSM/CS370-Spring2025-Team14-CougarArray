@@ -16,7 +16,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.cougararray.Config.config;;
+import com.cougararray.Config.config;
+import com.cougararray.OutputT.Output;
+import com.cougararray.OutputT.Status;;
 public class Decrypytion {
 
     private static final config Config = new config();
@@ -61,9 +63,15 @@ public class Decrypytion {
         return new CryptographyResult(decryptedData, true);
     }
 
-    public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
+        public CryptographyResult Decrypt(String Filepath, String output) throws Exception {
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
+        String encryptedHash = FileHasher.hashBytes(fileData);
+        Output.print("[Decryption.Decrypt] Encrypted file hash: " + encryptedHash, Status.DEBUG);
+
         byte[] decryptedData = decryptContent(fileData, decryptAESKey(this.privateKey));
+        String decryptedHash = FileHasher.hashBytes(decryptedData);
+        Output.print("[Decryption.Decrypt] Decrypted data hash: " + decryptedHash, Status.DEBUG);
+
 
         Path encryptedPath = Paths.get(Filepath);
         Path parentDir = encryptedPath.getParent();

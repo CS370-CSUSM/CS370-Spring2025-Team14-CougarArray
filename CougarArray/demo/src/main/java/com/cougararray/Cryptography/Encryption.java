@@ -34,30 +34,32 @@ public class Encryption {
 
     //Local Use
     public CryptographyResult Encrypt(String Filepath) throws Exception {
-
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
+        String originalHash = FileHasher.hashBytes(fileData);
+        Output.print("[Encryption.Encrypt] Original file hash: " + originalHash, Status.DEBUG);
+    
         byte[] encryptedData = encryptContent(fileData);
-        
-        //not needed
-        //byte[] encryptedKey = encryptAESKey(aesKey, externalPublicKey);
-
+        String encryptedHash = FileHasher.hashBytes(encryptedData);
+        Output.print("[Encryption.Encrypt] Encrypted data hash: " + encryptedHash, Status.DEBUG);
+    
         Files.write(Paths.get(Filepath + Config.getEncryptedSuffix()), encryptedData);
         return new CryptographyResult(encryptedData, true, null);
-
     }
+    
 
     //External Use
     public CryptographyResult Encrypt(String Filepath, String publicKey) throws Exception {
-
         PublicKey externalPublicKey = Keys.getPublicKeyFromString(publicKey);
-
         byte[] fileData = Files.readAllBytes(Paths.get(Filepath));
+        String originalHash = FileHasher.hashBytes(fileData);
+        Output.print("[Encryption.Encrypt] Original file hash: " + originalHash, Status.DEBUG);
+    
         byte[] encryptedData = encryptContent(fileData);
+        String encryptedHash = FileHasher.hashBytes(encryptedData);
+        Output.print("[Encryption.Encrypt] Encrypted data hash: " + encryptedHash, Status.DEBUG);
+    
         byte[] encryptedKey = encryptAESKey(externalPublicKey);
-
-        //Files.write(Paths.get(Filepath + ".enc"), encryptedData);
         return new CryptographyResult(encryptedData, true, encryptedKey);
-
     }
 
     //cipher documentation i was reading

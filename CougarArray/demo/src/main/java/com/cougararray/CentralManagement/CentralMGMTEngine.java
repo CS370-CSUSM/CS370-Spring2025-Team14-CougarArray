@@ -389,6 +389,8 @@ public class CentralMGMTEngine extends WebsocketListener {
     CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
     try {
         String encryptedHash = FileHasher.hashBytes(cry.encryptedData);
+        Output.print("[CentralMGMTEngine.sendFile] Encrypted data hash: " + encryptedHash, Status.DEBUG);
+        Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
         ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey, encryptedHash);
         String target = endUser.getAddress() + ":" + endUser.getPort();
         WebsocketSenderClient.sendMessage(target, packet.toJson());
@@ -477,15 +479,15 @@ public class CentralMGMTEngine extends WebsocketListener {
                         }
 
                         if (CryptographyClient.decryptBytes(encryptedContent, receivePacket.getFileName(), 
-                                Config.getPrivateKey(), Base64.getDecoder().decode(json.getString("key")))) {
-                            // Optional: Log decrypted file hash
-                            try {
-                                byte[] decryptedData = Files.readAllBytes(Paths.get(receivePacket.getFileName()));
-                                String decryptedHash = FileHasher.hashBytes(decryptedData);
-                                Output.print("Decrypted file hash: " + decryptedHash, Status.DEBUG);
-                            } catch (Exception e) {
+                        Config.getPrivateKey(), Base64.getDecoder().decode(json.getString("key")))) {
+                        try {
+                            byte[] decryptedData = Files.readAllBytes(Paths.get(receivePacket.getFileName()));
+                            String decryptedHash = FileHasher.hashBytes(decryptedData);
+                            Output.print("[CentralMGMTEngine.listen] Decrypted file hash: " + decryptedHash, Status.DEBUG);
+                            Output.print("Decrypted file hash (SHA-256): " + decryptedHash, Status.GOOD);
+                        } catch (Exception e) {
                                 Output.print("Could not compute decrypted hash: " + e.getMessage(), Status.DEBUG);
-                            }
+                        }
                             conn.send(ResponsePacket.toJson(0));
                         } else {
                             conn.send(ResponsePacket.toJson(1, "Decryption failed"));

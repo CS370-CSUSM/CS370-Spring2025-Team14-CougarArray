@@ -98,6 +98,13 @@ public class CryptographyClient {
                 Output.print("Encryption of file " + filePath + " failed", Status.BAD);
                 return false;
             }
+
+            String originalHash = FileHasher.hashFile(filePath);
+            Output.print("Original file hash (SHA-256): " + originalHash, Status.GOOD);
+            
+            String encryptedFilePath = filePath + Config.getEncryptedSuffix();
+            String encryptedHash = FileHasher.hashFile(encryptedFilePath);
+            Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
             
             Output.print("Encryption of file " + filePath + " successful", Status.GOOD);
             Output.print("Created file " + filePath + Config.getEncryptedSuffix(), Status.GOOD);
@@ -123,6 +130,12 @@ public class CryptographyClient {
                 Output.print("Decryption of file " + filePath + " failed", Status.BAD);
                 return false;
             }
+
+            String encryptedHash = FileHasher.hashFile(filePath);
+            Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
+            
+            String decryptedHash = FileHasher.hashFile(fileOutput);
+            Output.print("Decrypted file hash (SHA-256): " + decryptedHash, Status.GOOD);
             
             Output.print("Decryption of file " + filePath + " successful", Status.GOOD);
             String cleanedFilePath = filePath.replaceAll("\\" + Config.getEncryptedSuffix() + "$", "");
