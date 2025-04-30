@@ -126,7 +126,7 @@ public class CryptographyClient {
             
             Output.print("Decryption of file " + filePath + " successful", Status.GOOD);
             String cleanedFilePath = filePath.replaceAll("\\" + Config.getEncryptedSuffix() + "$", "");
-            Output.print("Created file" + Config.getDecryptedPrefix() + cleanedFilePath , Status.GOOD);
+            Output.print("Created file " + Config.getDecryptedPrefix() + cleanedFilePath , Status.GOOD);
             return true;
     
         } catch (Exception e) {
