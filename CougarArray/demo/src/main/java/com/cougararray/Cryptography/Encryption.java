@@ -6,6 +6,7 @@
 package com.cougararray.Cryptography;
 
 
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.PublicKey;
@@ -62,10 +63,16 @@ public class Encryption {
     //cipher documentation i was reading
 
     private byte[] encryptContent(byte[] content) throws Exception  {
-        Cipher aesCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        aesCipher.init(Cipher.ENCRYPT_MODE, this.aesKey);
-        return aesCipher.doFinal(content);
-    }
+    Cipher aesCipher = Cipher.getInstance("AES/GCM/NoPadding");
+    aesCipher.init(Cipher.ENCRYPT_MODE, this.aesKey);
+    byte[] iv = aesCipher.getIV();
+    byte[] encryptedBytes = aesCipher.doFinal(content);
+    // Prepend IV to encrypted data
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    outputStream.write(iv);
+    outputStream.write(encryptedBytes);
+    return outputStream.toByteArray();
+}
 
     private byte[] encryptAESKey(PublicKey publicKey) throws Exception {
         Cipher rsaCipher = Cipher.getInstance("RSA");

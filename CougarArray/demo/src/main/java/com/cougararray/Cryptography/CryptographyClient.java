@@ -115,31 +115,25 @@ public class CryptographyClient {
     }
 
     public boolean decrypt(String filePath, String fileOutput) {
-        if (filePath == null || filePath.trim().isEmpty()) {
-            Output.print("Invalid input file path provided for decryption", Status.BAD);
-            return false;
-        }
-        if (fileOutput == null || fileOutput.trim().isEmpty()) {
-            Output.print("Invalid output file path provided for decryption", Status.BAD);
-            return false;
-        }
-
         try {
             validateFileExists(filePath);
             CryptographyResult output = decryptCallMethod(filePath, fileOutput);
             
             if (output == null || !output.successful()) {
-                Output.print("Decryption of file " + filePath + "failed", Status.BAD);
+                Output.print("Decryption of file " + filePath + " failed", Status.BAD);
                 return false;
             }
             
             Output.print("Decryption of file " + filePath + " successful", Status.GOOD);
             String cleanedFilePath = filePath.replaceAll("\\" + Config.getEncryptedSuffix() + "$", "");
-            Output.print("Created file decrypted_" + cleanedFilePath , Status.GOOD);
+            Output.print("Created file" + Config.getDecryptedPrefix() + cleanedFilePath , Status.GOOD);
             return true;
-
+    
         } catch (Exception e) {
             Output.print("Decryption failed: " + e.getMessage(), Status.BAD);
+            if (e.getCause() != null) {
+                Output.print("Cause: " + e.getCause().getMessage(), Status.BAD);
+            }
             return false;
         }
     }
