@@ -100,7 +100,7 @@ public class CryptographyClient {
             }
             
             Output.print("Encryption of file " + filePath + " successful", Status.GOOD);
-            Output.print("Created file " + filePath, Status.GOOD);
+            Output.print("Created file "+ Config.getEncryptedSuffix() + filePath, Status.GOOD);
             return true;
 
         } catch (Exception e) {
