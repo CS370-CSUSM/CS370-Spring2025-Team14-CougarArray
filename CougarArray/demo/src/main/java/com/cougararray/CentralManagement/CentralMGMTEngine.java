@@ -539,6 +539,7 @@ public class CentralMGMTEngine extends WebsocketListener {
                             )) conn.send(ResponsePacket.toJson(0));
                             String hash = FileHasher.hashFile(receivePacket.getFileName());
                             Output.print("SHA-256 hash of " + receivePacket.getFileName() + ": " + hash, Status.GOOD);
+                            Output.print(">>> ");
                             break;
                         case "EXECUTE":
                             ExecutePacket executePacket = new ExecutePacket(message);
