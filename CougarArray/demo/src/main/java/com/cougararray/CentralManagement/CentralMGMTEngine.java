@@ -451,19 +451,25 @@ public class CentralMGMTEngine extends WebsocketListener {
      * @return true if file is sent, false otherwise
      */
     private boolean sendFile(String file, RecordValue record) {
+        // initialize and confirm recipient using provided record
         recipientdao endUser = new recipientdao(record);
         if (!endUser.exists()) return false;
-    
+
+        // encryption process
         CryptographyResult cry = CryptographyClient.encrypt(file, endUser.getPublicKey());
         try {
+            // hashing encrypted data
             String encryptedHash = FileHasher.hashBytes(cry.encryptedData);
             Output.print("[CentralMGMTEngine.sendFile] Encrypted data hash: " + encryptedHash, Status.DEBUG);
             Output.print("Encrypted file hash (SHA-256): " + encryptedHash, Status.GOOD);
+
+            // create packets and send through websocket
             ContentPacket packet = new ContentPacket(file, cry.encryptedData, cry.encryptedKey, encryptedHash);
             String target = endUser.getAddress() + ":" + endUser.getPort();
             WebsocketSenderClient.sendMessage(target, packet.toJson());
             return true;
         } catch (Exception e) {
+            // error handling
             Output.errorPrint("Error hashing encrypted data: " + e.getMessage());
             return false;
         }
